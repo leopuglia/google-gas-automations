@@ -1,0 +1,90 @@
+# Regras do Workspace para Google Apps Scripts Automações
+
+## Estrutura do Projeto
+- Estrutura monorepo com módulos independentes
+- Código fonte em TypeScript na pasta `src/` de cada módulo
+- Código compilado na pasta `build/` de cada módulo
+- Repositório Git inicializado na pasta raiz (/home/leopuglia/linux-projects/google-apps-scripts-automacoes)
+- Primeiro módulo: villadaspedras-lib (biblioteca com funções auxiliares para planilhas)
+- Arquivos ignorados pelo Git:
+  - Pastas de dependências (node_modules/)
+  - Arquivos de build compilados (build/)
+  - Logs e arquivos de debug
+  - Arquivos de ambiente (.env)
+  - Arquivos de cache (.npm, .pnpm-store/, etc.)
+  - Arquivos específicos de IDEs (mantendo configurações úteis do VS Code)
+  - Arquivos temporários e do sistema operacional
+  - Arquivos específicos do Google Apps Script (.clasp.json.bak)
+  - Arquivos compactados (*.tgz, *.zip, etc.)
+
+## Configurações Técnicas
+- TypeScript como linguagem principal de desenvolvimento
+- Compilação para JavaScript antes do envio para o Google Apps Script
+- Uso do clasp para sincronização com o Google Apps Script
+- Timezone padrão: America/Sao_Paulo
+- ESLint configurado com:
+  - Plugin para TypeScript
+  - Plugin para Google Apps Script
+  - Regras de formatação consistentes
+  - Integração com Prettier
+- Prettier configurado com:
+  - Aspas simples
+  - Ponto e vírgula obrigatório
+  - Largura máxima de 100 caracteres
+  - Indentação de 2 espaços
+- TypeScript configurado com:
+  - Target: ES2019
+  - Strict mode habilitado
+  - Decoradores experimentais habilitados
+  - Verificação de casing consistente em nomes de arquivos
+- Configuração do clasp:
+  - rootDir: build (para enviar apenas código compilado)
+  - scriptExtensions: .js, .gs
+  - htmlExtensions: .html
+  - jsonExtensions: .json
+
+## Fluxo de Trabalho
+- Desenvolvimento em TypeScript na pasta `src/`
+- Compilação automática com `pnpm watch` durante o desenvolvimento
+- Envio para o Google Apps Script com `pnpm push`
+- Testes no ambiente do Google Apps Script
+- Commits seguindo o formato de conventional commits
+- Scripts disponíveis:
+  - build: Compila o código TypeScript e formata o JavaScript resultante
+  - push: Compila e envia para o Google Apps Script
+  - pull: Baixa o código do Google Apps Script
+  - deploy: Compila e faz deploy de uma nova versão
+  - watch: Compila automaticamente quando houver alterações
+  - lint: Verifica erros de linting
+  - lint:fix: Corrige erros de linting automaticamente
+  - format: Formata o código com Prettier
+
+## Convenções de Código
+- Indentação: 2 espaços
+- Aspas simples para strings
+- Ponto e vírgula ao final das instruções
+- Documentação JSDoc para todas as funções
+- Tipagem explícita para parâmetros e retornos de funções
+- Nomes de funções em camelCase
+- Constantes globais em UPPER_SNAKE_CASE
+- Exportação explícita das funções a serem expostas globalmente
+- Uso de interfaces e tipos para melhorar a legibilidade e manutenção
+- Evitar o uso de `any` sempre que possível
+- Preferir funções com propósito único e bem definido
+- Comentários em português do Brasil
+
+## Módulos
+### villadaspedras-lib
+- Biblioteca com funções auxiliares para planilhas
+- Funções para virada de mês e ano das planilhas de consumo e salário
+- ScriptID: 1txMGRTvK71GgQ1Viz-Yzz_2rYHbaDUj2wGw5pZ7GySlWDYnFgYlBxdXE
+- Principais funcionalidades:
+  - Cálculo de meses atual e próximo
+  - Proteção e desproteção de abas
+  - Manipulação de intervalos e células
+  - Integração com Google Drive para acesso a planilhas compartilhadas
+  - Funções de formatação e limpeza de dados
+  - Reordenação de nomes em planilhas de salário
+  - Virada de mês e ano para planilhas de consumo e salário
+- Dependências de desenvolvimento:
+  - Analisar arquivo package.json

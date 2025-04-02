@@ -35,7 +35,6 @@ pnpm-debug.log*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
-*.code-workspace
 .history/
 
 # Arquivos do sistema operacional
