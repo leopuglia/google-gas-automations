@@ -1,5 +1,5 @@
 {
-  "scriptId": "1txMGRTvK71GgQ1Viz-Yzz_2rYHbaDUj2wGw5pZ7GySlWDYnFgYlBxdXE",
+  "scriptId": "{{SCRIPT_ID}}",
   "rootDir": "build",
   "scriptExtensions": [
     ".js",

@@ -1,0 +1,44 @@
+{
+  "timeZone": "America/Sao_Paulo",
+  "dependencies": {
+    "enabledAdvancedServices": [{
+      "userSymbol": "Drive",
+      "serviceId": "drive",
+      "version": "v3"
+    }]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/spreadsheets", 
+    "https://www.googleapis.com/auth/drive", 
+    "https://www.googleapis.com/auth/userinfo.email"
+  ],
+  "runtimeVersion": "V8",
+  "sheets": {
+    "macros": [{
+      "menuName": "1. VIRAR MÊS SALARIO E CONSUMO",
+      "functionName": "virarMesTudo"
+    }, {
+      "menuName": "2. VIRAR MÊS SALARIO",
+      "functionName": "virarMesSalario"
+    }, {
+      "menuName": "3. VIRAR ANO SALARIO E CONSUMO",
+      "functionName": "virarAnoTudo"
+    }, {
+      "menuName": "4. VIRAR ANO SALARIO",
+      "functionName": "virarAnoSalario"
+    }, {
+      "menuName": "LIMPAR CORES",
+      "functionName": "limparCores"
+    }, {
+      "menuName": "5. REORDENAR NOMES",
+      "functionName": "reordenarNomes"
+    }, {
+      "menuName": "LIMPAR DADOS",
+      "functionName": "limparDados"
+    }, {
+      "menuName": "BLOQUEAR ALTERAÇÕES",
+      "functionName": "bloquearAlteracoes"
+    }]
+  }
+}

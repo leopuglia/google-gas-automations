@@ -1,0 +1,73 @@
+/**
+ * {{PROJECT_NAME}}: Macros para planilha de consumo {{PDV}} {{YEAR}}
+ * 
+ * Versão: 0.1.0 | Data: {{DATE}}
+ * 
+ * Autor: Leonardo Puglia
+ * 
+ * Descrição: Automações para a planilha de consumo da unidade {{PDV}} do ano {{YEAR}}
+ */
+
+// Importando funções da biblioteca VilladasPedrasLib
+// Nota: Para usar a biblioteca, é necessário adicioná-la como dependência no editor do GAS
+// ID da biblioteca: 1txMGRTvK71GgQ1Viz-Yzz_2rYHbaDUj2wGw5pZ7GySlWDYnFgYlBxdXE
+
+/**********************************
+ * 
+ * CONSTANTES E CONFIGURAÇÕES
+ * 
+***********************************/
+
+// Constantes específicas para {{PDV}} {{YEAR}}
+const ANO_ATUAL = {{YEAR}};
+const PDV_ATUAL = '{{PDV}}';
+const ABA_MES_CORRENTE_NAME = 'MES CORRENTE';
+const ABA_MODELO_NAME = 'MODELO';
+
+/**********************************
+ * 
+ * FUNÇÕES PRINCIPAIS
+ * 
+***********************************/
+
+/**
+ * Função para virar o mês na planilha de consumo
+ * Esta função é chamada pelo menu ou por um trigger
+ */
+function virarMesConsumo(): void {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ui = SpreadsheetApp.getUi();
+    const mesCorrenteSheet = ss.getSheetByName(ABA_MES_CORRENTE_NAME);
+    const modeloSheet = ss.getSheetByName(ABA_MODELO_NAME);
+    
+    // Usar a biblioteca VilladasPedrasLib para operações comuns
+    // Exemplo: const resultado = VilladasPedrasLib.getCurrentAndNextMonth(ss.getName(), ss, ui, true);
+    
+    // Implementação específica para {{PDV}} {{YEAR}}
+    // ...
+    
+    // Exemplo de mensagem de sucesso
+    ss.toast(`Virada de mês concluída com sucesso para ${PDV_ATUAL}!`);
+  } catch (error) {
+    console.error('Erro ao virar o mês: %s', error);
+    SpreadsheetApp.getUi().alert('Erro ao virar o mês: ' + error);
+  }
+}
+
+/**
+ * Função para criar o menu na planilha
+ * Esta função é chamada quando a planilha é aberta
+ */
+function onOpen(): void {
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu('Villa das Pedras')
+    .addItem('Virar Mês', 'virarMesConsumo')
+    .addToUi();
+}
+
+// Exportando funções para uso global
+export {
+  virarMesConsumo,
+  onOpen
+};
