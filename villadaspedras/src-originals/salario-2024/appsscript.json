@@ -1,0 +1,46 @@
+{
+  "timeZone": "America/Sao_Paulo",
+  "dependencies": {
+    "enabledAdvancedServices": [{
+      "userSymbol": "Drive",
+      "serviceId": "drive",
+      "version": "v3"
+    }],
+    "libraries": [{
+      "userSymbol": "VilladasPedrasLib",
+      "libraryId": "1txMGRTvK71GgQ1Viz-Yzz_2rYHbaDUj2wGw5pZ7GySlWDYnFgYlBxdXE",
+      "version": "0",
+      "developmentMode": true
+    }]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/userinfo.email"],
+  "runtimeVersion": "V8",
+  "sheets": {
+    "macros": [{
+      "menuName": "1. VIRAR MÊS SALARIO E CONSUMO",
+      "functionName": "VIRAR_MES_TUDO"
+    }, {
+      "menuName": "2. VIRAR MÊS SALARIO",
+      "functionName": "VIRAR_MES_SALARIO"
+    }, {
+      "menuName": "3. VIRAR ANO SALARIO E CONSUMO",
+      "functionName": "VIRAR_ANO_TUDO"
+    }, {
+      "menuName": "4. VIRAR ANO SALARIO",
+      "functionName": "VIRAR_ANO_SALARIO"
+    }, {
+      "menuName": "LIMPAR CORES",
+      "functionName": "LIMPAR_CORES"
+    }, {
+      "menuName": "5. REORDENAR NOMES",
+      "functionName": "REORDENAR_NOMES"
+    }, {
+      "menuName": "LIMPAR DADOS",
+      "functionName": "LIMPAR_DADOS"
+    }, {
+      "menuName": "BLOQUEAR ALTERAÇÕES",
+      "functionName": "BLOQUEAR_ALTERACOES"
+    }]
+  }
+}
