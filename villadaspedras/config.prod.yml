@@ -1,0 +1,63 @@
+# Configurações globais
+defaults:
+  timeZone: America/Sao_Paulo
+  runtimeVersion: V8
+
+# Configurações dos projetos
+projects:
+  example:
+    name: Example 
+  salario:
+    dependencies:
+      userSymbol: Drive
+      version: v3
+      serviceId: drive
+    sheetsMacros:
+      - menuName: 1. VIRAR MÊS SALARIO E CONSUMO
+        functionName: virarMesTudo
+      - menuName: 2. VIRAR MÊS SALARIO
+        functionName: virarMesSalario
+      - menuName: 3. VIRAR ANO SALARIO E CONSUMO
+        functionName: virarAnoTudo
+      - menuName: 4. VIRAR ANO SALARIO
+        functionName: virarAnoSalario
+      - menuName: 5. REORDENAR NOMES
+        functionName: reordenarNomes
+      - menuName: LIMPAR CORES
+        functionName: limparCores
+      - menuName: LIMPAR DADOS
+        functionName: limparDados
+      - menuName: BLOQUEAR ALTERAÇÕES
+        functionName: bloquearAlteracoes
+    2024:
+      name: Macros Salários 2024
+      scriptId: 1piXZFH-QithkQm-Q5_S2HVsAZAlURV9iPKvgA_h4icEnNL9cJ0WgtMMJ
+      spreadSheetId: 1xE0OSx7V6fc5SoDM6L6kJTuj-F3705tkc6XQe-lJUns
+  
+  consumo:
+    dependencies:
+      userSymbol: Drive
+      version: v3
+      serviceId: drive
+    sheetsMacros:
+      - menuName: 1. VIRAR MÊS CONSUMO
+        functionName: virarMesConsumo
+      - menuName: 2. VIRAR ANO CONSUMO
+        functionName: virarAnoConsumo
+    2024:
+      1-cafeteria:
+        name: Macros Cafeteria 2024
+        scriptId: 11vi0dyEeT43B9Gzprc_FoyqZfKAt_SpmPERsF0MpMG-9tOMWT_YkDa1p
+        spreadSheetId: 1DVwbcihxArqQC1xXcZN4RVkdzlco270ikI5tdRY55UI
+      2-saara:
+        name: Macros Saara 2024
+        scriptId: 1hXR1oaQdUJTNgYHS6cWrd1_F5Z-cV7U1I1tz4CHrfatkIFVmzW9N145W
+        spreadSheetId: 1FRgOyMG4LmyNcDydBOsd_fpolPHV9VXOkBSHrSx6j4k
+      3-castelo:
+        name: Macros Castelo 2024
+        scriptId: 1JmMj09mr2XZCoL04I5w9Bqkwd9-Vy3YtwRALiy-w7ItHQeC2lxg7PyGP
+        spreadSheetId: 1PrfuhwbCdhKN68p-HyYh5anyBWLY3e9FAojzlsRff9U
+      4-stones:
+        name: Macros Stones 2024
+        scriptId: 1nioOhx_pLkusxhjPrchT4S0ToBW93YygTppDWfSZkpbKuZDr22AjRcv9
+        spreadSheetId: 1G5_yrB3yKdOak0Ia0jsSVoADi1YDGBkeseIEGvu252Y

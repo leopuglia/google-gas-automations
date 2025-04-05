@@ -15,5 +15,8 @@
     "https://www.googleapis.com/auth/drive", 
     "https://www.googleapis.com/auth/userinfo.email"
   ],
-  "runtimeVersion": "{{runtimeVersion}}"
+  "runtimeVersion": "{{runtimeVersion}}",
+  "sheets": {
+    "macros": ["{{sheetsMacros}}"]
+  }
 }

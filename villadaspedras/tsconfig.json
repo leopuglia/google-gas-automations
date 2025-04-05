@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "target": "ES2019",
-    "module": "None",
-    "lib": ["ESNext", "DOM"],
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "lib": ["ESNext"],
+    "allowJs": true,
     "outDir": "build",
-    "rootDir": "src",
-    "strict": true,
+    "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -14,8 +15,20 @@
     "sourceMap": false,
     "removeComments": false,
     "typeRoots": ["node_modules/@types"],
-    "types": ["google-apps-script"]
+    "types": ["google-apps-script", "node"],
+    "noImplicitReturns": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts"],
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  },
+  "include": ["src/**/*.ts", "rollup.config.ts", "scripts/**/*.ts"],
   "exclude": ["node_modules"]
 }

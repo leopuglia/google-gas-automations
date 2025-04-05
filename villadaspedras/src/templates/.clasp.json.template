@@ -1,9 +1,0 @@
-{
-  "scriptId": "{{scriptId}}",
-  "rootDir": ".",
-  "scriptExtensions": [".gs"],
-  "htmlExtensions": [".html"],
-  "jsonExtensions": [".json"],
-  "filePushOrder": [],
-  "skipSubdirectories": false
-}
