@@ -3,13 +3,17 @@
     "target": "ES2019",
     "module": "commonjs",
     "lib": ["ES2019"],
+    "outDir": "./dist",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "types": ["jest", "node"]
+    "types": ["jest", "node", "@types/google-apps-script"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "ts-node": {
     "transpileOnly": true,
@@ -17,6 +21,6 @@
       "module": "CommonJS"
     }
   },
-  "include": ["src/**/*", "__tests__/**/*"],
-  "exclude": ["node_modules", "build", "dist"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts", "build", "dist"]
 }
