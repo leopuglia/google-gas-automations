@@ -55,6 +55,14 @@ function processTemplate(templateContent, variables) {
     return match; // Mantém o placeholder se a variável não for encontrada
   });
   
+  // Substitui variáveis no formato ${variavel}
+  result = result.replace(/\$\{([^}]+)\}/g, (match, variableName) => {
+    if (variables[variableName] !== undefined) {
+      return variables[variableName];
+    }
+    return match; // Mantém o placeholder se a variável não for encontrada
+  });
+  
   // Substitui dependências
   if (variables.dependencies) {
     // Verifica se dependencies é um array
@@ -100,10 +108,122 @@ function processTemplate(templateContent, variables) {
 function processStringTemplate(templateString, keys, additionalVars = {}) {
   if (!templateString) return '';
   
-  // Combina as chaves dinâmicas com as variáveis adicionais
+  // Combina as chaves com as variáveis adicionais
   const variables = { ...keys, ...additionalVars };
   
-  return processTemplate(templateString, variables);
+  console.log(`DEBUG_TEMPLATE: ========== PROCESSANDO TEMPLATE ==========`);
+  console.log(`DEBUG_TEMPLATE: Template original: "${templateString}"`);
+  console.log(`DEBUG_TEMPLATE: Variáveis disponíveis:`, JSON.stringify(variables, null, 2));
+  
+  // Encontra todas as variáveis no template (formatos {{var}} e ${var})
+  const templateVars = [];
+  
+  // Procura variáveis no formato {{var}}
+  let regex = /\{\{([^}]+)\}\}/g;
+  let match;
+  
+  while ((match = regex.exec(templateString)) !== null) {
+    templateVars.push({name: match[1], format: 'handlebars', match: match[0]});
+  }
+  
+  // Procura variáveis no formato ${var}
+  regex = /\$\{([^}]+)\}/g;
+  while ((match = regex.exec(templateString)) !== null) {
+    templateVars.push({name: match[1], format: 'template', match: match[0]});
+  }
+  
+  console.log(`DEBUG_TEMPLATE: Variáveis encontradas no template:`, JSON.stringify(templateVars, null, 2));
+  
+  // Verifica se as variáveis encontradas existem no objeto de variáveis
+  for (const varInfo of templateVars) {
+    const varName = varInfo.name;
+    if (variables[varName] === undefined) {
+      console.log(`DEBUG_TEMPLATE: AVISO - Variável ${varName} (${varInfo.format}) não encontrada nas variáveis disponíveis`);
+    } else {
+      console.log(`DEBUG_TEMPLATE: Variável ${varName} (${varInfo.format}) = ${variables[varName]}`);
+    }
+  }
+  
+  // Processa blocos #each
+  let result = templateString;
+  const eachRegex = /\{\{#each\s+([^}]+)\}\}([\s\S]*?)\{\{\/each\}\}/g;
+  let eachMatch;
+  
+  while ((eachMatch = eachRegex.exec(templateString)) !== null) {
+    const arrayName = eachMatch[1].trim();
+    const blockContent = eachMatch[2];
+    const fullMatch = eachMatch[0];
+    
+    console.log(`DEBUG_TEMPLATE: Processando bloco #each para ${arrayName}`);
+    
+    if (variables[arrayName] && Array.isArray(variables[arrayName])) {
+      const array = variables[arrayName];
+      let replacement = '';
+      
+      for (let i = 0; i < array.length; i++) {
+        const item = array[i];
+        const isLast = i === array.length - 1;
+        
+        // Cria um contexto para o item atual
+        const itemContext = { ...item, '@index': i, '@last': isLast };
+        
+        // Processa o conteúdo do bloco para este item
+        let itemContent = blockContent;
+        
+        // Substitui variáveis no conteúdo do bloco
+        for (const [key, value] of Object.entries(itemContext)) {
+          const itemRegex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+          itemContent = itemContent.replace(itemRegex, value);
+        }
+        
+        // Processa condicionais #unless
+        const unlessRegex = /\{\{#unless\s+([^}]+)\}\}([\s\S]*?)\{\{\/unless\}\}/g;
+        let unlessMatch;
+        
+        while ((unlessMatch = unlessRegex.exec(itemContent)) !== null) {
+          const conditionVar = unlessMatch[1].trim();
+          const unlessContent = unlessMatch[2];
+          const unlessFullMatch = unlessMatch[0];
+          
+          if (!itemContext[conditionVar]) {
+            // Condição é falsa, mantém o conteúdo
+            itemContent = itemContent.replace(unlessFullMatch, unlessContent);
+          } else {
+            // Condição é verdadeira, remove o conteúdo
+            itemContent = itemContent.replace(unlessFullMatch, '');
+          }
+        }
+        
+        replacement += itemContent;
+      }
+      
+      result = result.replace(fullMatch, replacement);
+    } else {
+      // Se o array não existir ou não for um array, remove o bloco
+      console.log(`DEBUG_TEMPLATE: Array ${arrayName} não encontrado ou não é um array`);
+      result = result.replace(fullMatch, '');
+    }
+  }
+  
+  // Substitui cada variável encontrada
+  for (const varInfo of templateVars) {
+    const varName = varInfo.name;
+    if (variables[varName] !== undefined) {
+      console.log(`DEBUG_TEMPLATE: Substituindo ${varInfo.match} por "${variables[varName]}"`);
+      
+      if (varInfo.format === 'handlebars') {
+        // Substitui variáveis no formato {{var}}
+        result = result.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), variables[varName]);
+      } else if (varInfo.format === 'template') {
+        // Substitui variáveis no formato ${var}
+        result = result.replace(new RegExp(`\\$\\{${varName}\\}`, 'g'), variables[varName]);
+      }
+    }
+  }
+  
+  console.log(`DEBUG_TEMPLATE: Resultado final: "${result}"`);
+  console.log(`DEBUG_TEMPLATE: ========== FIM DO PROCESSAMENTO ==========`);
+  return result;
 }
 
 /**
@@ -144,10 +264,37 @@ function processObjectTemplates(obj, keys, additionalVars = {}) {
  * @param {Object} dynamicKeys - Chaves dinâmicas para substituição em templates
  */
 function processProjectTemplates(env, projectDir, projectConfig, defaults, paths, dynamicKeys = {}) {
-  console.log(`📝 Processando templates para projeto: ${projectDir} no ambiente: ${env}`);
+  console.log(`DEBUG_PROJECT: ========== PROCESSANDO PROJETO ==========`);
+  console.log(`DEBUG_PROJECT: Diretório original: "${projectDir}"`);
+  console.log(`DEBUG_PROJECT: Chaves dinâmicas:`, JSON.stringify(dynamicKeys, null, 2));
+  
+  // Processa o nome do diretório se ele contiver templates
+  let processedProjectDir = projectDir;
+  
+  // Verifica se o nome do diretório contém templates ({{...}} ou ${...})
+  if (projectDir.includes('{{') || projectDir.includes('${')) {
+    console.log(`DEBUG_PROJECT: Diretório contém templates, processando...`);
+    
+    // Variáveis adicionais para substituição
+    const additionalVars = {
+      ...defaults,
+      env: env,
+      ambiente: env === 'dev' ? 'dev' : 'prod'
+    };
+    
+    console.log(`DEBUG_PROJECT: Variáveis adicionais:`, JSON.stringify(additionalVars, null, 2));
+    
+    // Processa o nome do diretório com as chaves dinâmicas
+    processedProjectDir = processStringTemplate(projectDir, dynamicKeys, additionalVars);
+    console.log(`DEBUG_PROJECT: Diretório processado: "${processedProjectDir}"`);
+  } else {
+    console.log(`DEBUG_PROJECT: Diretório não contém templates, mantendo original`);
+  }
+  
+  console.log(`📝 Processando templates para projeto: ${processedProjectDir} no ambiente: ${env}`);
   
   // Cria o diretório de destino se não existir
-  const outputDir = path.resolve(process.cwd(), paths.dist, env, projectDir);
+  const outputDir = path.resolve(process.cwd(), paths.dist, env, processedProjectDir);
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
     console.log(`💾 Diretório criado: ${outputDir}`);
@@ -161,7 +308,7 @@ function processProjectTemplates(env, projectDir, projectConfig, defaults, paths
     // Variáveis adicionais para substituição
     const additionalVars = {
       ...defaults,
-      projectName: projectDir,
+      projectName: processedProjectDir,
       env: env,
       ambiente: env === 'dev' ? 'dev' : 'prod'
     };
@@ -194,7 +341,40 @@ function processProjectTemplates(env, projectDir, projectConfig, defaults, paths
   }
   
   // Processa o template do .clasp.json
-  processClaspTemplate(env, projectDir, projectConfig, paths, dynamicKeys);
+  processClaspTemplate(env, processedProjectDir, projectConfig, paths, dynamicKeys);
+  
+  // Processa o template do .claspignore
+  processClaspignoreTemplate(env, processedProjectDir, paths);
+}
+
+/**
+ * Processa o template do .claspignore para um projeto
+ * @param {string} env - Ambiente (dev ou prod)
+ * @param {string} projectDir - Diretório do projeto
+ * @param {Object} paths - Configurações de caminhos
+ */
+function processClaspignoreTemplate(env, projectDir, paths) {
+  const outputDir = path.resolve(process.cwd(), paths.dist, env, projectDir);
+  const outputPath = path.resolve(outputDir, '.claspignore');
+  
+  // Caminho para o template .claspignore-template
+  const templatePath = path.resolve(process.cwd(), paths.templates, '.claspignore-template');
+  
+  if (fs.existsSync(templatePath)) {
+    // Lê o conteúdo do template
+    const templateContent = fs.readFileSync(templatePath, 'utf8');
+    
+    // Cria o diretório de saída se não existir
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+    
+    // Salva o arquivo .claspignore
+    fs.writeFileSync(outputPath, templateContent);
+    console.log(`✅ Arquivo .claspignore criado: ${outputPath}`);
+  } else {
+    console.warn(`⚠️ Template .claspignore não encontrado: ${templatePath}`);
+  }
 }
 
 /**
@@ -291,17 +471,39 @@ function processClaspTemplate(env, projectDir, projectConfig, paths, dynamicKeys
     console.warn(`⚠️ ScriptId não encontrado para o projeto: ${projectDir} no ambiente: ${env}`);
   }
   
-  // Cria o conteúdo do .clasp.json
-  const claspConfig = {
-    scriptId,
-    rootDir: '.', // Relativo ao diretório dist/env/projectDir
-    fileExtension: 'js',
-    filePushOrder: ['Main.js']
-  };
+  // Caminho para o template .clasp-template.json
+  const templatePath = path.resolve(process.cwd(), paths.templates, '.clasp-template.json');
   
-  // Salva o arquivo
-  fs.writeFileSync(outputPath, JSON.stringify(claspConfig, null, 2));
-  console.log(`✅ Arquivo .clasp.json criado para ${projectName || projectDir}: ${outputPath}`);
+  if (fs.existsSync(templatePath)) {
+    // Lê o conteúdo do template
+    const templateContent = fs.readFileSync(templatePath, 'utf8');
+    
+    // Processa o template substituindo as variáveis
+    const templateVars = {
+      scriptId: scriptId || '',
+      projectName: projectName || projectDir,
+      env: env,
+      ambiente: env === 'dev' ? 'dev' : 'prod'
+    };
+    
+    const processedContent = processTemplate(templateContent, templateVars);
+    
+    // Salva o arquivo processado
+    fs.writeFileSync(outputPath, processedContent);
+    console.log(`✅ Arquivo .clasp.json criado para ${projectName || projectDir}: ${outputPath}`);
+  } else {
+    // Fallback para criação direta se o template não existir
+    const claspConfig = {
+      scriptId,
+      rootDir: '.', // Relativo ao diretório dist/env/projectDir
+      fileExtension: 'js',
+      filePushOrder: ['Main.js']
+    };
+    
+    // Salva o arquivo
+    fs.writeFileSync(outputPath, JSON.stringify(claspConfig, null, 2));
+    console.log(`⚠️ Template .clasp-template.json não encontrado. Criado .clasp.json com configuração padrão para ${projectName || projectDir}: ${outputPath}`);
+  }
 }
 
 /**
@@ -385,6 +587,27 @@ function processNestedKeys(projectName, projectConfig, env, defaults, paths, cur
     // Determina o nome do diretório de saída
     let outputDir;
     
+    // Adiciona as chaves dinâmicas ao objeto de variáveis
+    const templateVars = {
+      ...currentKeys,
+      env: env,
+      ambiente: env === 'dev' ? 'dev' : 'prod'
+    };
+    
+    console.log('DEBUG_KEYS: Chaves dinâmicas disponíveis:', JSON.stringify(currentKeys, null, 2));
+    console.log('DEBUG_KEYS: keyNames:', JSON.stringify(keyNames, null, 2));
+    
+    // Mapeamento explícito de chaves para variáveis de template
+    if (currentKeys['key-1']) {
+      templateVars.year = currentKeys['key-1'];
+      console.log(`DEBUG_MAPPING: Mapeando key-1 (${currentKeys['key-1']}) para year`);
+    }
+    
+    if (currentKeys['key-2']) {
+      templateVars.pdv = currentKeys['key-2'];
+      console.log(`DEBUG_MAPPING: Mapeando key-2 (${currentKeys['key-2']}) para pdv`);
+    }
+    
     // Coleta propriedades específicas do projeto atual
     const projectSpecificProps = {};
     
@@ -404,29 +627,26 @@ function processNestedKeys(projectName, projectConfig, env, defaults, paths, cur
     }
     
     // Variáveis para substituição
-    const templateVars = {
-      ...currentKeys,
-      ...projectSpecificProps,
-      env: env,
-      ambiente: env === 'dev' ? 'dev' : 'prod'
-    };
+    // Adiciona propriedades específicas ao objeto de variáveis
+    Object.assign(templateVars, projectSpecificProps);
+    
+    // Adiciona o scriptId às variáveis de template
+    templateVars.scriptId = currentLevel.scriptId;
     
     console.log(`Variáveis para template: ${JSON.stringify(templateVars, null, 2)}`);
     
     // Se houver um template de saída, usa-o
     if (projectConfig.outputTemplate) {
+      console.log('DEBUG_OUTPUT: Template de saída antes do processamento:', projectConfig.outputTemplate);
+      console.log('DEBUG_OUTPUT: Variáveis disponíveis para template:', JSON.stringify(templateVars, null, 2));
+      
       outputDir = processStringTemplate(projectConfig.outputTemplate, templateVars);
+      console.log(`DEBUG_OUTPUT: Resultado do processamento: ${outputDir}`);
     } else {
-      // Caso contrário, constrói o nome do diretório com as chaves
-      const keyParts = Object.values(currentKeys);
-      outputDir = keyParts.length > 0 ? 
-        `${keyParts.join('-')}-${projectConfig.output || projectName}` : 
-        (projectConfig.output || projectName);
+      // Caso contrário, usa o caminho completo das chaves
+      outputDir = keyNames.join('-');
+      console.log(`DEBUG_OUTPUT: Usando caminho de chaves como saída: ${outputDir}`);
     }
-    
-    // Propriedades específicas já foram coletadas acima e estão em templateVars
-    
-    // Usa as variáveis de template já combinadas
     
     // Processa os templates com as variáveis de template
     processProjectTemplates(env, outputDir, projectConfig, defaults, paths, templateVars);
@@ -458,9 +678,10 @@ if (require.main === module) {
   processAllTemplates(configFile, env);
 }
 
+// Exporta as funções para uso em outros módulos
 module.exports = {
   loadConfig,
-  processTemplate,
+  processAllTemplates,
   processProjectTemplates,
-  processAllTemplates
+  processTemplate
 };

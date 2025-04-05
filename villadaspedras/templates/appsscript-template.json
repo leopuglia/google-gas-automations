@@ -1,0 +1,26 @@
+{
+  "timeZone": "{{timeZone}}",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {{#each dependencies}}
+      {
+        "userSymbol": "{{userSymbol}}",
+        "serviceId": "{{serviceId}}",
+        "version": "{{version}}"
+      }
+      {{/each}}
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "{{runtimeVersion}}",
+  "sheets": {
+    "macros": [
+      {{#each sheetsMacros}}
+      {
+        "menuName": "{{menuName}}",
+        "functionName": "{{functionName}}"
+      }{{#unless @last}},{{/unless}}
+      {{/each}}
+    ]
+  }
+}

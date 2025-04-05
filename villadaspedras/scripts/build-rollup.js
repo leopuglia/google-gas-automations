@@ -4,6 +4,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { processAllTemplates } = require('./process-templates');
 
 const projectRoot = path.resolve(__dirname, '..');
 
@@ -42,6 +43,12 @@ function main() {
   
   // Executa o build com Rollup
   buildWithRollup();
+  
+  // Processa os templates para os projetos
+  console.log('📝 Processando templates para os projetos...');
+  const configFile = path.join(projectRoot, 'config.yml');
+  processAllTemplates(configFile, 'dev');
+  
   console.log('🎉 Processo de build concluído!');
 }
 

@@ -11,59 +11,18 @@ paths:
   templates: templates
   scripts: scripts
 
-# Configurações de projetos padrão (usados quando não há configurações específicas)
-projectTemplates:
-  # Projeto padrão para planilha de salário
+structure:
+  example:
+    keys:
   salario:
-    src: planilha-salario
-    output: salario
-    outputTemplate: '{{year}}-salario'
-    dependencies:
-      - userSymbol: Drive
-        version: v3
-        serviceId: drive
-    sheetsMacros:
-      - menuName: 1. VIRAR MÊS SALARIO E CONSUMO
-        functionName: virarMesTudo
-      - menuName: 2. VIRAR MÊS SALARIO
-        functionName: virarMesSalario
-      - menuName: 3. VIRAR ANO SALARIO E CONSUMO
-        functionName: virarAnoTudo
-      - menuName: 4. VIRAR ANO SALARIO
-        functionName: virarAnoSalario
-      - menuName: 5. REORDENAR NOMES
-        functionName: reordenarNomes
-      - menuName: LIMPAR CORES
-        functionName: limparCores
-      - menuName: LIMPAR DADOS
-        functionName: limparDados
-      - menuName: BLOQUEAR ALTERAÇÕES
-        functionName: bloquearAlteracoes
-  
-  # Projeto padrão para planilhas de consumo
-  consumo:
-    src: planilha-consumo
-    output: consumo
-    outputTemplate: '{{year}}-{{pdv}}-consumo'
-    dependencies:
-      - userSymbol: Drive
-        version: v3
-        serviceId: drive
-    sheetsMacros:
-      - menuName: 1. VIRAR MÊS CONSUMO
-        functionName: virarMesConsumo
-      - menuName: 2. VIRAR ANO CONSUMO
-        functionName: virarAnoConsumo
-    # Configurações aninhadas para PDVs
+    keys:
     nested:
-      1-cafeteria:
-        pdv_nome: Cafeteria
-      2-saara:
-        pdv_nome: Saara
-      3-castelo:
-        pdv_nome: Castelo
-      4-stones:
-        pdv_nome: Stones
+      - key: year
+  consumo:
+    keys:
+    nested:
+      - key: year
+      - key: pdv
 
 # Configurações dos projetos
 projects:
