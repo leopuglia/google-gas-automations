@@ -2,14 +2,13 @@
   "timeZone": "America/Sao_Paulo",
   "dependencies": {
     "enabledAdvancedServices": [
-      
+      {
+        "userSymbol": "Drive",
+        "version": "v3",
+        "serviceId": "drive"
+      }
     ]
   },
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8",
-  "sheets": {
-    "macros": [
-      
-    ]
-  }
+  "runtimeVersion": "V8"
 }
