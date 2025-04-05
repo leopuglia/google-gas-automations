@@ -45,6 +45,7 @@ src/
 
 - `core/dateUtils.ts` (implementa `IDateUtils`)
 - `models/config.ts` (configurações padrão)
+- `spreadsheet/spreadsheetService.ts` (manipulação básica de planilhas)
 
 ### SpreadsheetService.ts
 

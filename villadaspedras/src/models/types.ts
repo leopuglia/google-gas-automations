@@ -1,8 +1,19 @@
 // Interfaces básicas para o projeto
 
-declare namespace VilladasPedrasGAS {
+export declare namespace VilladasPedrasGAS {
   namespace Spreadsheet {
-    interface Spreadsheet {}
+    interface Spreadsheet {
+      getSheetByName(name: string): Sheet | null
+      getActiveSheet(): Sheet
+      duplicateActiveSheet(): Sheet
+    }
+    
+    interface Sheet {
+      getName(): string
+      setName(name: string): void
+      activate(): void
+      copyTo(spreadsheet: Spreadsheet): Sheet
+    }
   }
 }
 

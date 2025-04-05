@@ -1,6 +1,6 @@
 // Serviço para manipulação de planilhas
 
-import { VilladasPedrasGAS } from '../models/types';
+import type { VilladasPedrasGAS } from '../models/types';
 
 export class SpreadsheetService {
   private ss: VilladasPedrasGAS.Spreadsheet.Spreadsheet;
