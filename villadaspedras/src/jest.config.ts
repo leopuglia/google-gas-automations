@@ -14,14 +14,14 @@ const config: Config = {
       'ts-jest',
       {
         tsconfig: 'tsconfig.json',
-        isolatedModules: true
-      }
+        isolatedModules: true,
+      },
     ],
   },
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.json',
-      isolatedModules: true
+      isolatedModules: true,
     },
   },
 };

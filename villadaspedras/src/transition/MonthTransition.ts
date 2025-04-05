@@ -13,14 +13,14 @@ export class MonthTransition {
 
   execute(): void {
     const { currentMonth, lastMonth, config } = this.params;
-    
+
     // 1. Duplicar aba modelo
     const newSheetName = this.dateUtils.getMonthName(currentMonth);
     this.spreadsheetService.duplicateSheet(config.modelSheetName, newSheetName);
-    
+
     // 2. Proteger intervalos
     this.protectRanges(newSheetName);
-    
+
     // 3. Atualizar referências temporais
     this.updateTemporalReferences(newSheetName, currentMonth);
   }

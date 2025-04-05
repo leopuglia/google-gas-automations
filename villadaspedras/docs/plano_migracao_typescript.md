@@ -47,6 +47,26 @@ src/
 - `models/config.ts` (configurações padrão)
 - `spreadsheet/spreadsheetService.ts` (manipulação básica de planilhas)
 
+## Implementações Concluídas (2024)
+
+✅ **Classes Principais**
+
+- `MonthTransition`: Implementa toda lógica de virada de mês
+- `YearTransition`: Implementa lógica de virada de ano
+- `SpreadsheetService`: Serviço completo para manipulação de planilhas
+
+✅ **Sistema de Templates Genérico**
+
+- Processamento dinâmico de templates para `appsscript.json`
+- Suporte a múltiplos projetos e ambientes (dev/prod)
+- Configuração via `config.yml`
+
+✅ **Infraestrutura**
+
+- Build automatizado com Rollup
+- Processamento de templates integrado ao build
+- Comandos `pnpm` para push/deploy
+
 ### SpreadsheetService.ts
 
 ```typescript
@@ -86,13 +106,6 @@ class MonthTransition {
 - Serviços principais implementados
 - Merge realizado para o branch main
 
-### Próximos Passos
-
-1. Configurar Rollup para compilação TS → JS
-2. Implementar testes unitários
-3. Expandir funcionalidades do SpreadsheetService
-4. Documentar API da biblioteca
-
 ## Interfaces Principais
 
 ```typescript
@@ -109,10 +122,23 @@ interface IDateUtils {
 }
 ```
 
-## Próximos Passos
+### Próximos Passos Técnicos
 
-1. Criar estrutura de diretórios
-2. Definir interfaces base
-3. Migrar funções utilitárias primeiro
-4. Implementar classes principais
-5. Configurar rollup para bundle
+1. **Expansão do SpreadsheetService**
+   - Adicionar métodos para:
+     - Manipulação de proteções
+     - Formatação condicional
+     - Controle de permissões
+
+2. **Testes Automatizados**
+   - Cobrir 100% das classes principais
+   - Mock do ambiente Google Apps Script
+
+3. **Monitoramento**
+   - Logs estruturados
+   - Tracking de execução
+
+4. **Documentação**
+   - API Reference completa
+   - Guia de migração
+   - Exemplos de uso

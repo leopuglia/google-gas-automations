@@ -3,11 +3,13 @@
 ## Estrutura Atual do Projeto
 
 ### Arquivos Principais
+
 1. **config.yml** - Configurações dos projetos (salário, consumo)
 2. **rollup.config.js** - Configuração do Rollup para compilação TS → JS
 3. **tsconfig.json** - Configuração do TypeScript
 
 ### Arquivos Originais (src-originals)
+
 - **commons/**: Funções compartilhadas
 - **salario-2024/**:
   - `VirarSalario.gs`: Lógica de transição mensal/anual de salários
@@ -44,6 +46,7 @@
    - Documentar cada etapa
 
 ## Próximas Ações
+
 1. Analisar `VilladasPedrasLib.Main.gs` em detalhes
 2. Criar interfaces base
 3. Começar pela migração das funções utilitárias

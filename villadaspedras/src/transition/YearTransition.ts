@@ -13,13 +13,13 @@ export class YearTransition {
 
   execute(): void {
     const { currentMonth, config } = this.params;
-    
+
     // 1. Criar nova planilha para o ano
     const newYearSpreadsheet = this.createNewYearSpreadsheet(currentMonth);
-    
+
     // 2. Copiar abas essenciais
     this.copyEssentialSheets(newYearSpreadsheet);
-    
+
     // 3. Configurar permissões
     this.setupPermissions(newYearSpreadsheet);
   }

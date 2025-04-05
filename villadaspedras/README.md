@@ -100,6 +100,33 @@ projects:
           scriptId: 1abc123456789
           linkedFileId: 1abc123456789
 ```
+
+## Documentação
+
+- [Referência da API](docs/api_reference.md) - Documentação das classes e métodos principais
+- [Plano de Migração](docs/plano_migracao_typescript.md) - Progresso e próximos passos
+
+## Exemplo Básico
+
+```typescript
+// Uso do SpreadsheetService
+const ss = SpreadsheetApp.getActiveSpreadsheet();
+const service = new SpreadsheetService(ss);
+
+// Duplicar uma aba
+service.duplicateSheet('MODELO', 'NOVO_MÊS');
+
+// Usar MonthTransition
+const transition = new MonthTransition({
+  currentMonth: new Date(),
+  lastMonth: new Date(),
+  spreadsheet: ss,
+  config: defaultConfig
+});
+
+transition.execute();
+```
+
 ## Comandos Disponíveis
 
 ```bash
@@ -173,6 +200,7 @@ O projeto inclui um sistema completo para facilitar o desenvolvimento e depuraç
 4. Execute as funções remotamente com `pnpm run execute:salario`
 5. Analise os logs para identificar problemas
 6. Faça as correções necessárias e repita o processo
+
 ## Como Adicionar Novos Projetos
 
 Para adicionar um novo projeto:

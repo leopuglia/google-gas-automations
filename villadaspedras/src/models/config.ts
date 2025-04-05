@@ -7,5 +7,5 @@ export const defaultConfig: ISpreadsheetConfig = {
   modelSheetName: 'MODELO',
   protectedRanges: ['A1:Z100'],
   sharedFolderName: 'Faturamento Villa',
-  emailAdmin: 'leo@villadaspedras.com'
+  emailAdmin: 'leo@villadaspedras.com',
 };
