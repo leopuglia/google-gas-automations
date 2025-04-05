@@ -1,11 +1,11 @@
-# Villa das Pedras - Automações para Google Apps Script
+# Template para Automações em Google Apps Script
 
-Automações para planilhas da Villa das Pedras desenvolvidas em TypeScript e compiladas para Google Apps Script.
+Template genérico para automações de planilhas do Google desenvolvidas em TypeScript e compiladas para Google Apps Script. Este projeto foi criado para facilitar o desenvolvimento e manutenção de scripts para o Google Apps Script, permitindo o uso de TypeScript com uma estrutura modular e flexível.
 
 ## Estrutura do Projeto
 
 ```bash
-villadaspedras/
+template-gas/
 ├── src/                        # Código-fonte em TypeScript
 │   ├── commons/                # Código comum compartilhado entre todos os projetos
 │   │   ├── date/               # Utilitários de data
@@ -13,64 +13,93 @@ villadaspedras/
 │   │   ├── utils/              # Utilitários diversos
 │   │   ├── Main.ts             # Ponto de exportação central
 │   │   └── constants.ts        # Constantes globais
-│   ├── planilha-salario/       # Código específico para planilhas de salário
-│   │   ├── modules/            # Módulos de salário
-│   │   │   ├── viradaMes.ts    # Funções de virada de mês
-│   │   │   ├── viradaAno.ts    # Funções de virada de ano
-│   │   │   └── salarioUtils.ts # Funções utilitárias
-│   │   └── Salario.ts          # Ponto de entrada do módulo
-│   └── planilha-consumo/       # Código específico para planilhas de consumo
-│       ├── modules/            # Módulos de consumo
-│       │   ├── viradaMes.ts    # Funções de virada de mês
-│       │   ├── viradaAno.ts    # Funções de virada de ano
-│       │   └── consumoUtils.ts # Funções utilitárias
-│       └── Consumo.ts          # Ponto de entrada do módulo
+│   ├── projeto-tipo-a/         # Código específico para projetos do tipo A
+│   │   ├── modules/            # Módulos do projeto A
+│   │   │   ├── moduleA.ts      # Funções específicas do módulo A
+│   │   │   └── utilsA.ts       # Funções utilitárias
+│   │   └── ProjetoA.ts         # Ponto de entrada do módulo
+│   └── projeto-tipo-b/         # Código específico para projetos do tipo B
+│       ├── modules/            # Módulos do projeto B
+│       │   ├── moduleB.ts      # Funções específicas do módulo B
+│       │   └── utilsB.ts       # Funções utilitárias
+│       └── ProjetoB.ts         # Ponto de entrada do módulo
 ├── build/                      # Código compilado (gerado automaticamente)
-│   ├── salario-2024/           # Build específico para planilha de salário 2024
-│   ├── consumo-cafeteria-2024/ # Build específico para planilha de consumo Cafeteria 2024
-│   ├── consumo-saara-2024/     # Build específico para planilha de consumo Saara 2024
-│   ├── consumo-castelo-2024/   # Build específico para planilha de consumo Castelo 2024
-│   └── consumo-stones-2024/    # Build específico para planilha de consumo Stones 2024
-└── scripts/                    # Scripts auxiliares
-    ├── debug.ts                # Script para envio de código ao ambiente de teste
-    ├── execute-remote.ts       # Script para execução remota de funções
-    ├── debug-help.ts           # Instruções de depuração
-    ├── prepare-builds.ts       # Prepara builds para deploy
-    ├── push-project.ts         # Envia código para o GAS
-    └── push-all.ts             # Envia todos os projetos
+│   ├── projeto-a-2024/         # Build específico para projeto A 2024
+│   └── projeto-b-subchave1-2024/ # Build específico para projeto B subchave1 2024
+├── scripts/                    # Scripts auxiliares
+│   ├── build-deploy.js         # Script principal para build e deploy
+│   ├── build-rollup.js         # Script para build usando rollup
+│   └── process-templates.js    # Script para processamento de templates
+├── config.yml                  # Configuração principal dos projetos
+└── config.example.yml          # Exemplo de configuração para referência
 ```
 
 ## Fluxo de Trabalho
 
 1. Desenvolva o código em TypeScript nos diretórios `src/`
 2. Execute `pnpm run build` para compilar todo o código TypeScript
-3. Execute `pnpm run prepare:PROJETO` para preparar o build específico para um projeto (ex: `pnpm run prepare:salario`)
-4. Execute `pnpm run push:PROJETO` para enviar o código para o Google Apps Script (ex: `pnpm run push:salario`)
-5. Execute `pnpm run push:all` para enviar o código para todos os projetos
-6. Para debug, use `pnpm run debug:PROJETO` ou `pnpm run execute:PROJETO`
+3. Execute `pnpm run push:project` para enviar o código para o Google Apps Script
+4. Para projetos com subchaves, use `pnpm run push:project:key` substituindo PROJECT e KEY pelos valores adequados
+5. Para debug, use `pnpm run debug:project` ou `pnpm run execute:project`
+6. Para ambiente de produção, adicione `:prod` aos comandos (ex: `pnpm run push:project:prod`)
 
-## Projetos Configurados
+## Configuração de Projetos
 
-### Planilha de Salário
+O template suporta configuração dinâmica de projetos através do arquivo `config.yml`. Existem duas maneiras de configurar projetos:
 
-- **Salário 2024**
-  - ID: 1piXZFH-QithkQm-Q5_S2HVsAZAlURV9iPKvgA_h4icEnNL9cJ0WgtMMJ
-  - Comando: `pnpm run push:salario`
+### 1. Projetos Padrão (defaultProjects)
 
-### Planilhas de Consumo
+Defina projetos padrão que serão usados quando não houver configurações específicas:
 
-- **Cafeteria 2024**
-  - ID: 11vi0dyEeT43B9Gzprc_FoyqZfKAt_SpmPERsF0MpMG-9tOMWT_YkDa1p
-  - Comando: `pnpm run push:consumo:cafeteria`
-- **Saara 2024**
-  - ID: 1hXR1oaQdUJTNgYHS6cWrd1_F5Z-cV7U1I1tz4CHrfatkIFVmzW9N145W
-  - Comando: `pnpm run push:consumo:saara`
-- **Castelo 2024**
-  - ID: 1JmMj09mr2XZCoL04I5w9Bqkwd9-Vy3YtwRALiy-w7ItHQeC2lxg7PyGP
-  - Comando: `pnpm run push:consumo:castelo`
-- **Stones 2024**
-  - ID: 1nioOhx_pLkusxhjPrchT4S0ToBW93YygTppDWfSZkpbKuZDr22AjRcv9
-  - Comando: `pnpm run push:consumo:stones`
+```yaml
+defaultProjects:
+  projeto-tipo-a:
+    src: caminho-fonte-a
+    output: saida-a
+    outputTemplate: '{{year}}-saida-a'
+    dependencies:
+      - userSymbol: Drive
+        version: v3
+    sheetsMacros:
+      - menuName: 1. AÇÃO PRINCIPAL
+        functionName: acaoPrincipal
+```
+
+### 2. Projetos Específicos (projects)
+
+Defina projetos específicos com suas próprias configurações:
+
+```yaml
+projects:
+  meu-projeto:
+    src: pasta-fonte
+    output: saida
+    outputTemplate: "{{key-1}}-saida"
+    nameTemplate: "Projeto {{key-1}} {{ambiente}}"
+    dev:
+      2024:
+        scriptId: 1abc123456789
+        linkedFileId: 1abc123456789
+```
+
+### 3. Projetos com Subchaves
+
+Para projetos com subchaves (como diferentes instâncias do mesmo tipo):
+
+```yaml
+projects:
+  meu-projeto-b:
+    nested:
+      subchave-1:
+        propriedade: Valor 1
+      subchave-2:
+        propriedade: Valor 2
+    dev:
+      2024:
+        subchave-1:
+          scriptId: 1abc123456789
+          linkedFileId: 1abc123456789
+```
 ## Comandos Disponíveis
 
 ```bash
@@ -80,42 +109,41 @@ pnpm install
 # Compilar todo o código TypeScript
 pnpm run build
 
-# Preparar build específico para um projeto
-pnpm run prepare:salario
-pnpm run prepare:consumo:cafeteria
-pnpm run prepare:consumo:saara
-pnpm run prepare:consumo:castelo
-pnpm run prepare:consumo:stones
-
-# Enviar código para o Google Apps Script
-pnpm run push:salario
-pnpm run push:consumo:cafeteria
-pnpm run push:consumo:saara
-pnpm run push:consumo:castelo
-pnpm run push:consumo:stones
-
-# Enviar código para todos os projetos
-pnpm run push:all
-
-# Debug e Execução Remota
-pnpm run debug:salario
-pnpm run debug:consumo:cafeteria
-pnpm run execute:salario
-pnpm run execute:consumo:cafeteria
-pnpm run debug:help
-
-# Compilar automaticamente quando houver alterações
+# Compilar em modo de desenvolvimento (watch)
 pnpm run watch
 
-# Verificar erros de linting
-pnpm run lint
+# Comandos de build
+pnpm run build:dev    # Build para ambiente de desenvolvimento
+pnpm run build:prod   # Build para ambiente de produção
 
-# Corrigir erros de linting automaticamente
-pnpm run lint:fix
+# Comandos genéricos de push (envio para o Google Apps Script)
+pnpm run push:dev     # Enviar todos os projetos para ambiente de desenvolvimento
+pnpm run push:prod    # Enviar todos os projetos para ambiente de produção
 
-# Formatar o código com Prettier
-pnpm run format
+# Comandos para projetos específicos
+pnpm run push:project           # Enviar projeto para ambiente de desenvolvimento
+pnpm run push:project:prod      # Enviar projeto para ambiente de produção
+pnpm run push:project:key       # Enviar projeto com subchave para desenvolvimento
+pnpm run push:project:key:prod  # Enviar projeto com subchave para produção
+
+# Comandos de execução remota
+pnpm run execute:project        # Executar funções remotamente (desenvolvimento)
+pnpm run execute:project:prod   # Executar funções remotamente (produção)
+pnpm run execute:project:key    # Executar funções remotamente com subchave
+
+# Comandos de debug
+pnpm run debug:project          # Debug de projeto (desenvolvimento)
+pnpm run debug:project:prod     # Debug de projeto (produção)
+pnpm run debug:project:key      # Debug de projeto com subchave
+
+# Comandos de linting e formatação
+pnpm run lint                   # Verificar erros de linting
+pnpm run lint:fix               # Corrigir erros de linting automaticamente
+pnpm run format:source          # Formatar código fonte com Prettier
+pnpm run format:build           # Formatar código compilado
 ```
+
+> **Nota:** Para usar os comandos com projetos e subchaves específicos, substitua `project` e `key` pelos valores correspondentes na sua configuração.
 
 ## Sistema de Debug
 
@@ -147,31 +175,47 @@ O projeto inclui um sistema completo para facilitar o desenvolvimento e depuraç
 6. Faça as correções necessárias e repita o processo
 ## Como Adicionar Novos Projetos
 
-Para adicionar um novo projeto (por exemplo, para o ano 2025):
+Para adicionar um novo projeto:
 
-1. Adicione a configuração do projeto no arquivo `config.yml`
-2. Atualize os scripts correspondentes no `package.json`
-3. Execute o comando de preparação e push:
+1. Adicione a configuração do projeto no arquivo `config.yml` na seção `projects` ou `defaultProjects`
+2. Use os comandos genéricos para build e deploy:
 
 ```bash
-pnpm run prepare:salario
-pnpm run push:salario
+# Para um novo projeto chamado 'meu-projeto'
+pnpm run push:meu-projeto
+
+# Para um projeto com subchave
+pnpm run push:meu-projeto:subchave-1
 ```
 
-## Desenvolvimento Modular
+Não é necessário modificar o `package.json`, pois os comandos são genéricos e funcionam com qualquer nome de projeto definido no `config.yml`.
 
-- O código em TypeScript é organizado em módulos reutilizáveis
-- As funções comuns estão separadas em diretórios específicos:
-  - `commons/date/`: Funções para manipulação de datas
-  - `commons/sheet/`: Funções para manipulação de planilhas
-  - `commons/utils/`: Funções utilitárias diversas
-- As implementações específicas estão divididas em módulos:
-  - `planilha-salario/modules/viradaMes.ts`: Funções de virada de mês para salário
-  - `planilha-salario/modules/viradaAno.ts`: Funções de virada de ano para salário
-  - `planilha-consumo/modules/viradaMes.ts`: Funções de virada de mês para consumo
-  - `planilha-consumo/modules/viradaAno.ts`: Funções de virada de ano para consumo
-- Ao compilar, o código é transformado em arquivos .gs para compatibilidade com o Google Apps Script
+## Recursos do Template
+
+### 1. Processamento Dinâmico de Templates
+
+O template suporta substituição de variáveis dinâmicas em configurações:
+
+- Use `{{variavel}}` em templates para substituição automática
+- Variáveis disponíveis incluem chaves dinâmicas, ambiente, e propriedades específicas
+- Exemplo: `outputTemplate: "{{year}}-{{key}}-output"` gera diretórios como `2024-subchave1-output`
+
+### 2. Estrutura Modular
+
+- Código organizado em módulos reutilizáveis
+- Funções comuns separadas em diretórios específicos
+- Implementações específicas divididas por tipo de projeto
+- Compilação para arquivos .gs compatíveis com o Google Apps Script
 - Cada projeto tem seu próprio diretório de build com configuração específica
+
+### 3. Configuração Flexível
+
+- Suporte para projetos padrão (defaultProjects)
+- Projetos específicos com configurações personalizadas
+- Projetos aninhados com subchaves
+- Ambientes de desenvolvimento e produção separados
+- Configuração de dependências do Google Apps Script
+- Definição de macros para planilhas
 
 ## Convenções de Código
 
@@ -188,16 +232,29 @@ pnpm run push:salario
 - Preferir funções com propósito único e bem definido
 - Comentários em português do Brasil
 
-## Notas
+## Dicas e Boas Práticas
 
-- Ao fazer alterações no código comum, é necessário recompilar e fazer push para todos os projetos
+- Ao fazer alterações no código comum, recompile e faça push para todos os projetos
 - As funções exportadas estarão disponíveis globalmente no ambiente do Google Apps Script
-- Não é necessário criar uma biblioteca separada, pois o código comum é incluído diretamente em cada projeto
+- Use templates para nomes de arquivos e diretórios para manter consistência
+- Aproveite a estrutura modular para reutilizar código entre projetos
+- Utilize as chaves dinâmicas para criar configurações flexíveis
 
-## Créditos
+## Depuração
 
-Desenvolvido por [Leonardo Puglia](mailto:leo@villadaspedras.com para o Villa das Pedras.
+O template inclui ferramentas para facilitar a depuração:
+
+- Logs locais com `console.log()`
+- Execução remota de funções com visualização de logs
+- Integração com o editor do Google Apps Script para breakpoints
+- Comandos específicos para debug (`debug:project`)
 
 ## Licença
+
+MIT
+
+## Contribuições
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
 
 Reservado. Uso interno apenas.

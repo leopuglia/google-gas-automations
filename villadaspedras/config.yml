@@ -1,0 +1,174 @@
+# Configurações globais
+# Schema: ./schema/config.schema.json
+defaults:
+  timeZone: America/Sao_Paulo
+  runtimeVersion: V8
+
+# Configurações de caminhos (evita amarramento à estrutura do projeto)
+paths:
+  src: src
+  dist: dist
+  templates: templates
+  scripts: scripts
+
+# Configurações de projetos padrão (usados quando não há configurações específicas)
+projectTemplates:
+  # Projeto padrão para planilha de salário
+  salario:
+    src: planilha-salario
+    output: salario
+    outputTemplate: '{{year}}-salario'
+    dependencies:
+      - userSymbol: Drive
+        version: v3
+        serviceId: drive
+    sheetsMacros:
+      - menuName: 1. VIRAR MÊS SALARIO E CONSUMO
+        functionName: virarMesTudo
+      - menuName: 2. VIRAR MÊS SALARIO
+        functionName: virarMesSalario
+      - menuName: 3. VIRAR ANO SALARIO E CONSUMO
+        functionName: virarAnoTudo
+      - menuName: 4. VIRAR ANO SALARIO
+        functionName: virarAnoSalario
+      - menuName: 5. REORDENAR NOMES
+        functionName: reordenarNomes
+      - menuName: LIMPAR CORES
+        functionName: limparCores
+      - menuName: LIMPAR DADOS
+        functionName: limparDados
+      - menuName: BLOQUEAR ALTERAÇÕES
+        functionName: bloquearAlteracoes
+  
+  # Projeto padrão para planilhas de consumo
+  consumo:
+    src: planilha-consumo
+    output: consumo
+    outputTemplate: '{{year}}-{{pdv}}-consumo'
+    dependencies:
+      - userSymbol: Drive
+        version: v3
+        serviceId: drive
+    sheetsMacros:
+      - menuName: 1. VIRAR MÊS CONSUMO
+        functionName: virarMesConsumo
+      - menuName: 2. VIRAR ANO CONSUMO
+        functionName: virarAnoConsumo
+    # Configurações aninhadas para PDVs
+    nested:
+      1-cafeteria:
+        pdv_nome: Cafeteria
+      2-saara:
+        pdv_nome: Saara
+      3-castelo:
+        pdv_nome: Castelo
+      4-stones:
+        pdv_nome: Stones
+
+# Configurações dos projetos
+projects:
+  example:
+    src: example
+    output: example
+    dependencies:
+    dev:
+      name: Example {{dev}}
+      scriptId: 1U4zAb5JdN7Ys0dGe6a140InYiVbF937UU8gHHD905kicBeKuRsleaN6H
+  
+  # Configuração para planilha de salário
+  salario:
+    src: planilha-salario
+    output: salario
+    # Template para diretório de saída: ano-salario
+    outputTemplate: '{{year}}-salario'
+    # Template para nome do projeto
+    nameTemplate: 'Macros Salários {{year}} {{env}}'
+    dependencies:
+      - userSymbol: Drive
+        version: v3
+        serviceId: drive
+    sheetsMacros:
+      - menuName: 1. VIRAR MÊS SALARIO E CONSUMO
+        functionName: virarMesTudo
+      - menuName: 2. VIRAR MÊS SALARIO
+        functionName: virarMesSalario
+      - menuName: 3. VIRAR ANO SALARIO E CONSUMO
+        functionName: virarAnoTudo
+      - menuName: 4. VIRAR ANO SALARIO
+        functionName: virarAnoSalario
+      - menuName: 5. REORDENAR NOMES
+        functionName: reordenarNomes
+      - menuName: LIMPAR CORES
+        functionName: limparCores
+      - menuName: LIMPAR DADOS
+        functionName: limparDados
+      - menuName: BLOQUEAR ALTERAÇÕES
+        functionName: bloquearAlteracoes
+    dev:
+      2024:
+        scriptId: 1ni6ZUXl1lqfBRik93jEyMI_K7-nWJBGwHPIVAb5Fw-IHZTF1UPfEiBIL
+        linkedFileId: 1n1ypLBl5fPO4eClA9uIWUvlwwYTuu2lHAwQBmaFdSkI
+    prod:
+      2024:
+        scriptId: 1piXZFH-QithkQm-Q5_S2HVsAZAlURV9iPKvgA_h4icEnNL9cJ0WgtMMJ
+        linkedFileId: 1xE0OSx7V6fc5SoDM6L6kJTuj-F3705tkc6XQe-lJUns
+  
+  # Configuração para planilhas de consumo
+  consumo:
+    src: planilha-consumo
+    output: consumo
+    # Template para diretório de saída: ano-pdv-consumo
+    outputTemplate: '{{year}}-{{pdv}}-consumo'
+    # Template para nome do projeto
+    nameTemplate: 'Macros {{pdv}} {{year}} {{env}}'
+    dependencies:
+      - userSymbol: Drive
+        version: v3
+        serviceId: drive
+    sheetsMacros:
+      - menuName: 1. VIRAR MÊS CONSUMO
+        functionName: virarMesConsumo
+      - menuName: 2. VIRAR ANO CONSUMO
+        functionName: virarAnoConsumo
+    # Mapeamento de PDVs para nomes amigáveis
+    pdv_mapping:
+      1-cafeteria: Cafeteria
+      2-saara: Saara
+      3-castelo: Castelo
+      4-stones: Stones
+    dev:
+      2024:
+        1-cafeteria:
+          scriptId: 1950SgMmrmWZw6clxlsFZlU6TmBnwRdahBh7entPoVAteqFta_iNNZMy-
+          linkedFileId: 15mSmurGhqrG6o1t4vr2aLPOHN2HJ_Y6SK3od-2v0CbI
+          pdv_nome: Cafeteria
+        2-saara:
+          scriptId: 1j2qOwS6Iehduk1IqwckujJmX-nV9AIiOU0yik-f4ja5oIcXHQNnsZMSJ
+          linkedFileId: 1o0SdfBj15wgp4VB3ajwrrChwiU6cq2NEgkBsTjFZAmk
+          pdv_nome: Saara
+        3-castelo:
+          scriptId: 1weezYUwBRbpriYYtaAetmkUdPQcNJUz_Q8G1e3qoZmH5UdRMK5m0c4Yh
+          linkedFileId: 1tCBoBkFnbjwHKiCN6TiLpwO_X9Z0Z7WKd9y7cz_2yIM
+          pdv_nome: Castelo
+        4-stones:
+          scriptId: 1x-UClZ5PEuUYbwrcM2c7GQxT3atTXZRz3hbTT-nyCo62JnUBeKlFZJUF
+          linkedFileId: 1hUKBaJBS5CuCi3AKnyCuLrk_RSzEKWHC3AST4FVJCdk
+          pdv_nome: Stones
+    prod:
+      2024:
+        1-cafeteria:
+          scriptId: 11vi0dyEeT43B9Gzprc_FoyqZfKAt_SpmPERsF0MpMG-9tOMWT_YkDa1p
+          linkedFileId: 1DVwbcihxArqQC1xXcZN4RVkdzlco270ikI5tdRY55UI
+          pdv_nome: Cafeteria
+        2-saara:
+          scriptId: 1hXR1oaQdUJTNgYHS6cWrd1_F5Z-cV7U1I1tz4CHrfatkIFVmzW9N145W
+          linkedFileId: 1FRgOyMG4LmyNcDydBOsd_fpolPHV9VXOkBSHrSx6j4k
+          pdv_nome: Saara
+        3-castelo:
+          scriptId: 1JmMj09mr2XZCoL04I5w9Bqkwd9-Vy3YtwRALiy-w7ItHQeC2lxg7PyGP
+          linkedFileId: 1PrfuhwbCdhKN68p-HyYh5anyBWLY3e9FAojzlsRff9U
+          pdv_nome: Castelo
+        4-stones:
+          name: Macros Stones 2024
+          scriptId: 1nioOhx_pLkusxhjPrchT4S0ToBW93YygTppDWfSZkpbKuZDr22AjRcv9
+          linkedFileId: 1G5_yrB3yKdOak0Ia0jsSVoADi1YDGBkeseIEGvu252Y

@@ -1,0 +1,22 @@
+{
+  "timeZone": "${timeZone}",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      ${dependencies ? `{
+        "userSymbol": "${dependencies.userSymbol}",
+        "serviceId": "${dependencies.serviceId}",
+        "version": "${dependencies.version}"
+      }` : ''}
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "${runtimeVersion}",
+  "sheets": {
+    "macros": [
+      ${sheetsMacros ? sheetsMacros.map(macro => `{
+        "menuName": "${macro.menuName}",
+        "functionName": "${macro.functionName}"
+      }`).join(',') : ''}
+    ]
+  }
+}

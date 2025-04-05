@@ -586,17 +586,3 @@ function limparDados_(
 ): void {
   VilladasPedrasLib.limparDados(modeloSheet, mesCorrenteSheet);
 }
-
-// Expondo as funções globalmente para o GAS
-// Necessário para o Google Apps Script conseguir acessar as funções
-// (global as any).VIRAR_MES_SALARIO = VIRAR_MES_SALARIO;
-// (global as any).VIRAR_MES_TUDO = VIRAR_MES_TUDO;
-// (global as any).VIRAR_ANO_SALARIO = VIRAR_ANO_SALARIO;
-// (global as any).VIRAR_ANO_TUDO = VIRAR_ANO_TUDO;
-// (global as any).BLOQUEAR_ALTERACOES = BLOQUEAR_ALTERACOES;
-// (global as any).REORDENAR_NOMES = REORDENAR_NOMES;
-// (global as any).LIMPAR_CORES = LIMPAR_CORES;
-// (global as any).LIMPAR_DADOS = LIMPAR_DADOS;
-// (global as any).DESPROTEGER_ABA_ATUAL = DESPROTEGER_ABA_ATUAL;
-// (global as any).COPIAR_PROTECAO_INTERVALOS_MODELO_PARA_ABA_ATUAL =
-//   COPIAR_PROTECAO_INTERVALOS_MODELO_PARA_ABA_ATUAL;
