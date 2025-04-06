@@ -1,6 +1,5 @@
 import { VilladasPedrasGAS } from '../../../src/models/types';
 import { SpreadsheetService } from '../../../src/spreadsheet/spreadsheetService';
-import { describe, beforeEach, it, expect, jest } from '@jest/globals';
 
 describe('SpreadsheetService', () => {
   let mockSpreadsheet: VilladasPedrasGAS.Spreadsheet.Spreadsheet;

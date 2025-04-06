@@ -1,29 +1,17 @@
-import type { Config } from 'jest';
+// Arquivo de configuração do Jest
 
-const config: Config = {
+export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  moduleDirectories: ['node_modules', 'src'],
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
-  setupFiles: ['<rootDir>/src/__mocks__/google-apps-script.ts'],
-  testMatch: ['**/__tests__/**/*.test.ts'],
-  transform: {
-    '^.+\\.ts$': [
-      'ts-jest',
-      {
-        tsconfig: 'tsconfig.json',
-        isolatedModules: true,
-      },
-    ],
-  },
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.json',
-      isolatedModules: true,
     },
   },
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    'google-apps-script': '<rootDir>/tests/mocks/google-apps-script.ts',
+  },
+  testMatch: ['**/tests/**/*.test.ts'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setupTests.ts'],
 };
-
-export default config;

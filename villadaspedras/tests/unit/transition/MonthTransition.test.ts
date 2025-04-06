@@ -1,6 +1,5 @@
 import { MonthTransition } from '../../../src/transition/MonthTransition';
 import { SpreadsheetService } from '../../../src/spreadsheet/spreadsheetService';
-import { describe, beforeEach, test, expect, jest } from '@jest/globals';
 
 describe('MonthTransition', () => {
   let transition: MonthTransition;
@@ -28,11 +27,11 @@ describe('MonthTransition', () => {
     transition['spreadsheetService'] = mockSpreadsheetService;
   });
 
-  test('should initialize correctly', () => {
+  it('should initialize correctly', () => {
     expect(transition).toBeInstanceOf(MonthTransition);
   });
 
-  test('should execute month transition', () => {
+  it('should execute month transition', () => {
     const monthName = 'JANEIRO';
     jest.spyOn(transition['dateUtils'], 'getMonthName').mockReturnValue(monthName);
     
