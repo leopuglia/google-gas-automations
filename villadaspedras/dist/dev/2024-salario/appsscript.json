@@ -1,0 +1,70 @@
+{
+  "timeZone": "America/Sao_Paulo",
+  "runtimeVersion": "V8",
+  "exceptionLogging": "STACKDRIVER",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      
+      {
+        "userSymbol": "Drive",
+        "serviceId": "drive",
+        "version": "v3"
+      }
+      
+    ]
+  },
+  "sheets": {
+    "macros": [
+      
+      {
+        "menuName": "1. VIRAR MÊS SALARIO E CONSUMO",
+        "functionName": "virarMesTudo"
+      },
+      
+      {
+        "menuName": "2. VIRAR MÊS SALARIO",
+        "functionName": "virarMesSalario"
+      },
+      
+      {
+        "menuName": "3. VIRAR ANO SALARIO E CONSUMO",
+        "functionName": "virarAnoTudo"
+      },
+      
+      {
+        "menuName": "4. VIRAR ANO SALARIO",
+        "functionName": "virarAnoSalario"
+      },
+      
+      {
+        "menuName": "5. REORDENAR NOMES",
+        "functionName": "reordenarNomes"
+      },
+      
+      {
+        "menuName": "LIMPAR CORES",
+        "functionName": "limparCores"
+      },
+      
+      {
+        "menuName": "LIMPAR DADOS",
+        "functionName": "limparDados"
+      },
+      
+      {
+        "menuName": "BLOQUEAR ALTERAÇÕES",
+        "functionName": "bloquearAlteracoes"
+      }
+      
+    ],
+    "docs": [
+      
+    ],
+    "forms": [
+      
+    ],
+    "slides": [
+      
+    ]
+  }
+}

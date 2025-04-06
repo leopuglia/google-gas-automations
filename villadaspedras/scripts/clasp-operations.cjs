@@ -4,7 +4,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { loadConfig } = require('./process-templates');
+const { loadConfig } = require('./process-templates.cjs');
 
 /**
  * Executa um comando clasp em um diretório específico

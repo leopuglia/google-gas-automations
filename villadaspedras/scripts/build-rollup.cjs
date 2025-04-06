@@ -4,7 +4,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { processAllTemplates } = require('./process-templates');
+const { processAllTemplates } = require('./process-templates.cjs');
 
 const projectRoot = path.resolve(__dirname, '..');
 
@@ -23,7 +23,7 @@ function checkOutputDirectories() {
 function buildWithRollup() {
   console.log('🔨 Iniciando build com Rollup...');
   try {
-    execSync('npx rollup -c rollup.config.js', {
+    execSync('npx rollup -c rollup.config.cjs', {
       cwd: projectRoot,
       stdio: 'inherit'
     });

@@ -7,7 +7,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "rimraf build/** dist/** && pnpm run format:source && node scripts/build-rollup.js",
+    "build": "rimraf build/** dist/** && pnpm run format:source && node scripts/build-rollup.cjs",
     "build:watch": "rollup -c rollup.config.js -w --env dev",
     "watch": "tsc -w",
     "test": "jest",

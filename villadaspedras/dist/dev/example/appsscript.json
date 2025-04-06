@@ -1,0 +1,24 @@
+{
+  "timeZone": "America/Sao_Paulo",
+  "runtimeVersion": "V8",
+  "exceptionLogging": "STACKDRIVER",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      
+    ]
+  },
+  "sheets": {
+    "macros": [
+      
+    ],
+    "docs": [
+      
+    ],
+    "forms": [
+      
+    ],
+    "slides": [
+      
+    ]
+  }
+}

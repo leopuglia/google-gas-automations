@@ -79,6 +79,7 @@ function processTemplate(template, variables) {
  * @param {number} depth - Profundidade da recursão para evitar loops infinitos
  * @returns {Array} Array de configurações
  */
+/* 
 function getNestedConfigs(projectConfig, env, prefix = '', result = [], depth = 0) {
   if (depth > 10) {
     console.warn(`Aviso: Profundidade máxima de recursão atingida para ${prefix}`);
@@ -133,55 +134,23 @@ function getNestedConfigs(projectConfig, env, prefix = '', result = [], depth = 
   
   return result;
 }
+ */
 
 // Configuração base para todos os projetos
 function createConfig(inputPath, outputDir, includes, scriptId = null) {
-  // Verificar se o arquivo de entrada existe
-  if (!fs.existsSync(inputPath)) {
-    console.warn(`Aviso: Arquivo de entrada não encontrado: ${inputPath}`);
-    console.warn(`Tentando usar o arquivo index.ts como alternativa`);
-    // Tentar usar o arquivo index.ts como alternativa
-    const alternativeInput = path.resolve(process.cwd(), 'src/index.ts');
-    if (fs.existsSync(alternativeInput)) {
-      inputPath = alternativeInput;
-    }
-  }
-  
-  const config = {
+  return {
     input: inputPath,
     output: {
       dir: outputDir,
-      format: 'cjs',
-      exports: 'named'
+      format: 'esm',
+      sourcemap: true
     },
     plugins: [
-      typescript({
-        tsconfig: './tsconfig.json',
-        include: includes,
-        exclude: [`${paths.scripts}/**/*`, 'node_modules/**/*'],
-        outDir: outputDir,
-        target: 'es2019',
-        module: 'esnext',
-        noEmitOnError: false,
-        skipLibCheck: true,
-        sourceMap: false
-      })
+      typescript()
     ],
-    onwarn(warning, warn) {
-      if (warning.code === 'THIS_IS_UNDEFINED' ||
-          warning.code === 'CIRCULAR_DEPENDENCY' ||
-          warning.code === 'EMPTY_BUNDLE') {
-        return;
-      }
-      warn(warning);
-    },
-    // Metadados adicionais que podem ser usados por scripts de deploy
-    meta: {
-      scriptId: scriptId
-    }
+    external: ['google-apps-script'],
+    treeshake: true
   };
-  
-  return config;
 }
 
 // Configurações para todos os projetos usando chaves dinâmicas

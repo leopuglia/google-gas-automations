@@ -4,8 +4,8 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { processAllTemplates } = require('./process-templates');
-const { processProjects } = require('./clasp-operations');
+const { processAllTemplates } = require('./process-templates.cjs');
+const { processProjects } = require('./clasp-operations.cjs');
 
 const projectRoot = path.resolve(__dirname, '..');
 
