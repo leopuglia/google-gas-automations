@@ -1,0 +1,13 @@
+{
+  "jest.jestCommandLine": "",
+  "jest.runMode": "on-demand",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "jest.shell": "/bin/bash",
+  "jest.outputConfig": {
+    "revealOn": "run",
+    "revealWithFocus": "terminal",
+    "clearOnRun": "terminal"
+  },
+  "testing.openTesting": "neverOpen",
+  "terminal.integrated.defaultProfile.linux": "bash"
+}

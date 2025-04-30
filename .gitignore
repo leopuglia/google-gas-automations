@@ -1,6 +1,7 @@
 # Dependências
 node_modules/
 **/node_modules
+.local
 
 # Arquivos de build
 build/
@@ -39,6 +40,8 @@ pnpm-debug.log*
 
 # Arquivos do sistema operacional
 .DS_Store
+.zsh_history
+.bash_history
 Thumbs.db
 desktop.ini
 

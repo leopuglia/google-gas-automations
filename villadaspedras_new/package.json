@@ -1,0 +1,32 @@
+{
+  "name": "villadaspedras",
+  "version": "0.0.1",
+  "description": "Automações para Google Apps Script",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest",
+    "push": "clasp push",
+    "watch": "rollup -c -w"
+  },
+  "devDependencies": {
+    "@google/clasp": "3.0.3-alpha",
+    "@jest/globals": "^29.7.0",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/google-apps-script": "^1.0.97",
+    "@types/jest": "^29.5.14",
+    "@types/luxon": "^3.6.2",
+    "jest": "^29.7.0",
+    "rollup": "^4.40.1",
+    "ts-jest": "^29.3.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "pnpm@10.10.0",
+  "dependencies": {
+    "luxon": "^3.6.1"
+  }
+}
