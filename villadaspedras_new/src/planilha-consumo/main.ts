@@ -1,7 +1,7 @@
 /**
  * Arquivo principal para as automações do Google Apps Script
  */
-import * as utils from './../utils';
+import * as utils from '../commons/utils';
 
 // Função que será exposta ao GAS
 global.onOpen = (): void => {

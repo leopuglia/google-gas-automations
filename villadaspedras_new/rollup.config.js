@@ -20,65 +20,73 @@ function removeImports() {
 }
 
 export default [
-  /*
-  input: 'src/main.ts',
-  // input: {
-  //   main: 'src/main.ts',
-  //   utils: 'src/utils.ts'
-  // },
-  // input: ['src/main.ts', 'src/utils.ts'],
-  output: {
-    // file: 'build/villadaspedras.js',
-    dir: 'build',
-    // format: 'iife',
-    // format: 'umd',
-    format: 'esm',
-    // format: 'es',
-    // format: 'cjs',
-    // manualChunks: {
-    //   utils: 'src/utils.ts'
-    // },
-    // inlineDynamicImports: true,
-    inlineDynamicImports: false,
-    // exports: 'default',
-    name: 'VillaDasPedras'
-  },
-  // external: ['utils'],
-  // external: ['src/utils.ts'],
-  external: ['utils', 'luxon'],
-  // external: ['luxon'],
-  plugins: [
-    nodeResolve(),
-    // commonjs(),
-    typescript({
-      tsconfig: './tsconfig.json'
-    }),
-    // terser()
-  ]
-  */
   {
-    // input: {
-    //   salarios: 'src/salarios/main.ts'
-    // },
     input: {
-      salarios: 'src/salarios/main.ts',
-      utils: 'src/utils.ts'
+      example: 'src/example/main.ts',
+      utils: 'src/commons/utils.ts'
     },
     output: {
-      dir: 'build/salarios',
+      dir: 'build/example',
       format: 'esm',
-      // inlineDynamicImports: true,
       inlineDynamicImports: false,
-      name: 'VilladasPedras.Salarios'
+      name: 'VilladasPedras.Example'
     },
     // external: ['utils', 'luxon'],
-    external: ['luxon'],
+    // external: ['luxon'],
     plugins: [
       nodeResolve(),
       // commonjs(),
       typescript({
         tsconfig: './tsconfig.json',
-        outDir: 'build/salarios'
+        outDir: 'build/example'
+      }),
+      removeImports(),
+      // terser(),
+    ]
+  },
+  {
+    input: {
+      salario: 'src/planilha-salario/main.ts',
+      utils: 'src/commons/utils.ts'
+    },
+    output: {
+      dir: 'build/salario',
+      format: 'esm',
+      inlineDynamicImports: false,
+      name: 'VilladasPedras.Salarios'
+    },
+    // external: ['utils', 'luxon'],
+    // external: ['luxon'],
+    plugins: [
+      nodeResolve(),
+      // commonjs(),
+      typescript({
+        tsconfig: './tsconfig.json',
+        outDir: 'build/salario'
+      }),
+      removeImports(),
+      // terser(),
+    ]
+  },
+  {
+    input: {
+      consumo: 'src/planilha-consumo/main.ts',
+      utils: 'src/commons/utils.ts'
+    },
+    output: {
+      dir: 'build/consumo',
+      format: 'esm',
+      inlineDynamicImports: false,
+      name: 'VilladasPedras.Consumo'
+    },
+    // external: ['utils', 'luxon'],
+    // external: ['luxon'],
+    plugins: [
+      nodeResolve(),
+      // commonjs(),
+      typescript({
+        tsconfig: './tsconfig.json',
+        outDir: 'build/consumo'
       }),
       removeImports(),
       // terser(),

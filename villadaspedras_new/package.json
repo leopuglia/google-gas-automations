@@ -6,8 +6,16 @@
   "scripts": {
     "build": "rollup -c",
     "test": "jest",
-    "push": "clasp push",
-    "watch": "rollup -c -w"
+    "watch": "rollup -c -w",
+    "clean": "rimraf dist/* build/*",
+    "deploy": "node scripts/deploy.js",
+    "deploy:dev": "node scripts/deploy.js --env=dev",
+    "deploy:prod": "node scripts/deploy.js --env=prod",
+    "deploy:push": "node scripts/deploy.js --push",
+    "deploy:dev:push": "node scripts/deploy.js --env=dev --push",
+    "deploy:prod:push": "node scripts/deploy.js --env=prod --push",
+    "deploy:clean": "node scripts/deploy.js --clean",
+    "deploy:clean:push": "node scripts/deploy.js --clean --push"
   },
   "devDependencies": {
     "@google/clasp": "3.0.3-alpha",
@@ -19,7 +27,11 @@
     "@types/google-apps-script": "^1.0.97",
     "@types/jest": "^29.5.14",
     "@types/luxon": "^3.6.2",
+    "fs-extra": "^11.3.0",
+    "handlebars": "^4.7.8",
     "jest": "^29.7.0",
+    "js-yaml": "^4.1.0",
+    "rimraf": "^6.0.1",
     "rollup": "^4.40.1",
     "ts-jest": "^29.3.2",
     "tslib": "^2.8.1",

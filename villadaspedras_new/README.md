@@ -1,22 +1,39 @@
-# Villa das Pedras - Automações Google Apps Script
+# Villa das Pedras - Sistema de Build Flexível para Google Apps Script
 
-Projeto de automações para Google Apps Script utilizando TypeScript e Rollup.
+Sistema de build e deploy totalmente flexível e genérico para projetos Google Apps Script em TypeScript, utilizando templates Handlebars e configuração YAML.
+
+## Visão Geral
+
+Este projeto implementa um sistema de build e deploy que permite:
+
+- Build, deploy e push automatizados para múltiplos projetos
+- Suporte a múltiplos ambientes (dev/prod)
+- Suporte a estruturas aninhadas (ano, pdv, etc.)
+- Configuração centralizada via YAML
+- Templates dinâmicos com Handlebars
+- Comandos simplificados no package.json
 
 ## Estrutura do Projeto
 
-```
-villadaspedras/
-├── src/                  # Código fonte TypeScript
-│   ├── index.ts          # Ponto de entrada principal
-│   └── utils.ts          # Funções utilitárias
-├── build/                # Output do build (JavaScript)
-├── dist/                 # Código implantado
-├── tests/                # Testes unitários
-│   └── mocks/            # Mocks para testes
-├── package.json          # Dependências e scripts
-├── tsconfig.json         # Configuração TypeScript
-├── rollup.config.js      # Configuração Rollup
-└── README.md             # Documentação
+```text
+villadaspedras_new/
+│── src/                    # Código fonte TypeScript
+│   │── commons/            # Código compartilhado
+│   │── planilha-salario/   # Código do projeto salário
+│   │── planilha-consumo/   # Código do projeto consumo
+│   └── example/            # Projeto de exemplo
+│── build/                  # Código compilado (output do Rollup)
+│── dist/                   # Arquivos de deploy (output para Clasp)
+│   │── dev/                # Ambiente de desenvolvimento
+│   └── prod/               # Ambiente de produção
+│── templates/              # Templates para arquivos de deploy
+│── scripts/                # Scripts de build e deploy
+│── docs/                   # Documentação do projeto
+│── config.yml              # Configuração do sistema de build
+│── rollup.config.js        # Configuração do Rollup
+│── package.json            # Scripts e dependências
+│── tsconfig.json           # Configuração TypeScript
+└── README.md               # Documentação principal
 ```
 
 ## Configuração Inicial
@@ -28,31 +45,60 @@ Para configurar o projeto, execute:
 pnpm install
 
 # Login no Google (necessário apenas uma vez)
-npx clasp login
+pnpm dlx @google/clasp login
 ```
 
 ## Comandos Disponíveis
 
+### Build e Deploy
+
 ```bash
 # Compilar o projeto
-pnpm build
+pnpm run build
 
-# Executar testes
-pnpm test
+# Limpar diretórios
+pnpm run clean
 
-# Enviar para o Google Apps Script
-pnpm push
+# Deploy para ambiente de desenvolvimento
+pnpm run deploy:dev
 
-# Modo de desenvolvimento (watch)
-pnpm watch
+# Deploy para ambiente de produção
+pnpm run deploy:prod
+
+# Deploy e push para o Google Apps Script (desenvolvimento)
+pnpm run deploy:dev:push
+
+# Deploy e push para o Google Apps Script (produção)
+pnpm run deploy:prod:push
+
+# Deploy com limpeza de diretórios
+pnpm run deploy:clean
 ```
 
-## Desenvolvimento
+### Filtragem por Parâmetros
 
-1. Escreva seu código TypeScript em `src/`
-2. Execute `pnpm build` para compilar
-3. O arquivo de saída será gerado em `build/bundle.js`
-4. Use `pnpm push` para enviar ao Google Apps Script
+```bash
+# Deploy de um projeto específico
+pnpm run deploy:dev -- --project=salario
+
+# Deploy para um ano específico
+pnpm run deploy:dev -- --year=2024
+
+# Deploy para um PDV específico
+pnpm run deploy:dev -- --project=consumo --pdv=1-cafeteria
+
+# Combinações de parâmetros
+pnpm run deploy:prod -- --project=consumo --year=2024 --pdv=1-cafeteria
+```
+
+## Documentação
+
+Para mais informações, consulte os documentos na pasta `docs/`:
+
+- [Guia de Início Rápido](./docs/guia_inicio_rapido.md)
+- [Sistema de Build Flexível](./docs/sistema_build_flexivel.md)
+- [Referência de Configuração YAML](./docs/configuracao_yaml_referencia.md)
+- [Análise do Sistema de Build](./docs/analise_sistema_build_flexivel.md)
 
 ## Testes
 
