@@ -76,9 +76,7 @@ projects:
       # Nome do pacote de saída
       name: VilladasPedras.Example
       # Bibliotecas comuns a serem incluidas
-      common-libs:
-        - name: utils
-          path: src/commons/utils.ts
+      common-libs: []
       # Bibliotecas específicas deste projeto
       project-libs: []
       # Bibliotecas externas (não empacotadas)
@@ -143,7 +141,7 @@ projects:
       # Bibliotecas comuns a serem incluidas
       common-libs:
         - name: utils
-          path: src/commons/utils.ts
+          path: ./src/commons/utils.ts
       # Bibliotecas específicas deste projeto
       project-libs: []
       # Bibliotecas externas (não empacotadas)
@@ -217,7 +215,7 @@ projects:
       # Bibliotecas comuns a serem incluidas
       common-libs:
         - name: utils
-          path: src/commons/utils.ts
+          path: ./src/commons/utils.ts
       # Bibliotecas específicas deste projeto
       project-libs: []
       # Bibliotecas externas (não empacotadas)

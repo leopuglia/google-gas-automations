@@ -27,7 +27,7 @@ const DEFAULT_PATHS = {
  * @param {boolean} verbose Se true, exibe mensagens no console
  * @returns {Object} Configuração carregada
  */
-function loadConfig(configFile = DEFAULT_CONFIG_FILE, verbose = true) {
+export function loadConfig(configFile = DEFAULT_CONFIG_FILE, verbose = true) {
   try {
     const configPath = path.resolve(configFile);
     if (verbose) {
@@ -48,7 +48,7 @@ function loadConfig(configFile = DEFAULT_CONFIG_FILE, verbose = true) {
  * @param {boolean} verbose Se true, exibe mensagens no console
  * @returns {Object} Objeto com os caminhos inicializados
  */
-function initializePaths(config, verbose = true) {
+export function initializePaths(config, verbose = true) {
   // Obter os caminhos da configuração ou usar os valores padrão
   const configPaths = config.defaults && config.defaults.paths || {};
   
@@ -79,17 +79,8 @@ function initializePaths(config, verbose = true) {
  * @param {boolean} verbose Se true, exibe mensagens no console
  * @returns {Object} Objeto com a configuração e os caminhos
  */
-function loadConfigAndInitializePaths(configFile = DEFAULT_CONFIG_FILE, verbose = true) {
+export function loadConfigAndInitializePaths(configFile = DEFAULT_CONFIG_FILE, verbose = true) {
   const config = loadConfig(configFile, verbose);
   const paths = initializePaths(config, verbose);
   return { config, paths };
 }
-
-// Exportar as funções
-export {
-  loadConfig,
-  initializePaths,
-  loadConfigAndInitializePaths,
-  DEFAULT_CONFIG_FILE,
-  DEFAULT_PATHS
-};

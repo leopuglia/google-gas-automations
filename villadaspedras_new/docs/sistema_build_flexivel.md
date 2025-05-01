@@ -11,6 +11,15 @@ O sistema de build flexível do projeto utiliza:
 
 O sistema foi projetado para ser completamente genérico e configurável, permitindo fácil expansão para novos projetos, ambientes, anos e PDVs sem necessidade de modificar o código JavaScript.
 
+### Recursos Principais
+
+- **Configuração Centralizada**: Toda a estrutura do projeto é definida em um único arquivo YAML
+- **Estrutura Aninhada**: Suporte a projetos com estruturas complexas (ano, PDV, etc.)
+- **Templates Dinâmicos**: Geração de arquivos de configuração com base em templates Handlebars
+- **Ordem de Envio Otimizada**: Configuração automática da ordem de envio dos arquivos para o Google Apps Script
+- **Build Automático**: Verificação e execução automática do build antes do deploy
+- **Modularidade**: Código organizado em módulos com responsabilidades específicas
+
 ## Arquivos Principais
 
 ### 1. config.yml

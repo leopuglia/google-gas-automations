@@ -5,7 +5,7 @@ import terser from '@rollup/plugin-terser';
 // import path from 'path';
 
 // Importar o módulo de carregamento de configuração
-import * as configLoader from './scripts/config-loader.js';
+import * as configHelper from './scripts/config-helper.js';
 
 /** Plugin para remover todas as linhas de import estático */
 function removeImports() {
@@ -147,7 +147,7 @@ function generateRollupConfig(configData) {
 }
 
 // Carregar a configuração usando o módulo compartilhado
-const config = configLoader.loadConfig();
+const config = configHelper.loadConfig();
 
 // Gerar a configuração do Rollup
 const rollupConfig = generateRollupConfig(config);

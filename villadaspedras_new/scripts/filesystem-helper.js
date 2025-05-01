@@ -3,8 +3,6 @@ import fsExtra from 'fs-extra';
 import { execSync } from 'child_process';
 import path from 'path';
 
-export { cleanDirectories, ensureBuildBeforeDeploy };
-
 /**
  * Limpa os diretórios de build e/ou dist
  * @param {string} buildDir Caminho do diretório de build
@@ -12,7 +10,7 @@ export { cleanDirectories, ensureBuildBeforeDeploy };
  * @param {boolean} cleanBuild Limpar diretório de build
  * @param {boolean} cleanDist Limpar diretório de dist
  */
-function cleanDirectories(buildDir, distDir, cleanBuild = true, cleanDist = true) {
+export function cleanDirectories(buildDir, distDir, cleanBuild = true, cleanDist = true) {
   // Função auxiliar para verificar se um diretório está vazio
   const isDirEmpty = (dirPath) => {
     if (!fs.existsSync(dirPath)) {
@@ -28,9 +26,6 @@ function cleanDirectories(buildDir, distDir, cleanBuild = true, cleanDist = true
     
     // Verificar se o diretório existe antes de limpar
     if (fs.existsSync(buildDir)) {
-      // Salvar o estado antes da limpeza
-      const wasEmptyBefore = isDirEmpty(buildDir);
-      
       // Limpar o diretório
       fsExtra.emptyDirSync(buildDir);
       
@@ -54,9 +49,6 @@ function cleanDirectories(buildDir, distDir, cleanBuild = true, cleanDist = true
     
     // Verificar se o diretório existe antes de limpar
     if (fs.existsSync(distDir)) {
-      // Salvar o estado antes da limpeza
-      const wasEmptyBefore = isDirEmpty(distDir);
-      
       // Limpar o diretório
       fsExtra.emptyDirSync(distDir);
       
@@ -85,7 +77,7 @@ function cleanDirectories(buildDir, distDir, cleanBuild = true, cleanDist = true
  * @param {boolean} forceBuild Forçar o build mesmo se os diretórios existirem
  * @returns {boolean} true se o build foi executado com sucesso
  */
-function ensureBuildBeforeDeploy(config, paths, projectKey = null, forceBuild = false) {
+export function ensureBuildBeforeDeploy(config, paths, projectKey = null, forceBuild = false) {
   const projects = config.projects || {};
   const projectKeys = projectKey ? [projectKey] : Object.keys(projects);
   let needsBuild = forceBuild;

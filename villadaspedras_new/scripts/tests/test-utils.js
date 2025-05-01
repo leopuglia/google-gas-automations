@@ -6,7 +6,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 
-import { cleanDirectories } from './utils.js';
+import * as filesystemHelper from '../filesystem-helper.js';
 
 // Função principal
 function testCleanDirectories() {
@@ -29,7 +29,7 @@ function testCleanDirectories() {
     
   // Limpar diretório de build
   console.log(`Limpando diretório de build: ${buildDir}`);
-  cleanDirectories(buildDir, distDir, true, false);
+  filesystemHelper.cleanDirectories(buildDir, distDir, true, false);
   
   // Verificar se o arquivo ainda existe
   const buildFileExistsAfter = fs.existsSync(path.join(buildDir, 'test-file.txt'));
@@ -45,7 +45,7 @@ function testCleanDirectories() {
     
   // Limpar diretório de dist
   console.log(`Limpando diretório de dist: ${distDir}`);
-  cleanDirectories(buildDir, distDir, false, true);
+  filesystemHelper.cleanDirectories(buildDir, distDir, false, true);
     
   // Verificar se o arquivo ainda existe
   const distFileExistsAfter = fs.existsSync(path.join(distDir, 'test-file.txt'));

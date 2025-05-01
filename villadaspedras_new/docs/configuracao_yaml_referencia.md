@@ -168,6 +168,48 @@ projects:
         functionName: virarAno
 ```
 
+### Configuração do Rollup e ordem de envio de arquivos
+
+Define como o código será empacotado pelo Rollup e a ordem de envio dos arquivos para o Google Apps Script:
+
+```yaml
+projects:
+  nome-projeto:
+    # ... outras configurações
+    rollup:
+      # Arquivo principal de entrada
+      main: main.ts
+      # Nome do pacote de saída
+      name: VilladasPedras.NomeProjeto
+      # Bibliotecas comuns a serem incluídas
+      common-libs:
+        - name: utils
+          path: ./src/commons/utils.ts
+      # Bibliotecas específicas deste projeto
+      project-libs:
+        - name: helpers
+          path: ./src/nome-projeto/helpers.ts
+      # Bibliotecas externas (não empacotadas)
+      externals:
+        - name: ExternalLib
+          path: ./src/external/external-lib.ts
+```
+
+Esta configuração é usada para:
+
+1. **Build com Rollup**: Define como o código TypeScript será compilado e empacotado
+2. **Ordem de Envio**: Determina a ordem em que os arquivos serão enviados para o Google Apps Script
+
+A ordem de envio segue a seguinte sequência:
+
+1. Bibliotecas externas (`externals`)
+2. Bibliotecas comuns (`common-libs`)
+3. Bibliotecas específicas do projeto (`project-libs`)
+4. Arquivo principal (`main.js`)
+5. Arquivo de manifesto (`appsscript.json`)
+
+Esta ordem garante que as dependências estejam disponíveis antes de serem utilizadas por outros arquivos.
+
 ## Configurações de ambiente
 
 Existem três formas de definir configurações específicas para cada ambiente (dev/prod):

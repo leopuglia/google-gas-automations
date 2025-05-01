@@ -97,6 +97,8 @@ Para mais informações, consulte os documentos na pasta `docs/`:
 
 - [Guia de Início Rápido](./docs/guia_inicio_rapido.md)
 - [Sistema de Build Flexível](./docs/sistema_build_flexivel.md)
+- [Ordem de Envio e Build Automático](./docs/ordem_envio_e_build_automatico.md)
+- [Modularização do Código](./docs/modularizacao_do_codigo.md)
 - [Referência de Configuração YAML](./docs/configuracao_yaml_referencia.md)
 - [Análise do Sistema de Build](./docs/analise_sistema_build_flexivel.md)
 

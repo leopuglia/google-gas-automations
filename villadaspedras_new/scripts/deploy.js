@@ -18,299 +18,12 @@
  * - --push: faz push para o Google Apps Script após o processamento
  */
 
-import fs from 'fs';
-import fsExtra from 'fs-extra';
-import path from 'path';
-import Handlebars from 'handlebars';
-import { execSync } from 'child_process';
 
 // Importar o módulo de carregamento de configuração
-import * as configLoader from './config-loader.js';
-import { cleanDirectories, ensureBuildBeforeDeploy } from './utils.js';
-
-/**
- * Processa um template com Handlebars
- * @param {string} templatePath Caminho do template
- * @param {string} outputPath Caminho de saída
- * @param {Object} context Contexto para substituição
- */
-function processTemplate(templatePath, outputPath, context) {
-  try {
-    if (!fs.existsSync(templatePath)) {
-      console.error(`Template não encontrado: ${templatePath}`);
-      return;
-    }
-
-    const templateContent = fs.readFileSync(templatePath, 'utf8');
-    
-    // Registrar helper para verificar se é o último item de um array
-    Handlebars.registerHelper('unless', function(conditional, options) {
-      if (!conditional) {
-        return options.fn(this);
-      } else {
-        return options.inverse(this);
-      }
-    });
-    
-    // Registrar helper para verificar se é o último item de um array
-    Handlebars.registerHelper('last', function(array, options) {
-      if (array && array.length > 0) {
-        return options.fn(array[array.length - 1]);
-      } else {
-        return options.inverse(this);
-      }
-    });
-    
-    const template = Handlebars.compile(templateContent);
-    const result = template(context);
-    
-    // Garantir que o diretório de saída existe
-    fsExtra.ensureDirSync(path.dirname(outputPath));
-    
-    fs.writeFileSync(outputPath, result);
-    console.log(`Template processado: ${outputPath}`);
-  } catch (error) {
-    console.error(`Erro ao processar template ${templatePath}: ${error.message}`);
-  }
-}
-
-/**
- * Processa os templates para um projeto específico
- * @param {Object} config Configuração completa
- * @param {string} projectKey Chave do projeto
- * @param {string} environment Ambiente (dev/prod)
- * @param {Object} keys Chaves adicionais para substituição
- */
-function processProjectTemplates(config, projectKey, environment, keys = {}) {
-  try {
-    const projectConfig = config.projects[projectKey];
-    if (!projectConfig) {
-      throw new Error(`Projeto "${projectKey}" não encontrado na configuração.`);
-    }
-    
-    // Verificar se há configurações de ambiente
-    let envConfig;
-    
-    // Primeiro, verificar na nova estrutura recomendada: projects.{project}.environments.{env}
-    if (projectConfig.environments && projectConfig.environments[environment]) {
-      envConfig = projectConfig.environments[environment];
-    }
-    // Segundo, verificar na estrutura environments.{env}.{project}
-    else if (config.environments && config.environments[environment] && config.environments[environment][projectKey]) {
-      envConfig = config.environments[environment][projectKey];
-    }
-    // Terceiro, verificar na estrutura antiga (configurações de ambiente no próprio projeto)
-    else if (projectConfig[environment]) {
-      envConfig = projectConfig[environment];
-    }
-    // Se não houver configurações de ambiente
-    else {
-      // Se não é o ambiente padrão (dev), retornar null
-      if (environment !== 'dev') {
-        console.warn(`Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Pulando.`);
-        return null;
-      }
-      // Para o ambiente padrão, usar um objeto vazio
-      console.warn(`Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Usando configurações padrão.`);
-      envConfig = {};
-    }
-
-    // Verificar a estrutura do projeto
-    const projectStructure = config.defaults['projects-structure']?.[projectKey];
-    if (!projectStructure) {
-      console.warn(`Estrutura do projeto "${projectKey}" não encontrada na configuração. Usando estrutura padrão.`);
-    }
-    
-    // Processar estrutura aninhada se existir
-    let nestedConfig = envConfig;
-    let nestedKeys = {};
-    
-    if (projectStructure?.nested) {
-      // Para cada chave aninhada definida na estrutura do projeto
-      for (const nestedItem of projectStructure.nested) {
-        const keyName = nestedItem.key;
-        if (keys[keyName]) {
-          // Se a chave foi fornecida nos argumentos
-          if (nestedConfig[keys[keyName]]) {
-            nestedConfig = nestedConfig[keys[keyName]];
-            nestedKeys[keyName] = keys[keyName];
-          }
-        }
-      }
-    } else {
-      // Se não há estrutura aninhada definida, usar as chaves diretamente
-      for (const key in keys) {
-        if (keys[key] && nestedConfig[keys[key]]) {
-          nestedConfig = nestedConfig[keys[key]];
-          nestedKeys[key] = keys[key];
-        }
-      }
-    }
-    
-    // Construir contexto para substituição
-    const context = {
-      ...config.defaults,
-      ...projectConfig,
-      ...nestedConfig,
-      ...keys,
-      env: environment,
-      timeZone: config.defaults.keys?.find(k => k.timeZone)?.timeZone || 'America/Sao_Paulo',
-      runtimeVersion: config.defaults.keys?.find(k => k.runtimeVersion)?.runtimeVersion || 'V8',
-      scriptId: nestedConfig.templates && nestedConfig.templates['.clasp-template.json']?.scriptId || '',
-      dependencies: projectConfig.dependencies || [],
-      sheetsMacros: projectConfig.sheetsMacros || [],
-      docsMacros: projectConfig.docsMacros || [],
-      formsMacros: projectConfig.formsMacros || [],
-      slidesMacros: projectConfig.slidesMacros || [],
-      // main_files: ['salarios.js', 'utils.js'],
-      main_files: [],
-      utils_files: []
-    };
-    
-    console.log('Contexto para substituição:', JSON.stringify(context, null, 2));
-    
-    // Verificar se existem templates específicos no nestedConfig
-    const templatesParaProcessar = new Map();
-    
-    // Adicionar templates padrão do config.defaults.templates (nova estrutura)
-    if (config.defaults.templates) {
-      for (const templateKey in config.defaults.templates) {
-        const templateConfig = config.defaults.templates[templateKey];
-        templatesParaProcessar.set(templateKey, {
-          config: templateConfig,
-          destinationFile: templateConfig['destination-file']
-        });
-      }
-    }
-
-    // Adicionar ou sobrescrever com templates específicos do nestedConfig
-    for (const templateKey in nestedConfig) {
-      if (templateKey.endsWith('-template') || templateKey.endsWith('-template.json')) {
-        const templateConfig = nestedConfig[templateKey];
-        templatesParaProcessar.set(templateKey, {
-          config: templateConfig,
-          destinationFile: templateConfig['destination-file']
-        });
-      }
-    }
-    
-    // Resolver o template de saída para o caminho do diretório
-    let outputTemplate = projectConfig.outputTemplate || '{{output}}';
-    
-    // Substituir todas as variáveis no template
-    const resolvedOutput = outputTemplate.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-      // Verificar primeiro nas chaves aninhadas
-      if (nestedKeys[key]) {
-        return nestedKeys[key];
-      }
-      // Depois nas chaves fornecidas
-      if (keys[key]) {
-        return keys[key];
-      }
-      // Depois nas propriedades do projeto
-      if (projectConfig[key]) {
-        return projectConfig[key];
-      }
-      // Se não encontrar, manter o placeholder
-      return match;
-    });
-    
-    // Processar cada template
-    for (const [templateKey, templateInfo] of templatesParaProcessar) {
-      const templateConfig = templateInfo.config;
-      let destinationFileName = templateInfo.destinationFile;
-      
-      // Mapear o nome do template no arquivo de configuração para o nome real do arquivo
-      let templateFileName = templateKey;
-      
-      // Mapeamento específico para o arquivo .claspignore
-      if (templateKey === '.claspignore-template.json') {
-        if (fs.existsSync(path.join(config.defaults.paths.templates, '.claspignore-template'))) {
-          templateFileName = '.claspignore-template';
-        } else {
-          templateFileName = '.claspignore-template';
-          if (!fs.existsSync(path.join(config.defaults.paths.templates, templateFileName))) {
-            templateFileName = '.clasp-template.json';
-            destinationFileName = '.clasp.json';
-          }
-        }
-      } 
-      // Mapeamento específico para o arquivo .clasp.json
-      else if (templateKey === '.clasp-template.json') {
-        templateFileName = '.clasp-template.json';
-        destinationFileName = '.clasp.json';
-      }
-      // Mapeamento específico para o arquivo appsscript.json
-      else if (templateKey === 'appsscript-template') {
-        templateFileName = 'appsscript-template.json';
-      }
-      
-      const templatePath = path.join(config.defaults.paths.templates, templateFileName);
-      console.log(`Processando template: ${templatePath} -> ${destinationFileName}`);
-      
-      // Criar caminho de saída com pasta separada para o ambiente
-      const outputDir = path.join(
-        config.defaults.paths.dist,
-        environment,
-        resolvedOutput
-      );
-      
-      const outputPath = path.join(outputDir, destinationFileName);
-      
-      // Processar o template
-      processTemplate(templatePath, outputPath, context);
-      
-      // Copiar arquivos compilados para a pasta de destino
-      // Determinar o diretório de origem correto com base no tipo de projeto
-      let srcDir;
-      
-      // Mapear o nome do projeto para o nome da pasta de build
-      // if (projectKey === 'salario') {
-      //   srcDir = path.join(config.defaults.paths.build, 'salario');
-      // } else if (projectKey === 'consumo') {
-      //   srcDir = path.join(config.defaults.paths.build, 'consumo');
-      // } else if (projectKey === 'example') {
-      //   srcDir = path.join(config.defaults.paths.build, 'example');
-      // } else {
-      //   // Tentar usar o nome do projeto como diretório
-      //   srcDir = path.join(config.defaults.paths.build, projectKey);
-      // }
-      srcDir = path.join(config.defaults.paths.build, projectKey);
-      
-      // Verificar se o diretório existe
-      if (!fs.existsSync(srcDir)) {
-        console.warn(`Diretório de origem não encontrado: ${srcDir}`);
-        console.warn('Tentando alternativas...');
-        
-        // Tentar com o nome no src do projeto
-        const srcAltDir = path.join(config.defaults.paths.build, projectConfig.src || projectKey);
-        if (fs.existsSync(srcAltDir)) {
-          srcDir = srcAltDir;
-          console.log(`Usando diretório alternativo: ${srcDir}`);
-        } else {
-          console.error(`Não foi possível encontrar um diretório de origem válido para o projeto ${projectKey}`);
-          console.error(`Diretórios verificados: ${srcDir}, ${srcAltDir}`);
-          console.error('Execute o comando "pnpm run build" antes de fazer o deploy');
-        }
-      }
-      
-      console.log(`Copiando arquivos de ${srcDir} para ${outputDir}`);
-      fsExtra.copySync(srcDir, outputDir);
-      console.log(`Arquivos copiados de ${srcDir} para ${outputDir}`);
-    }
-
-    return {
-      outputDir: path.join(
-        config.defaults.paths.dist,
-        environment,
-        resolvedOutput
-      )
-    };
-  } catch (error) {
-    console.error(`Erro ao processar templates para o projeto ${projectKey}: ${error.message}`);
-    return null;
-  }
-}
+import * as configHelper from './config-helper.js';
+import * as filesystemHelper from './filesystem-helper.js';
+import * as claspHelper from './clasp-helper.js';
+import * as templateHelper from './template-helper.js';
 
 /**
  * Processa todos os projetos definidos na configuração
@@ -343,13 +56,13 @@ function processAllProjects(config, environment, filters = {}, doPush = false, p
       processNestedProject(config, projectKey, environment, nestedStructure, filters, doPush, outputDirs, paths);
     } else {
       // Processar projeto sem estrutura aninhada
-      const result = processProjectTemplates(config, projectKey, environment, filters, paths);
+      const result = templateHelper.processProjectTemplates(config, projectKey, environment, filters, paths);
       if (result && result.outputDir) {
         outputDirs.push(result.outputDir);
         
         // Executar push se solicitado
         if (doPush) {
-          pushProject(result.outputDir);
+          claspHelper.pushProject(result.outputDir);
         }
       }
     }
@@ -415,13 +128,13 @@ function processNestedProject(config, projectKey, environment, nestedStructure, 
 function processNestedLevel(config, projectKey, environment, nestedStructure, level, filters, doPush, outputDirs, paths) {
   // Se chegamos ao final da estrutura aninhada, processar o projeto
   if (level >= nestedStructure.length) {
-    const result = processProjectTemplates(config, projectKey, environment, filters, paths);
+    const result = templateHelper.processProjectTemplates(config, projectKey, environment, filters, paths);
     if (result && result.outputDir) {
       outputDirs.push(result.outputDir);
       
       // Executar push se solicitado
       if (doPush) {
-        pushProject(result.outputDir);
+        claspHelper.pushProject(result.outputDir);
       }
     }
     return;
@@ -512,22 +225,6 @@ function getAvailableValuesForKey(config, environment, projectKey, key, filters 
 }
 
 /**
- * Executa o comando clasp push para um projeto
- * @param {string} projectDir Diretório do projeto
- */
-function pushProject(projectDir) {
-  try {
-    console.log(`Executando clasp push para: ${projectDir}`);
-    execSync('clasp push', { cwd: projectDir, stdio: 'inherit' });
-    console.log(`Push concluído com sucesso para: ${projectDir}`);
-    return true;
-  } catch (error) {
-    console.error(`Erro ao executar clasp push para ${projectDir}: ${error.message}`);
-    return false;
-  }
-}
-
-/**
  * Função principal
  */
 function main() {
@@ -535,7 +232,7 @@ function main() {
   const args = process.argv.slice(2);
   let projectKey = null;
   let environment = null; // Processar ambos os ambientes por padrão
-  let configFile = configLoader.DEFAULT_CONFIG_FILE;
+  let configFile = configHelper.DEFAULT_CONFIG_FILE;
   let doPush = false;
   let doClean = false;
   const filters = {};
@@ -564,22 +261,22 @@ function main() {
   // O script deve processar apenas as configurações existentes no arquivo YAML
   
   // Carregar configuração usando o módulo compartilhado
-  const config = configLoader.loadConfig(configFile);
+  const config = configHelper.loadConfig(configFile);
   
   // Inicializar caminhos globais
-  const paths = configLoader.initializePaths(config);
+  const paths = configHelper.initializePaths(config);
   
   // Adicionar os caminhos ao objeto config para uso nas funções
   config.paths = paths;
   
   // Limpar diretórios se solicitado
   if (doClean) {
-    cleanDirectories(paths.build, paths.dist, false, true);
+    filesystemHelper.cleanDirectories(paths.build, paths.dist, false, true);
   }
 
   // Verificar se os diretórios de build existem e executar o build se necessário
   const selectedProject = filters.project || null;
-  const buildSuccess = ensureBuildBeforeDeploy(config, paths, selectedProject, false);
+  const buildSuccess = filesystemHelper.ensureBuildBeforeDeploy(config, paths, selectedProject, false);
   
   // Se o build falhou, interromper o deploy
   if (!buildSuccess) {
@@ -611,11 +308,11 @@ function main() {
       console.log(`Filtros adicionais: ${JSON.stringify(filters)}`);
       
       // Processar templates para o projeto específico
-      const result = processProjectTemplates(config, projectKey, environment, filters);
+      const result = templateHelper.processProjectTemplates(config, projectKey, environment, filters);
       
       // Executar push se solicitado
       if (doPush && result && result.outputDir) {
-        pushProject(result.outputDir);
+        claspHelper.pushProject(result.outputDir);
       }
     } else {
       // Processar todos os projetos para o ambiente especificado
