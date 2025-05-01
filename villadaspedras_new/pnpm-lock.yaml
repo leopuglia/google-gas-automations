@@ -11,6 +11,9 @@ importers:
       luxon:
         specifier: ^3.6.1
         version: 3.6.1
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
     devDependencies:
       '@google/clasp':
         specifier: 3.0.3-alpha

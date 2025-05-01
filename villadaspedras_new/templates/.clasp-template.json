@@ -1,7 +1,6 @@
 {
   "scriptId": "{{scriptId}}",
   "filePushOrder": [
-    "appsscript.json",
     {{#each main_files}}
     "{{this}}"{{#unless @last}},{{/unless}}
     {{/each}}
@@ -11,5 +10,6 @@
     "{{this}}"{{#unless @last}},{{/unless}}
     {{/each}}
     {{/if}}
+    "appsscript.json"
   ]
 }

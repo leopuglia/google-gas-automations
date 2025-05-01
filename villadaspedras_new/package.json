@@ -39,6 +39,7 @@
   },
   "packageManager": "pnpm@10.10.0",
   "dependencies": {
-    "luxon": "^3.6.1"
+    "luxon": "^3.6.1",
+    "yargs": "^17.7.2"
   }
 }

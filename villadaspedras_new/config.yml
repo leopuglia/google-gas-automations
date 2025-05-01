@@ -22,6 +22,22 @@ defaults:
     templates: ./templates
     scripts: ./scripts
   
+  # Configurações para o Rollup
+  rollup:
+    # Configurações de saída padrão
+    output:
+      format: esm
+      inlineDynamicImports: false
+    # Plugins padrão
+    plugins:
+      - name: nodeResolve
+        config: {}
+      - name: typescript
+        config:
+          tsconfig: './tsconfig.json'
+      - name: removeImports
+        config: {}
+  
   # Estrutura de projetos
   projects-structure:
     example:
@@ -53,6 +69,20 @@ projects:
     docsMacros: []
     formsMacros: []
     slidesMacros: []
+    # Configurações específicas para o Rollup
+    rollup:
+      # Arquivo principal de entrada
+      main: main.ts
+      # Nome do pacote de saída
+      name: VilladasPedras.Example
+      # Bibliotecas comuns a serem incluidas
+      common-libs:
+        - name: utils
+          path: src/commons/utils.ts
+      # Bibliotecas específicas deste projeto
+      project-libs: []
+      # Bibliotecas externas (não empacotadas)
+      externals: []
     # Ambientes dentro do projeto (nova estrutura recomendada)
     environments:
       dev:
@@ -104,6 +134,20 @@ projects:
     docsMacros: []
     formsMacros: []
     slidesMacros: []
+    # Configurações específicas para o Rollup
+    rollup:
+      # Arquivo principal de entrada
+      main: main.ts
+      # Nome do pacote de saída
+      name: VilladasPedras.Salarios
+      # Bibliotecas comuns a serem incluidas
+      common-libs:
+        - name: utils
+          path: src/commons/utils.ts
+      # Bibliotecas específicas deste projeto
+      project-libs: []
+      # Bibliotecas externas (não empacotadas)
+      externals: []
     # Ambientes dentro do projeto (nova estrutura recomendada)
     environments:
       dev:
@@ -164,6 +208,20 @@ projects:
     docsMacros: []
     formsMacros: []
     slidesMacros: []
+    # Configurações específicas para o Rollup
+    rollup:
+      # Arquivo principal de entrada
+      main: main.ts
+      # Nome do pacote de saída
+      name: VilladasPedras.Consumo
+      # Bibliotecas comuns a serem incluidas
+      common-libs:
+        - name: utils
+          path: src/commons/utils.ts
+      # Bibliotecas específicas deste projeto
+      project-libs: []
+      # Bibliotecas externas (não empacotadas)
+      externals: []
     # Ambientes dentro do projeto (nova estrutura recomendada)
     environments:
       dev:

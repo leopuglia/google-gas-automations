@@ -7,6 +7,10 @@ node_modules/
 build/
 **/build
 
+# Arquivos de dist
+dist/
+**/dist
+
 # Logs
 logs
 *.log

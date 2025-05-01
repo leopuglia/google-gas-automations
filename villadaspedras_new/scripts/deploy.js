@@ -18,75 +18,15 @@
  * - --push: faz push para o Google Apps Script após o processamento
  */
 
-import fs from 'fs-extra';
+import fs from 'fs';
+import fsExtra from 'fs-extra';
 import path from 'path';
-import yaml from 'js-yaml';
 import Handlebars from 'handlebars';
 import { execSync } from 'child_process';
-import * as rimraf from 'rimraf';
 
-// Constantes
-const DEFAULT_CONFIG_FILE = path.resolve('./config.yml');
-
-// Valores padrão para os diretórios (fallback)
-const DEFAULT_PATHS = {
-  src: path.resolve('./src'),
-  build: path.resolve('./build'),
-  dist: path.resolve('./dist'),
-  templates: path.resolve('./templates'),
-  scripts: path.resolve('./scripts')
-};
-
-// Variáveis para armazenar os caminhos reais (serão definidas após carregar a configuração)
-let SRC_DIR;
-let BUILD_DIR;
-let DIST_DIR;
-let TEMPLATES_DIR;
-let SCRIPTS_DIR;
-
-/**
- * Carrega o arquivo de configuração YAML e inicializa as variáveis de caminhos
- * @param {string} configFile Caminho para o arquivo de configuração
- * @returns {Object} Configuração carregada
- */
-function loadConfig(configFile = DEFAULT_CONFIG_FILE) {
-  try {
-    console.log(`Carregando configuração de: ${configFile}`);
-    const fileContents = fs.readFileSync(configFile, 'utf8');
-    const config = yaml.load(fileContents);
-    
-    // Inicializar as variáveis de caminhos com base na configuração
-    initializePaths(config);
-    
-    return config;
-  } catch (error) {
-    console.error(`Erro ao carregar configuração: ${error.message}`);
-    process.exit(1);
-  }
-}
-
-/**
- * Inicializa as variáveis de caminhos com base na configuração
- * @param {Object} config Configuração carregada
- */
-function initializePaths(config) {
-  // Obter os caminhos da configuração ou usar os valores padrão
-  const configPaths = config.defaults && config.defaults.paths || {};
-  
-  // Inicializar cada caminho, usando o valor da configuração ou o valor padrão
-  SRC_DIR = configPaths.src ? path.resolve(configPaths.src) : DEFAULT_PATHS.src;
-  BUILD_DIR = configPaths.build ? path.resolve(configPaths.build) : DEFAULT_PATHS.build;
-  DIST_DIR = configPaths.dist ? path.resolve(configPaths.dist) : DEFAULT_PATHS.dist;
-  TEMPLATES_DIR = configPaths.templates ? path.resolve(configPaths.templates) : DEFAULT_PATHS.templates;
-  SCRIPTS_DIR = configPaths.scripts ? path.resolve(configPaths.scripts) : DEFAULT_PATHS.scripts;
-  
-  console.log('Caminhos inicializados:');
-  console.log(` - SRC_DIR: ${SRC_DIR}`);
-  console.log(` - BUILD_DIR: ${BUILD_DIR}`);
-  console.log(` - DIST_DIR: ${DIST_DIR}`);
-  console.log(` - TEMPLATES_DIR: ${TEMPLATES_DIR}`);
-  console.log(` - SCRIPTS_DIR: ${SCRIPTS_DIR}`);
-}
+// Importar o módulo de carregamento de configuração
+import * as configLoader from './config-loader.js';
+import { cleanDirectories, ensureBuildBeforeDeploy } from './utils.js';
 
 /**
  * Processa um template com Handlebars
@@ -125,7 +65,7 @@ function processTemplate(templatePath, outputPath, context) {
     const result = template(context);
     
     // Garantir que o diretório de saída existe
-    fs.ensureDirSync(path.dirname(outputPath));
+    fsExtra.ensureDirSync(path.dirname(outputPath));
     
     fs.writeFileSync(outputPath, result);
     console.log(`Template processado: ${outputPath}`);
@@ -163,8 +103,14 @@ function processProjectTemplates(config, projectKey, environment, keys = {}) {
     else if (projectConfig[environment]) {
       envConfig = projectConfig[environment];
     }
-    // Se não houver configurações de ambiente, usar um objeto vazio
+    // Se não houver configurações de ambiente
     else {
+      // Se não é o ambiente padrão (dev), retornar null
+      if (environment !== 'dev') {
+        console.warn(`Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Pulando.`);
+        return null;
+      }
+      // Para o ambiente padrão, usar um objeto vazio
       console.warn(`Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Usando configurações padrão.`);
       envConfig = {};
     }
@@ -210,13 +156,14 @@ function processProjectTemplates(config, projectKey, environment, keys = {}) {
       env: environment,
       timeZone: config.defaults.keys?.find(k => k.timeZone)?.timeZone || 'America/Sao_Paulo',
       runtimeVersion: config.defaults.keys?.find(k => k.runtimeVersion)?.runtimeVersion || 'V8',
-      scriptId: nestedConfig['.clasp-template.json']?.scriptId || '',
+      scriptId: nestedConfig.templates && nestedConfig.templates['.clasp-template.json']?.scriptId || '',
       dependencies: projectConfig.dependencies || [],
       sheetsMacros: projectConfig.sheetsMacros || [],
       docsMacros: projectConfig.docsMacros || [],
       formsMacros: projectConfig.formsMacros || [],
       slidesMacros: projectConfig.slidesMacros || [],
-      main_files: ['salarios.js', 'utils.js'],
+      // main_files: ['salarios.js', 'utils.js'],
+      main_files: [],
       utils_files: []
     };
     
@@ -235,18 +182,7 @@ function processProjectTemplates(config, projectKey, environment, keys = {}) {
         });
       }
     }
-/*     
-    // Fallback para a estrutura antiga (templates diretamente em defaults)
-    for (const templateKey in config.defaults) {
-      if ((templateKey.endsWith('-template') || templateKey.endsWith('-template.json')) && !templatesParaProcessar.has(templateKey)) {
-        const templateConfig = config.defaults[templateKey];
-        templatesParaProcessar.set(templateKey, {
-          config: templateConfig,
-          destinationFile: templateConfig['destination-file']
-        });
-      }
-    }
- */    
+
     // Adicionar ou sobrescrever com templates específicos do nestedConfig
     for (const templateKey in nestedConfig) {
       if (templateKey.endsWith('-template') || templateKey.endsWith('-template.json')) {
@@ -289,11 +225,11 @@ function processProjectTemplates(config, projectKey, environment, keys = {}) {
       
       // Mapeamento específico para o arquivo .claspignore
       if (templateKey === '.claspignore-template.json') {
-        if (fs.existsSync(path.join(TEMPLATES_DIR, '.claspignore-template'))) {
+        if (fs.existsSync(path.join(config.defaults.paths.templates, '.claspignore-template'))) {
           templateFileName = '.claspignore-template';
         } else {
           templateFileName = '.claspignore-template';
-          if (!fs.existsSync(path.join(TEMPLATES_DIR, templateFileName))) {
+          if (!fs.existsSync(path.join(config.defaults.paths.templates, templateFileName))) {
             templateFileName = '.clasp-template.json';
             destinationFileName = '.clasp.json';
           }
@@ -309,12 +245,12 @@ function processProjectTemplates(config, projectKey, environment, keys = {}) {
         templateFileName = 'appsscript-template.json';
       }
       
-      const templatePath = path.join(TEMPLATES_DIR, templateFileName);
+      const templatePath = path.join(config.defaults.paths.templates, templateFileName);
       console.log(`Processando template: ${templatePath} -> ${destinationFileName}`);
       
       // Criar caminho de saída com pasta separada para o ambiente
       const outputDir = path.join(
-        DIST_DIR,
+        config.defaults.paths.dist,
         environment,
         resolvedOutput
       );
@@ -329,16 +265,17 @@ function processProjectTemplates(config, projectKey, environment, keys = {}) {
       let srcDir;
       
       // Mapear o nome do projeto para o nome da pasta de build
-      if (projectKey === 'salario') {
-        srcDir = path.join(BUILD_DIR, 'salario');
-      } else if (projectKey === 'consumo') {
-        srcDir = path.join(BUILD_DIR, 'consumo');
-      } else if (projectKey === 'example') {
-        srcDir = path.join(BUILD_DIR, 'example');
-      } else {
-        // Tentar usar o nome do projeto como diretório
-        srcDir = path.join(BUILD_DIR, projectKey);
-      }
+      // if (projectKey === 'salario') {
+      //   srcDir = path.join(config.defaults.paths.build, 'salario');
+      // } else if (projectKey === 'consumo') {
+      //   srcDir = path.join(config.defaults.paths.build, 'consumo');
+      // } else if (projectKey === 'example') {
+      //   srcDir = path.join(config.defaults.paths.build, 'example');
+      // } else {
+      //   // Tentar usar o nome do projeto como diretório
+      //   srcDir = path.join(config.defaults.paths.build, projectKey);
+      // }
+      srcDir = path.join(config.defaults.paths.build, projectKey);
       
       // Verificar se o diretório existe
       if (!fs.existsSync(srcDir)) {
@@ -346,7 +283,7 @@ function processProjectTemplates(config, projectKey, environment, keys = {}) {
         console.warn('Tentando alternativas...');
         
         // Tentar com o nome no src do projeto
-        const srcAltDir = path.join(BUILD_DIR, projectConfig.src || projectKey);
+        const srcAltDir = path.join(config.defaults.paths.build, projectConfig.src || projectKey);
         if (fs.existsSync(srcAltDir)) {
           srcDir = srcAltDir;
           console.log(`Usando diretório alternativo: ${srcDir}`);
@@ -358,13 +295,13 @@ function processProjectTemplates(config, projectKey, environment, keys = {}) {
       }
       
       console.log(`Copiando arquivos de ${srcDir} para ${outputDir}`);
-      fs.copySync(srcDir, outputDir);
+      fsExtra.copySync(srcDir, outputDir);
       console.log(`Arquivos copiados de ${srcDir} para ${outputDir}`);
     }
 
     return {
       outputDir: path.join(
-        DIST_DIR,
+        config.defaults.paths.dist,
         environment,
         resolvedOutput
       )
@@ -376,85 +313,20 @@ function processProjectTemplates(config, projectKey, environment, keys = {}) {
 }
 
 /**
- * Copia os arquivos compilados para a pasta de destino
- * @param {string} sourceDir Diretório de origem (build)
- * @param {string} targetDir Diretório de destino (dist)
- */
-/* function copyCompiledFiles(sourceDir, targetDir) {
-  try {
-    if (!fs.existsSync(sourceDir)) {
-      console.error(`Diretório de origem não encontrado: ${sourceDir}`);
-      return;
-    }
-
-    // Garantir que o diretório de destino existe
-    fs.ensureDirSync(targetDir);
-    
-    // Copiar arquivos
-    fs.copySync(sourceDir, targetDir, {
-      overwrite: true,
-      filter: (src) => {
-        // Apenas arquivos .js
-        return fs.statSync(src).isDirectory() || path.extname(src) === '.js';
-      }
-    });
-    
-    console.log(`Arquivos copiados de ${sourceDir} para ${targetDir}`);
-  } catch (error) {
-    console.error(`Erro ao copiar arquivos: ${error.message}`);
-  }
-}
- */
-/**
- * Limpa os diretórios de build e/ou dist
- * @param {boolean} cleanBuild Limpar diretório de build
- * @param {boolean} cleanDist Limpar diretório de dist
- */
-function cleanDirectories(cleanBuild = false, cleanDist = false) {
-  if (cleanBuild) {
-    console.log(`Limpando diretório de build: ${BUILD_DIR}`);
-    rimraf.sync(`${BUILD_DIR}/*`);
-  }
-  
-  if (cleanDist) {
-    console.log(`Limpando diretório de dist: ${DIST_DIR}`);
-    rimraf.sync(`${DIST_DIR}/*`);
-  }
-}
-
-/**
- * Executa o comando clasp push para um projeto
- * @param {string} projectDir Diretório do projeto
- */
-function pushProject(projectDir) {
-  try {
-    console.log(`Executando clasp push para: ${projectDir}`);
-    execSync('clasp push', { cwd: projectDir, stdio: 'inherit' });
-    console.log(`Push concluído com sucesso para: ${projectDir}`);
-    return true;
-  } catch (error) {
-    console.error(`Erro ao executar clasp push para ${projectDir}: ${error.message}`);
-    return false;
-  }
-}
-
-/**
  * Processa todos os projetos definidos na configuração
  * @param {Object} config Configuração completa
  * @param {string} environment Ambiente (dev/prod)
  * @param {Object} filters Filtros adicionais (ex: {year: '2024'})
  * @param {boolean} doPush Executar push após processamento
+ * @param {Object} paths Caminhos dos diretórios
  * @returns {Array} Lista de diretórios de saída processados
  */
-function processAllProjects(config, environment, filters = {}, doPush = false) {
+function processAllProjects(config, environment, filters = {}, doPush = false, paths) {
   const outputDirs = [];
   const projects = config.projects || {};
   
   console.log(`Processando todos os projetos para ambiente: ${environment}`);
   console.log(`Filtros aplicados: ${JSON.stringify(filters)}`);
-  
-  // Obter as configurações específicas do ambiente
-  // const envConfig = config.environments && config.environments[environment] || {};
   
   for (const projectKey in projects) {
     // Se um filtro de projeto foi especificado e não corresponde, pular
@@ -462,16 +334,16 @@ function processAllProjects(config, environment, filters = {}, doPush = false) {
       continue;
     }
     
-    // Verificar se o projeto tem estrutura aninhada
+    // Verificar se o projeto tem configuração para o ambiente atual
     const projectConfig = projects[projectKey] || {};
     const nestedStructure = projectConfig.nested || [];
     
     if (nestedStructure.length > 0) {
       // Processar projeto com estrutura aninhada
-      processNestedProject(config, projectKey, environment, nestedStructure, filters, doPush, outputDirs);
+      processNestedProject(config, projectKey, environment, nestedStructure, filters, doPush, outputDirs, paths);
     } else {
       // Processar projeto sem estrutura aninhada
-      const result = processProjectTemplates(config, projectKey, environment, filters);
+      const result = processProjectTemplates(config, projectKey, environment, filters, paths);
       if (result && result.outputDir) {
         outputDirs.push(result.outputDir);
         
@@ -483,6 +355,7 @@ function processAllProjects(config, environment, filters = {}, doPush = false) {
     }
   }
   
+  console.log(`Processados ${outputDirs.length} projetos para ambiente de ${environment === 'dev' ? 'desenvolvimento' : 'produção'}`);
   return outputDirs;
 }
 
@@ -495,8 +368,9 @@ function processAllProjects(config, environment, filters = {}, doPush = false) {
  * @param {Object} filters Filtros adicionais
  * @param {boolean} doPush Executar push após processamento
  * @param {Array} outputDirs Lista de diretórios de saída
+ * @param {Object} paths Caminhos dos diretórios
  */
-function processNestedProject(config, projectKey, environment, nestedStructure, filters, doPush, outputDirs) {
+function processNestedProject(config, projectKey, environment, nestedStructure, filters, doPush, outputDirs, paths) {
   // Obter as configurações específicas do ambiente
   // const envConfig = config.environments && config.environments[environment] || {};
   
@@ -522,7 +396,7 @@ function processNestedProject(config, projectKey, environment, nestedStructure, 
   
   for (const value of availableValues) {
     const levelFilters = { ...filters, [firstLevelKey]: value };
-    processNestedLevel(config, projectKey, environment, nestedStructure, 0, levelFilters, doPush, outputDirs);
+    processNestedLevel(config, projectKey, environment, nestedStructure, 0, levelFilters, doPush, outputDirs, paths);
   }
 }
 
@@ -536,11 +410,12 @@ function processNestedProject(config, projectKey, environment, nestedStructure, 
  * @param {Object} filters Filtros acumulados
  * @param {boolean} doPush Executar push após processamento
  * @param {Array} outputDirs Lista de diretórios de saída
+ * @param {Object} paths Caminhos dos diretórios
  */
-function processNestedLevel(config, projectKey, environment, nestedStructure, level, filters, doPush, outputDirs) {
+function processNestedLevel(config, projectKey, environment, nestedStructure, level, filters, doPush, outputDirs, paths) {
   // Se chegamos ao final da estrutura aninhada, processar o projeto
   if (level >= nestedStructure.length) {
-    const result = processProjectTemplates(config, projectKey, environment, filters);
+    const result = processProjectTemplates(config, projectKey, environment, filters, paths);
     if (result && result.outputDir) {
       outputDirs.push(result.outputDir);
       
@@ -587,26 +462,42 @@ function processNestedLevel(config, projectKey, environment, nestedStructure, le
  * @returns {Array} Lista de valores disponíveis
  */
 function getAvailableValuesForKey(config, environment, projectKey, key, filters = {}) {
-  const envConfig = config.environments && config.environments[environment] || {};
-  const projectEnvConfig = envConfig[projectKey] || {};
+  // Obter a configuração do projeto
+  const projectConfig = config.projects && config.projects[projectKey] || {};
   
-  // Verificar se há valores disponíveis no nível do projeto
-  if (projectEnvConfig[key]) {
-    return Object.keys(projectEnvConfig[key]);
+  // Obter a estrutura aninhada do projeto usando projects-structure
+  const projectStructure = config.defaults && config.defaults['projects-structure'] && 
+                          config.defaults['projects-structure'][projectKey] || {};
+  const nestedStructure = projectStructure.nested || projectConfig.nested || [];
+  const nestedKeys = nestedStructure.map(item => item.key);
+  
+  // Verificar se a chave solicitada está na estrutura aninhada
+  if (!nestedKeys.includes(key)) {
+    return [];
   }
   
-  // Verificar se há valores disponíveis em níveis aninhados
-  for (const prevKey in filters) {
-    if (prevKey === key) continue;
-    
+  // Obter a configuração de ambientes
+  const envConfig = config.projects[projectKey].environments && 
+                   config.projects[projectKey].environments[environment] || {};
+  
+  // Determinar o nível da chave na estrutura aninhada
+  const keyLevel = nestedKeys.indexOf(key);
+  
+  // Processar de acordo com o nível da chave
+  if (keyLevel === 0) {
+    // Primeiro nível: retornar todas as chaves no nível do ambiente
+    return Object.keys(envConfig);
+  } else if (keyLevel > 0) {
+    // Níveis subsequentes: verificar chaves anteriores nos filtros
+    const prevKey = nestedKeys[keyLevel - 1];
     const prevValue = filters[prevKey];
-    if (projectEnvConfig[prevKey] && projectEnvConfig[prevKey][prevValue] && projectEnvConfig[prevKey][prevValue][key]) {
-      return Object.keys(projectEnvConfig[prevKey][prevValue][key]);
+    
+    if (prevValue && envConfig[prevValue]) {
+      return Object.keys(envConfig[prevValue]);
     }
   }
   
-  // Verificar se há valores disponíveis na configuração do projeto
-  const projectConfig = config.projects && config.projects[projectKey] || {};
+  // Verificar se há valores disponíveis na configuração do projeto via mapping
   const mapping = projectConfig.mapping || {};
   const keysTemplate = mapping['keys-template'] || [];
   
@@ -621,6 +512,22 @@ function getAvailableValuesForKey(config, environment, projectKey, key, filters 
 }
 
 /**
+ * Executa o comando clasp push para um projeto
+ * @param {string} projectDir Diretório do projeto
+ */
+function pushProject(projectDir) {
+  try {
+    console.log(`Executando clasp push para: ${projectDir}`);
+    execSync('clasp push', { cwd: projectDir, stdio: 'inherit' });
+    console.log(`Push concluído com sucesso para: ${projectDir}`);
+    return true;
+  } catch (error) {
+    console.error(`Erro ao executar clasp push para ${projectDir}: ${error.message}`);
+    return false;
+  }
+}
+
+/**
  * Função principal
  */
 function main() {
@@ -628,7 +535,7 @@ function main() {
   const args = process.argv.slice(2);
   let projectKey = null;
   let environment = null; // Processar ambos os ambientes por padrão
-  let configFile = DEFAULT_CONFIG_FILE;
+  let configFile = configLoader.DEFAULT_CONFIG_FILE;
   let doPush = false;
   let doClean = false;
   const filters = {};
@@ -656,13 +563,29 @@ function main() {
   // Não definimos valores padrão para os filtros
   // O script deve processar apenas as configurações existentes no arquivo YAML
   
+  // Carregar configuração usando o módulo compartilhado
+  const config = configLoader.loadConfig(configFile);
+  
+  // Inicializar caminhos globais
+  const paths = configLoader.initializePaths(config);
+  
+  // Adicionar os caminhos ao objeto config para uso nas funções
+  config.paths = paths;
+  
   // Limpar diretórios se solicitado
   if (doClean) {
-    cleanDirectories(true, true);
+    cleanDirectories(paths.build, paths.dist, false, true);
   }
 
-  // Carregar configuração
-  const config = loadConfig(configFile);
+  // Verificar se os diretórios de build existem e executar o build se necessário
+  const selectedProject = filters.project || null;
+  const buildSuccess = ensureBuildBeforeDeploy(config, paths, selectedProject, false);
+  
+  // Se o build falhou, interromper o deploy
+  if (!buildSuccess) {
+    console.error('Build falhou, interrompendo o deploy.');
+    process.exit(1);
+  }
 
   // Se não foi especificado um ambiente, processar ambos
   if (!environment) {
