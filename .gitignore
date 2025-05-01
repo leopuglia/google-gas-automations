@@ -8,8 +8,8 @@ build/
 **/build
 
 # Arquivos de dist
-# dist/
-# **/dist
+dist/
+**/dist
 
 # Logs
 logs
