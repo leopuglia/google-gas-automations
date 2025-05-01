@@ -16,6 +16,7 @@
  * - --<chave>=<valor>: filtra projetos com a chave/valor especificados (ex: --year=2025)
  * - --clean: limpa os diretórios de build e dist antes de processar
  * - --push: faz push para o Google Apps Script após o processamento
+ * - --log-level=<level>: define o nível de log (verbose, debug, info, warn, error, none)
  */
 
 
@@ -24,6 +25,7 @@ import * as configHelper from './config-helper.js';
 import * as filesystemHelper from './filesystem-helper.js';
 import * as claspHelper from './clasp-helper.js';
 import * as templateHelper from './template-helper.js';
+import logger from './logger.js';
 
 /**
  * Processa todos os projetos definidos na configuração
@@ -38,12 +40,13 @@ function processAllProjects(config, environment, filters = {}, doPush = false, p
   const outputDirs = [];
   const projects = config.projects || {};
   
-  console.log(`Processando todos os projetos para ambiente: ${environment}`);
-  console.log(`Filtros aplicados: ${JSON.stringify(filters)}`);
+  logger.highlight(`Processando todos os projetos para ambiente: ${environment}`);
+  logger.debug(`Filtros aplicados: ${JSON.stringify(filters)}`);
   
   for (const projectKey in projects) {
     // Se um filtro de projeto foi especificado e não corresponde, pular
     if (filters.project && filters.project !== projectKey) {
+      logger.debug(`Pulando projeto ${projectKey} que não corresponde ao filtro`);
       continue;
     }
     
@@ -51,24 +54,44 @@ function processAllProjects(config, environment, filters = {}, doPush = false, p
     const projectConfig = projects[projectKey] || {};
     const nestedStructure = projectConfig.nested || [];
     
+    logger.verbose(`Configuração do projeto: ${JSON.stringify(projectConfig)}`);
+    // logger.verbose(`Configuração do projeto: ${JSON.stringify(projectConfig, null, 2)}`);
+    
     if (nestedStructure.length > 0) {
+      logger.debug(`Processando projeto ${projectKey} com estrutura aninhada`);
+      logger.debug(`Estrutura aninhada: ${JSON.stringify(nestedStructure)}`);
+
       // Processar projeto com estrutura aninhada
       processNestedProject(config, projectKey, environment, nestedStructure, filters, doPush, outputDirs, paths);
     } else {
+      logger.debug(`Processando projeto ${projectKey} sem estrutura aninhada`);
+      
       // Processar projeto sem estrutura aninhada
       const result = templateHelper.processProjectTemplates(config, projectKey, environment, filters, paths);
+
+      logger.verbose(`Resultados do processamento: ${JSON.stringify(result)}`);
+      
       if (result && result.outputDir) {
+        // logger.debug(`Diretório de saída: ${result.outputDir}`);
+        logger.success(`Projeto ${projectKey} processado com sucesso`);
+
+        // Adicionar diretório de saída à lista
         outputDirs.push(result.outputDir);
         
         // Executar push se solicitado
         if (doPush) {
+          logger.highlight(`Executando push para projeto ${projectKey}`, { bold: true });
+
           claspHelper.pushProject(result.outputDir);
         }
+      }
+      else {
+        logger.warn(`Projeto ${projectKey} não processado`);
       }
     }
   }
   
-  console.log(`Processados ${outputDirs.length} projetos para ambiente de ${environment === 'dev' ? 'desenvolvimento' : 'produção'}`);
+  logger.success(`Processados ${outputDirs.length} projetos para ambiente de ${environment === 'dev' ? 'desenvolvimento' : 'produção'}`);
   return outputDirs;
 }
 
@@ -101,11 +124,18 @@ function processNestedProject(config, projectKey, environment, nestedStructure, 
   const availableValues = getAvailableValuesForKey(config, environment, projectKey, firstLevelKey);
   
   if (availableValues.length === 0) {
-    console.log(`Nenhum valor encontrado para a chave ${firstLevelKey} no projeto ${projectKey}`);
+    logger.warn(`Nenhum valor encontrado para a chave ${firstLevelKey} no projeto ${projectKey}`);
     return;
   }
   
-  console.log(`Processando projeto ${projectKey} para ${availableValues.length} valores de ${firstLevelKey}...`);
+  let nestedKeys = '';
+  for (const key in nestedStructure) {
+    const nestedStructureKeyAndValues = `${nestedStructure[key].key}=${getAvailableValuesForKey(config, environment, projectKey, nestedStructure[key].key).join(`, ${nestedStructure[key].key}=`)}`;
+    logger.verbose(nestedStructureKeyAndValues);
+    nestedKeys += `${key > 0 ? ', ' : ''}${nestedStructureKeyAndValues}`;
+  }
+  // logger.debug(`Processando projeto ${projectKey} com a chave ${firstLevelKey}=${availableValues.join(', ')}...`);
+  logger.info(`Processando projeto ${projectKey} com as chaves ${nestedKeys}...`);
   
   for (const value of availableValues) {
     const levelFilters = { ...filters, [firstLevelKey]: value };
@@ -126,22 +156,50 @@ function processNestedProject(config, projectKey, environment, nestedStructure, 
  * @param {Object} paths Caminhos dos diretórios
  */
 function processNestedLevel(config, projectKey, environment, nestedStructure, level, filters, doPush, outputDirs, paths) {
+  logger.debug(`Processando nível ${level} do projeto ${projectKey} com filtros: ${JSON.stringify(filters)}`);
+  logger.verbose(`Estrutura aninhada: ${JSON.stringify(nestedStructure)}`);
+  logger.verbose(`Filtros acumulados: ${JSON.stringify(filters)}`);
+  logger.verbose(`Nível atual: ${level}`);
+  // logger.verbose(`Diretórios de saída: ${JSON.stringify(outputDirs)}`)
+  logger.verbose(`Diretório de saída: ${outputDirs[outputDirs.length - 1]}`)
+
   // Se chegamos ao final da estrutura aninhada, processar o projeto
   if (level >= nestedStructure.length) {
+    logger.debug(`Processando projeto ${projectKey} com filtros: ${JSON.stringify(filters)}`);
+
     const result = templateHelper.processProjectTemplates(config, projectKey, environment, filters, paths);
+    
+    logger.verbose(`Resultados do processamento: ${JSON.stringify(result)}`);
+    
     if (result && result.outputDir) {
       outputDirs.push(result.outputDir);
+
+      let projectIdentifier = projectKey;
+      for (const key in filters) {
+        projectIdentifier += `-${filters[key]}`;
+      }
+      // logger.success(`Projeto ${projectIdentifier} em ${result.outputDir} processado com sucesso`);
+      logger.success(`Projeto ${projectIdentifier} processado com sucesso`);
+      logger.debug(`Diretório de saída: ${result.outputDir}`);
       
       // Executar push se solicitado
       if (doPush) {
+        logger.highlight(`Executando push para projeto ${projectIdentifier}`, { bold: true });
+        
         claspHelper.pushProject(result.outputDir);
       }
     }
+    else {
+      logger.warn(`Projeto ${projectKey} não processado`);
+    }
+    
     return;
   }
   
   const currentLevel = nestedStructure[level];
   const currentKey = currentLevel.key;
+  
+  // logger.verbose(`Processando nível ${level} (${currentKey})`);
   
   // Se já temos um filtro para este nível, processar o próximo nível
   if (filters[currentKey]) {
@@ -153,11 +211,11 @@ function processNestedLevel(config, projectKey, environment, nestedStructure, le
   const availableValues = getAvailableValuesForKey(config, environment, projectKey, currentKey, filters);
   
   if (availableValues.length === 0) {
-    console.log(`Nenhum valor encontrado para a chave ${currentKey} no projeto ${projectKey}`);
+    logger.warn(`Nenhum valor encontrado para a chave ${currentKey} no projeto ${projectKey}`);
     return;
   }
   
-  console.log(`Processando nível ${level} (${currentKey}) com ${availableValues.length} valores...`);
+  logger.debug(`Processando nível ${level} (${currentKey}) com ${availableValues.length} valores...`);
   
   for (const value of availableValues) {
     const levelFilters = { ...filters, [currentKey]: value };
@@ -235,6 +293,7 @@ function main() {
   let configFile = configHelper.DEFAULT_CONFIG_FILE;
   let doPush = false;
   let doClean = false;
+  let logLevel = null;
   const filters = {};
 
   // Processar argumentos
@@ -247,6 +306,8 @@ function main() {
       environment = arg.split('=')[1];
     } else if (arg.startsWith('--config=')) {
       configFile = arg.split('=')[1];
+    } else if (arg.startsWith('--log-level=')) {
+      logLevel = arg.split('=')[1].toUpperCase();
     } else if (arg === '--push') {
       doPush = true;
     } else if (arg === '--clean') {
@@ -254,6 +315,17 @@ function main() {
     } else if (arg.includes('=')) {
       const [key, value] = arg.replace('--', '').split('=');
       filters[key] = value;
+    }
+  }
+  
+  // Configurar o nível de log se especificado
+  if (logLevel) {
+    const levels = logger.levels;
+    if (levels[logLevel] !== undefined) {
+      logger.configure({ level: levels[logLevel] });
+      logger.debug(`Nível de log configurado para: ${logLevel}`);
+    } else {
+      logger.warn(`Nível de log inválido: ${logLevel}. Usando padrão.`);
     }
   }
   
@@ -280,36 +352,38 @@ function main() {
   
   // Se o build falhou, interromper o deploy
   if (!buildSuccess) {
-    console.error('Build falhou, interrompendo o deploy.');
+    logger.error('Build falhou, interrompendo o deploy.');
     process.exit(1);
   }
 
   // Se não foi especificado um ambiente, processar ambos
   if (!environment) {
-    console.log('Nenhum ambiente especificado, processando ambos (dev e prod)');
+    logger.important('Nenhum ambiente especificado, processando ambos (dev e prod)');
     
     // Processar ambiente de desenvolvimento
     const devOutputDirs = processAllProjects(config, 'dev', filters, doPush);
-    console.log(`Processados ${devOutputDirs.length} projetos para ambiente de desenvolvimento`);
+    logger.debug(`Processados ${devOutputDirs.length} projetos para ambiente de desenvolvimento`);
     
     // Processar ambiente de produção
     const prodOutputDirs = processAllProjects(config, 'prod', filters, doPush);
-    console.log(`Processados ${prodOutputDirs.length} projetos para ambiente de produção`);
+    logger.debug(`Processados ${prodOutputDirs.length} projetos para ambiente de produção`);
   } else {
     // Validar o ambiente
     if (environment !== 'dev' && environment !== 'prod') {
-      console.warn(`Ambiente "${environment}" não reconhecido. Usando "dev" como padrão.`);
+      logger.warn(`Ambiente "${environment}" não reconhecido. Usando "dev" como padrão.`);
       environment = 'dev';
     }
     
     // Se um projeto específico foi solicitado
     if (projectKey) {
-      console.log(`Processando projeto específico: ${projectKey} (${environment})`);
-      console.log(`Filtros adicionais: ${JSON.stringify(filters)}`);
+      logger.highlight(`Processando projeto específico: ${projectKey} (${environment})`, { bold: true });
+      logger.debug(`Filtros adicionais: ${JSON.stringify(filters)}`);
       
       // Processar templates para o projeto específico
       const result = templateHelper.processProjectTemplates(config, projectKey, environment, filters);
       
+      logger.verbose(`Resultados do processamento: ${JSON.stringify(result)}`);
+
       // Executar push se solicitado
       if (doPush && result && result.outputDir) {
         claspHelper.pushProject(result.outputDir);
@@ -317,11 +391,11 @@ function main() {
     } else {
       // Processar todos os projetos para o ambiente especificado
       const outputDirs = processAllProjects(config, environment, filters, doPush);
-      console.log(`Processados ${outputDirs.length} projetos para ambiente ${environment}`);
+      logger.debug(`Processados ${outputDirs.length} projetos para ambiente ${environment}`);
     }
   }
   
-  console.log('Deploy concluído com sucesso!');
+  logger.success('Deploy concluído com sucesso!', { bold: true });
 }
 
 // Executar a função principal

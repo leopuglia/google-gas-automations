@@ -8,6 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
+import logger from './logger.js';
 
 // Caminho padrão para o arquivo de configuração
 const DEFAULT_CONFIG_FILE = 'config.yml';
@@ -31,13 +32,17 @@ export function loadConfig(configFile = DEFAULT_CONFIG_FILE, verbose = true) {
   try {
     const configPath = path.resolve(configFile);
     if (verbose) {
-      console.log(`Carregando configuração de: ${configPath}`);
+      logger.info(`Carregando configuração de: ${configFile}`);
     }
     const fileContents = fs.readFileSync(configPath, 'utf8');
     const config = yaml.load(fileContents);
+
+    // logger.verbose(`Configuração carregada: ${JSON.stringify(config)}`);
+    logger.verbose(`Configuração carregada: ${JSON.stringify(config, null, 2)}`);
+
     return config;
   } catch (error) {
-    console.error(`Erro ao carregar configuração: ${error.message}`);
+    logger.error(`Erro ao carregar configuração: ${error.message}`, error);
     process.exit(1);
   }
 }
@@ -62,12 +67,12 @@ export function initializePaths(config, verbose = true) {
   };
   
   if (verbose) {
-    console.log('Caminhos inicializados:');
-    console.log(` - SRC_DIR: ${paths.src}`);
-    console.log(` - BUILD_DIR: ${paths.build}`);
-    console.log(` - DIST_DIR: ${paths.dist}`);
-    console.log(` - TEMPLATES_DIR: ${paths.templates}`);
-    console.log(` - SCRIPTS_DIR: ${paths.scripts}`);
+    logger.info('Inicializando caminhos de diretórios...');
+    logger.debug(` - SRC_DIR: ${paths.src}`);
+    logger.debug(` - BUILD_DIR: ${paths.build}`);
+    logger.debug(` - DIST_DIR: ${paths.dist}`);
+    logger.debug(` - TEMPLATES_DIR: ${paths.templates}`);
+    logger.debug(` - SCRIPTS_DIR: ${paths.scripts}`);
   }
   
   return paths;

@@ -6,6 +6,7 @@ import terser from '@rollup/plugin-terser';
 
 // Importar o módulo de carregamento de configuração
 import * as configHelper from './scripts/config-helper.js';
+import logger from './scripts/logger.js';
 
 /** Plugin para remover todas as linhas de import estático */
 function removeImports() {
@@ -153,9 +154,9 @@ const config = configHelper.loadConfig();
 const rollupConfig = generateRollupConfig(config);
 
 // Exibir informações sobre a configuração gerada
-console.log(`Configuração do Rollup gerada para ${rollupConfig.length} projetos:`);
+logger.info(`Configuração do Rollup gerada para ${rollupConfig.length} projetos:`);
 rollupConfig.forEach((config, index) => {
-  console.log(`- Projeto ${index + 1}: ${Object.keys(config.input).join(', ')}`);
+  logger.info(`  Projeto ${index + 1}: ${Object.keys(config.input).join(', ')}`);
 });
 
 export default rollupConfig;

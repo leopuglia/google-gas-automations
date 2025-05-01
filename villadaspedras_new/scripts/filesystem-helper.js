@@ -2,6 +2,7 @@ import fs from 'fs';
 import fsExtra from 'fs-extra';
 import { execSync } from 'child_process';
 import path from 'path';
+import logger from './logger.js';
 
 /**
  * Limpa os diretórios de build e/ou dist
@@ -22,7 +23,7 @@ export function cleanDirectories(buildDir, distDir, cleanBuild = true, cleanDist
   };
   
   if (cleanBuild) {
-    console.log(`Limpando diretório de build: ${buildDir}`);
+    logger.info(`Limpando diretório de build: ${buildDir}`);
     
     // Verificar se o diretório existe antes de limpar
     if (fs.existsSync(buildDir)) {
@@ -33,19 +34,19 @@ export function cleanDirectories(buildDir, distDir, cleanBuild = true, cleanDist
       const isEmptyAfter = isDirEmpty(buildDir);
       
       if (isEmptyAfter) {
-        console.log(`Diretório de build limpo com sucesso: ${buildDir}`);
+        logger.info(`Diretório de build limpo com sucesso: ${buildDir}`);
       } else {
-        console.warn(`Aviso: O diretório de build pode não ter sido completamente limpo: ${buildDir}`);
+        logger.warn(`O diretório de build pode não ter sido completamente limpo: ${buildDir}`);
       }
     } else {
       // Criar o diretório se não existir
       fsExtra.ensureDirSync(buildDir);
-      console.log(`Diretório de build criado: ${buildDir}`);
+      logger.info(`Diretório de build criado: ${buildDir}`);
     }
   }
   
   if (cleanDist) {
-    console.log(`Limpando diretório de dist: ${distDir}`);
+    logger.info(`Limpando diretório de dist: ${distDir}`);
     
     // Verificar se o diretório existe antes de limpar
     if (fs.existsSync(distDir)) {
@@ -56,14 +57,14 @@ export function cleanDirectories(buildDir, distDir, cleanBuild = true, cleanDist
       const isEmptyAfter = isDirEmpty(distDir);
       
       if (isEmptyAfter) {
-        console.log(`Diretório de dist limpo com sucesso: ${distDir}`);
+        logger.info(`Diretório de dist limpo com sucesso: ${distDir}`);
       } else {
-        console.warn(`Aviso: O diretório de dist pode não ter sido completamente limpo: ${distDir}`);
+        logger.warn(`O diretório de dist pode não ter sido completamente limpo: ${distDir}`);
       }
     } else {
       // Criar o diretório se não existir
       fsExtra.ensureDirSync(distDir);
-      console.log(`Diretório de dist criado: ${distDir}`);
+      logger.info(`Diretório de dist criado: ${distDir}`);
     }
   }
 }
@@ -82,14 +83,18 @@ export function ensureBuildBeforeDeploy(config, paths, projectKey = null, forceB
   const projectKeys = projectKey ? [projectKey] : Object.keys(projects);
   let needsBuild = forceBuild;
   
+  logger.info(`Verificando diretórios de build para os projetos: ${projectKeys.join(', ')}`);
+  
   // Verificar se os diretórios de build existem para os projetos especificados
   for (const key of projectKeys) {
     const projectConfig = projects[key] || {};
     const srcDir = projectConfig.src || key;
     const buildDir = path.join(paths.build, srcDir);
+
+    logger.debug(`Verificando diretório de build para o projeto ${key}: ${buildDir}`);
     
     if (!fs.existsSync(buildDir) || forceBuild) {
-      console.log(`Diretório de build não encontrado para o projeto ${key}: ${buildDir}`);
+      logger.debug(`Diretório de build não encontrado para o projeto ${key}: ${buildDir}`);
       needsBuild = true;
       break;
     }
@@ -97,7 +102,7 @@ export function ensureBuildBeforeDeploy(config, paths, projectKey = null, forceB
   
   // Se algum diretório de build não existir, executar o build
   if (needsBuild) {
-    console.log('Executando build antes do deploy...');
+    logger.info('Executando build antes do deploy...');
     try {
       // Determinar o comando de build
       const buildCmd = 'pnpm run build';
@@ -107,17 +112,17 @@ export function ensureBuildBeforeDeploy(config, paths, projectKey = null, forceB
       }
       
       // Executar o comando de build
-      console.log(`Executando: ${buildCmd}`);
+      logger.info(`Executando: ${buildCmd}`);
       execSync(buildCmd, { stdio: 'inherit', cwd: path.resolve(paths.scripts, '..') });
-      console.log('Build concluído com sucesso!');
+      logger.info('Build concluído com sucesso!');
       return true;
     } catch (error) {
-      console.error('Erro ao executar o build:', error.message);
-      console.error('Verifique se o comando de build está configurado corretamente no package.json');
+      logger.error('Erro ao executar o build: ' + error.message, error);
+      logger.error('Verifique se o comando de build está configurado corretamente no package.json');
       return false;
     }
   }
   
-  console.log('Diretórios de build encontrados, continuando com o deploy...');
+  logger.info('Diretórios de build encontrados, continuando com o deploy...');
   return true;
 }

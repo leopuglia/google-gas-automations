@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import logger from './logger.js';
 
 /**
  * Executa o comando clasp push para um projeto
@@ -6,12 +7,12 @@ import { execSync } from 'child_process';
  */
 export function pushProject(projectDir) {
   try {
-    console.log(`Executando clasp push para: ${projectDir}`);
+    logger.info(`Executando clasp push para: ${projectDir}`);
     execSync('clasp push', { cwd: projectDir, stdio: 'inherit' });
-    console.log(`Push concluído com sucesso para: ${projectDir}`);
+    logger.info(`Push concluído com sucesso para: ${projectDir}`);
     return true;
   } catch (error) {
-    console.error(`Erro ao executar clasp push para ${projectDir}: ${error.message}`);
+    logger.error(`Erro ao executar clasp push para ${projectDir}: ${error.message}`, error);
     return false;
   }
 }

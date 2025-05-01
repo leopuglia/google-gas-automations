@@ -2,6 +2,7 @@ import fs from 'fs';
 import fsExtra from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
+import logger from './logger.js';
 
 /**
  * Processa um template com Handlebars
@@ -12,7 +13,7 @@ import path from 'path';
 function processTemplate(templatePath, outputPath, context) {
   try {
     if (!fs.existsSync(templatePath)) {
-      console.error(`Template não encontrado: ${templatePath}`);
+      logger.error(`Template não encontrado: ${templatePath}`);
       return;
     }
 
@@ -43,9 +44,9 @@ function processTemplate(templatePath, outputPath, context) {
     fsExtra.ensureDirSync(path.dirname(outputPath));
 
     fs.writeFileSync(outputPath, result);
-    console.log(`Template processado: ${outputPath}`);
+    logger.verbose(`Template processado em ${outputPath}`);
   } catch (error) {
-    console.error(`Erro ao processar template ${templatePath}: ${error.message}`);
+    logger.error(`Erro ao processar template ${templatePath}: ${error.message}`, error);
   }
 }
 /**
@@ -59,6 +60,8 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
   try {
     const projectConfig = config.projects[projectKey];
     if (!projectConfig) {
+      logger.error(`Projeto "${projectKey}" não encontrado na configuração.`);
+      
       throw new Error(`Projeto "${projectKey}" não encontrado na configuração.`);
     }
 
@@ -84,18 +87,18 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
     else {
       // Se não é o ambiente padrão (dev), retornar null
       if (environment !== 'dev') {
-        console.warn(`Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Pulando.`);
+        logger.warn(`Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Pulando.`);
         return null;
       }
       // Para o ambiente padrão, usar um objeto vazio
-      console.warn(`Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Usando configurações padrão.`);
+      logger.warn(`Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Usando configurações padrão.`);
       envConfig = {};
     }
 
     // Verificar a estrutura do projeto
     const projectStructure = config.defaults['projects-structure']?.[projectKey];
     if (!projectStructure) {
-      console.warn(`Estrutura do projeto "${projectKey}" não encontrada na configuração. Usando estrutura padrão.`);
+      logger.warn(`Estrutura do projeto "${projectKey}" não encontrada na configuração. Usando estrutura padrão.`);
     }
 
     // Processar estrutura aninhada se existir
@@ -199,7 +202,8 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
       main_file: mainFile,
     };
 
-    console.log('Contexto para substituição:', JSON.stringify(context, null, 2));
+    // logger.verbose('Contexto para substituição: ' + JSON.stringify(context, null, 2));
+    // logger.verbose('Contexto para substituição: ' + JSON.stringify(context));
 
     // Verificar se existem templates específicos no nestedConfig
     const templatesParaProcessar = new Map();
@@ -280,7 +284,7 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
       }
 
       const templatePath = path.join(config.defaults.paths.templates, templateFileName);
-      console.log(`Processando template: ${templatePath} -> ${destinationFileName}`);
+      logger.debug(`Processando template ${templatePath} -> ${destinationFileName}`);
 
       // Criar caminho de saída com pasta separada para o ambiente
       const outputDir = path.join(
@@ -313,24 +317,24 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
 
       // Verificar se o diretório existe
       if (!fs.existsSync(srcDir)) {
-        console.warn(`Diretório de origem não encontrado: ${srcDir}`);
-        console.warn('Tentando alternativas...');
+        logger.warn(`Diretório de origem não encontrado: ${srcDir}`);
+        logger.warn('Tentando alternativas...');
 
         // Tentar com o nome no src do projeto
         const srcAltDir = path.join(config.defaults.paths.build, projectConfig.src || projectKey);
         if (fs.existsSync(srcAltDir)) {
           srcDir = srcAltDir;
-          console.log(`Usando diretório alternativo: ${srcDir}`);
+          logger.info(`Usando diretório alternativo: ${srcDir}`);
         } else {
-          console.error(`Não foi possível encontrar um diretório de origem válido para o projeto ${projectKey}`);
-          console.error(`Diretórios verificados: ${srcDir}, ${srcAltDir}`);
-          console.error('Execute o comando "pnpm run build" antes de fazer o deploy');
+          logger.error(`Não foi possível encontrar um diretório de origem válido para o projeto ${projectKey}`);
+          logger.error(`Diretórios verificados: ${srcDir}, ${srcAltDir}`);
+          logger.error('Execute o comando "pnpm run build" antes de fazer o deploy');
         }
       }
 
-      console.log(`Copiando arquivos de ${srcDir} para ${outputDir}`);
+      logger.debug(`Copiando arquivos de ${srcDir} para ${outputDir}`);
       fsExtra.copySync(srcDir, outputDir);
-      console.log(`Arquivos copiados de ${srcDir} para ${outputDir}`);
+      logger.verbose(`Arquivos copiados de ${srcDir} para ${outputDir}`);
     }
 
     return {
@@ -341,7 +345,7 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
       )
     };
   } catch (error) {
-    console.error(`Erro ao processar templates para o projeto ${projectKey}: ${error.message}`);
+    logger.error(`Erro ao processar templates para o projeto ${projectKey}: ${error.message}`, error);
     return null;
   }
 }
