@@ -1,16 +1,55 @@
 {
   "compilerOptions": {
+    /* Configurações básicas */
     "target": "ES2019",
     "module": "ESNext",
     "moduleResolution": "node",
-    "lib": ["ESNext"],
-    // "strict": true,
+    "lib": ["ESNext", "DOM"],
+    "outDir": "build",
+    "rootDir": "src",
+    
+    /* Configurações de compilação */
+    "declaration": true,
+    "sourceMap": true,
+    "removeComments": false,
+    "allowJs": true,
+    "checkJs": false,
+    "resolveJsonModule": true,
+    
+    /* Configurações de tipo */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    
+    /* Verificações adicionais */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "build",
-    "rootDir": "src"
+    
+    /* Configurações experimentais */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "tests"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist",
+    "tests",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }

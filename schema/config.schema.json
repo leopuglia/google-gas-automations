@@ -1,0 +1,354 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Configuração do GAS Builder",
+  "description": "Schema para validação do arquivo de configuração YAML do sistema de build para Google Apps Script",
+  "type": "object",
+  "required": ["defaults", "projects"],
+  "properties": {
+    "defaults": {
+      "type": "object",
+      "description": "Configurações padrão para todos os projetos",
+      "required": ["templates", "paths", "rollup"],
+      "properties": {
+        "templates": {
+          "type": "object",
+          "description": "Templates padrão para todos os projetos",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "destination-file": {
+                "type": "string",
+                "description": "Nome do arquivo de destino"
+              },
+              "keys": {
+                "type": "array",
+                "description": "Chaves a serem substituídas no template",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": ["destination-file"]
+          }
+        },
+        "paths": {
+          "type": "object",
+          "description": "Configurações de caminhos",
+          "properties": {
+            "src": {
+              "type": "string",
+              "description": "Diretório de código-fonte"
+            },
+            "build": {
+              "type": "string",
+              "description": "Diretório de build"
+            },
+            "dist": {
+              "type": "string",
+              "description": "Diretório de distribuição"
+            },
+            "templates": {
+              "type": "string",
+              "description": "Diretório de templates"
+            },
+            "scripts": {
+              "type": "string",
+              "description": "Diretório de scripts"
+            }
+          },
+          "required": ["src", "build", "dist", "templates", "scripts"]
+        },
+        "rollup": {
+          "type": "object",
+          "description": "Configurações para o Rollup",
+          "properties": {
+            "output": {
+              "type": "object",
+              "description": "Configurações de saída padrão",
+              "properties": {
+                "format": {
+                  "type": "string",
+                  "description": "Formato de saída",
+                  "enum": ["esm", "cjs", "iife", "umd"]
+                },
+                "inlineDynamicImports": {
+                  "type": "boolean",
+                  "description": "Inline dynamic imports"
+                }
+              }
+            },
+            "plugins": {
+              "type": "array",
+              "description": "Plugins padrão",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nome do plugin"
+                  },
+                  "config": {
+                    "type": "object",
+                    "description": "Configuração do plugin"
+                  }
+                },
+                "required": ["name", "config"]
+              }
+            }
+          }
+        },
+        "projects-structure": {
+          "type": "object",
+          "description": "Estrutura de projetos",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "keys": {
+                "type": ["object", "null"],
+                "description": "Chaves para o projeto"
+              },
+              "nested": {
+                "type": "array",
+                "description": "Estrutura aninhada do projeto",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "description": "Chave para a estrutura aninhada"
+                    }
+                  },
+                  "required": ["key"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "projects": {
+      "type": "object",
+      "description": "Configurações dos projetos",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "src": {
+            "type": "string",
+            "description": "Diretório de código-fonte do projeto"
+          },
+          "output": {
+            "type": "string",
+            "description": "Nome do diretório de saída"
+          },
+          "outputTemplate": {
+            "type": "string",
+            "description": "Template para o diretório de saída"
+          },
+          "nameTemplate": {
+            "type": "string",
+            "description": "Template para o nome do projeto"
+          },
+          "nested": {
+            "type": "array",
+            "description": "Estrutura aninhada do projeto",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "description": "Chave para a estrutura aninhada"
+                }
+              },
+              "required": ["key"]
+            }
+          },
+          "mapping": {
+            "type": "object",
+            "description": "Mapeamento de chaves",
+            "properties": {
+              "keys-template": {
+                "type": "array",
+                "description": "Templates para chaves",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "description": "Chave a ser mapeada"
+                    },
+                    "nameTemplate": {
+                      "type": "object",
+                      "description": "Template para o nome",
+                      "properties": {
+                        "substitutions": {
+                          "type": "array",
+                          "description": "Substituições a serem aplicadas",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": ["key", "nameTemplate"]
+                }
+              }
+            }
+          },
+          "dependencies": {
+            "type": "array",
+            "description": "Dependências do projeto",
+            "items": {
+              "type": "object",
+              "properties": {
+                "userSymbol": {
+                  "type": "string",
+                  "description": "Símbolo de usuário para a dependência"
+                },
+                "version": {
+                  "type": "string",
+                  "description": "Versão da dependência"
+                },
+                "serviceId": {
+                  "type": "string",
+                  "description": "ID do serviço"
+                }
+              },
+              "required": ["userSymbol", "version", "serviceId"]
+            }
+          },
+          "sheetsMacros": {
+            "type": "array",
+            "description": "Macros para planilhas",
+            "items": {
+              "type": "object",
+              "properties": {
+                "menuName": {
+                  "type": "string",
+                  "description": "Nome do menu"
+                },
+                "functionName": {
+                  "type": "string",
+                  "description": "Nome da função"
+                }
+              },
+              "required": ["menuName", "functionName"]
+            }
+          },
+          "docsMacros": {
+            "type": "array",
+            "description": "Macros para documentos",
+            "items": {
+              "type": "object",
+              "properties": {
+                "menuName": {
+                  "type": "string",
+                  "description": "Nome do menu"
+                },
+                "functionName": {
+                  "type": "string",
+                  "description": "Nome da função"
+                }
+              },
+              "required": ["menuName", "functionName"]
+            }
+          },
+          "formsMacros": {
+            "type": "array",
+            "description": "Macros para formulários",
+            "items": {
+              "type": "object",
+              "properties": {
+                "menuName": {
+                  "type": "string",
+                  "description": "Nome do menu"
+                },
+                "functionName": {
+                  "type": "string",
+                  "description": "Nome da função"
+                }
+              },
+              "required": ["menuName", "functionName"]
+            }
+          },
+          "slidesMacros": {
+            "type": "array",
+            "description": "Macros para apresentações",
+            "items": {
+              "type": "object",
+              "properties": {
+                "menuName": {
+                  "type": "string",
+                  "description": "Nome do menu"
+                },
+                "functionName": {
+                  "type": "string",
+                  "description": "Nome da função"
+                }
+              },
+              "required": ["menuName", "functionName"]
+            }
+          },
+          "rollup": {
+            "type": "object",
+            "description": "Configurações específicas para o Rollup",
+            "properties": {
+              "main": {
+                "type": "string",
+                "description": "Arquivo principal de entrada"
+              },
+              "name": {
+                "type": "string",
+                "description": "Nome do pacote de saída"
+              },
+              "common-libs": {
+                "type": "array",
+                "description": "Bibliotecas comuns a serem incluídas",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Nome da biblioteca"
+                    },
+                    "path": {
+                      "type": "string",
+                      "description": "Caminho para a biblioteca"
+                    }
+                  },
+                  "required": ["name", "path"]
+                }
+              },
+              "project-libs": {
+                "type": "array",
+                "description": "Bibliotecas específicas do projeto"
+              },
+              "externals": {
+                "type": "array",
+                "description": "Bibliotecas externas (não empacotadas)"
+              }
+            },
+            "required": ["main", "name"]
+          },
+          "environments": {
+            "type": "object",
+            "description": "Ambientes do projeto",
+            "properties": {
+              "dev": {
+                "type": "object",
+                "description": "Ambiente de desenvolvimento",
+                "additionalProperties": true
+              },
+              "prod": {
+                "type": "object",
+                "description": "Ambiente de produção",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "required": ["src", "output", "outputTemplate", "nameTemplate"]
+      }
+    }
+  }
+}

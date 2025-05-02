@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from '@jest/globals';
-import { formatarData, formatarMoeda, validarEmail } from '../src/utils';
+import { formatarData, formatarMoeda, validarEmail } from '../src/commons/utils';
 
 describe('Funções Utilitárias', () => {
   describe('formatarData', () => {
@@ -23,11 +23,11 @@ describe('Funções Utilitárias', () => {
     });
 
     it('null, undefined e string => lançar exceção', () => {
-      // @ts-ignore - Testando comportamento com valor inválido
+      // @ts-expect-error - Testando comportamento com valor inválido
       expect(() => formatarData(null)).toThrow();
-      // @ts-ignore - Testando comportamento com valor inválido
+      // @ts-expect-error - Testando comportamento com valor inválido
       expect(() => formatarData(undefined)).toThrow();
-      // @ts-ignore - Testando comportamento com valor inválido
+      // @ts-expect-error - Testando comportamento com valor inválido
       expect(() => formatarData('não é uma data')).toThrow();
     });
   });
@@ -36,12 +36,12 @@ describe('Funções Utilitárias', () => {
     const padraoRegex = /R\$\s\d{1,3}(\.\d{3})*,\d{2}/;
     // Casos básicos usando test.each
     test.each([
-      ["R$ 1.234,56", 1234.56],      // Valor normal
-      ["R$ 0,00", 0],                // Zero
-      ["R$ 1,00", 1],                // Valor inteiro
-      ["R$ 0,50", 0.5],              // Valor decimal
-      ["R$ 1.000.000,00", 1000000],  // Valor grande com separadores
-      ["R$ 0,01", 0.01],             // Menor valor possível (um centavo)
+      ['R$ 1.234,56', 1234.56],      // Valor normal
+      ['R$ 0,00', 0],                // Zero
+      ['R$ 1,00', 1],                // Valor inteiro
+      ['R$ 0,50', 0.5],              // Valor decimal
+      ['R$ 1.000.000,00', 1000000],  // Valor grande com separadores
+      ['R$ 0,01', 0.01],             // Menor valor possível (um centavo)
     ])('obter %s <= de %s', (esperado, valor) => {
       expect(esperado).toMatch(padraoRegex);
       expect(formatarMoeda(valor)).toMatch(padraoRegex);
@@ -49,9 +49,9 @@ describe('Funções Utilitárias', () => {
 
     // Testes de borda
     test.each([
-      ["-R$ 1.234,56", -1234.56],
-      ["R$ 1.234,57", 1234.567],
-      ["R$ 1.234,56", 1234.564],
+      ['-R$ 1.234,56', -1234.56],
+      ['R$ 1.234,57', 1234.567],
+      ['R$ 1.234,56', 1234.564],
     ])('obter %s <= de %s', (esperado, valor) => {
       expect(esperado).toMatch(padraoRegex);
       expect(formatarMoeda(valor)).toMatch(padraoRegex);
@@ -63,11 +63,11 @@ describe('Funções Utilitárias', () => {
     });
 
     it('null, undefined e string => lançar exceção', () => {
-      // @ts-ignore - Testando comportamento com valor inválido
+      // @ts-expect-error - Testando comportamento com valor inválido
       expect(() => formatarMoeda(null)).toThrow();
-      // @ts-ignore - Testando comportamento com valor inválido
+      // @ts-expect-error - Testando comportamento com valor inválido
       expect(() => formatarMoeda(undefined)).toThrow();
-      // @ts-ignore - Testando comportamento com valor inválido
+      // @ts-expect-error - Testando comportamento com valor inválido
       expect(() => formatarMoeda('não é um número')).toThrow();
     });
   });
@@ -102,20 +102,19 @@ describe('Funções Utilitárias', () => {
 
     // Testes de borda
     it('null, undefined e string vazia => lançar exceção', () => {
-      // @ts-ignore - Testando comportamento com valor inválido
+      // @ts-expect-error - Testando comportamento com valor inválido
       expect(() => validarEmail(null)).toThrow();
-      // @ts-ignore - Testando comportamento com valor inválido
+      // @ts-expect-error - Testando comportamento com valor inválido
       expect(() => validarEmail(undefined)).toThrow();
-      // @ts-ignore - Testando comportamento com valor inválido
       expect(() => validarEmail('')).toThrow();
     });
 
     it('tipos não-string => false', () => {
-      // @ts-ignore - Testando comportamento com valor inválido
+      // @ts-expect-error - Testando comportamento com valor inválido
       expect(validarEmail(123)).toBe(false); // número como false
-      // @ts-ignore - Testando comportamento com valor inválido
+      // @ts-expect-error - Testando comportamento com valor inválido
       expect(validarEmail({})).toBe(false); // objeto vazio como false
-      // @ts-ignore - Testando comportamento com valor inválido
+      // @ts-expect-error - Testando comportamento com valor inválido
       expect(validarEmail([])).toBe(false); // array vazio como false
     });
 

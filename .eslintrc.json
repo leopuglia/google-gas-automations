@@ -2,6 +2,7 @@
   "env": {
     "browser": true,
     "es2021": true,
+    "node": true,
     "googleappsscript/googleappsscript": true
   },
   "extends": [
@@ -11,17 +12,55 @@
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 12,
-    "sourceType": "script"
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "project": "./tsconfig.eslint.json"
   },
   "plugins": [
     "@typescript-eslint",
     "googleappsscript"
   ],
   "rules": {
+    // Estilo de código
     "indent": ["error", 2],
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "single"],
-    "semi": ["error", "always"]
-  }
+    "semi": ["error", "always"],
+    "comma-dangle": ["error", "always-multiline"],
+    "eol-last": ["error", "always"],
+    "no-trailing-spaces": "error",
+    "max-len": ["error", { "code": 100, "ignoreComments": true, "ignoreStrings": true }],
+    
+    // Boas práticas
+    "no-console": "warn",
+    "no-unused-vars": "off", // Desativado em favor da regra do TypeScript
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "@typescript-eslint/explicit-function-return-type": ["warn", { "allowExpressions": true }],
+    "@typescript-eslint/no-explicit-any": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["scripts/**/*.js"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    },
+    {
+      "files": ["**/*.test.ts", "**/*.spec.ts"],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "node_modules/",
+    "build/",
+    "dist/",
+    "*.js",
+    "!scripts/build/**/*.js"
+  ]
 }
