@@ -1,0 +1,296 @@
+# Configurações globais
+# Schema: ./schema/config.schema.json
+
+defaults:
+  # Templates padrão para todos os projetos
+  templates:
+    .clasp-template.json:
+      destination-file: .clasp.json
+    .claspignore-template.json:
+      destination-file: .claspignore
+    appsscript-template:
+      destination-file: appsscript.json
+      keys:
+        - timeZone: America/Sao_Paulo
+        - runtimeVersion: V8
+  
+  # Configurações de caminhos
+  paths:
+    src: ./src
+    build: ./build
+    dist: ./dist
+    templates: ./templates
+    scripts: ./scripts
+  
+  # Configurações para o Rollup
+  rollup:
+    # Configurações de saída padrão
+    output:
+      format: esm
+      inlineDynamicImports: false
+    # Plugins padrão
+    plugins:
+      - name: nodeResolve
+        config: {}
+      - name: typescript
+        config:
+          tsconfig: './tsconfig.json'
+      - name: removeImports
+        config: {}
+  
+  # Estrutura de projetos
+  projects-structure:
+    example:
+      keys:
+    salario:
+      nested:
+        - key: year
+    consumo:
+      nested:
+        - key: year
+        - key: pdv
+
+# Configurações dos projetos
+projects:
+  # Projeto de exemplo sem estrutura aninhada
+  example:
+    src: example
+    output: example
+    outputTemplate: example
+    nameTemplate: '{{output}} {{env}}'
+    mapping:
+      keys-template:
+        - key: output
+          nameTemplate:
+            substitutions:
+              - example: Example
+    dependencies: []
+    sheetsMacros: []
+    docsMacros: []
+    formsMacros: []
+    slidesMacros: []
+    # Configurações específicas para o Rollup
+    rollup:
+      # Arquivo principal de entrada
+      main: main.ts
+      # Nome do pacote de saída
+      name: VilladasPedras.Example
+      # Bibliotecas comuns a serem incluidas
+      common-libs: []
+      # Bibliotecas específicas deste projeto
+      project-libs: []
+      # Bibliotecas externas (não empacotadas)
+      externals: []
+    # Ambientes dentro do projeto (nova estrutura recomendada)
+    environments:
+      dev:
+        templates:
+          .clasp-template.json:
+            destination-file: .clasp.json
+            scriptId: 1U4zAb5JdN7Ys0dGe6a140InYiVbF937UU8gHHD905kicBeKuRsleaN6H
+          .claspignore-template.json:
+            destination-file: .claspignore
+
+  # Configuração para planilhas de salário
+  salario:
+    src: planilha-salario
+    output: salario
+    # Template para diretório de saída: ano-salario
+    outputTemplate: '{{year}}-{{output}}'
+    # Estrutura aninhada do projeto
+    nested:
+      - key: year
+    # Template para nome do projeto
+    nameTemplate: 'Macros {{output}} {{year}} {{env}}'
+    mapping:
+      keys-template:
+        - key: output
+          nameTemplate:
+            substitutions:
+              - salario: Salário
+    dependencies:
+      - userSymbol: Drive
+        version: v3
+        serviceId: drive
+    sheetsMacros:
+      - menuName: 1. VIRAR MÊS SALARIO E CONSUMO
+        functionName: virarMesTudo
+      - menuName: 2. VIRAR MÊS SALARIO
+        functionName: virarMesSalario
+      - menuName: 3. VIRAR ANO SALARIO E CONSUMO
+        functionName: virarAnoTudo
+      - menuName: 4. VIRAR ANO SALARIO
+        functionName: virarAnoSalario
+      - menuName: 5. REORDENAR NOMES
+        functionName: reordenarNomes
+      - menuName: LIMPAR CORES
+        functionName: limparCores
+      - menuName: LIMPAR DADOS
+        functionName: limparDados
+      - menuName: BLOQUEAR ALTERAÇÕES
+        functionName: bloquearAlteracoes
+    docsMacros: []
+    formsMacros: []
+    slidesMacros: []
+    # Configurações específicas para o Rollup
+    rollup:
+      # Arquivo principal de entrada
+      main: main.ts
+      # Nome do pacote de saída
+      name: VilladasPedras.Salarios
+      # Bibliotecas comuns a serem incluidas
+      common-libs:
+        - name: utils
+          path: ./src/commons/utils.ts
+      # Bibliotecas específicas deste projeto
+      project-libs: []
+      # Bibliotecas externas (não empacotadas)
+      externals: []
+    # Ambientes dentro do projeto (nova estrutura recomendada)
+    environments:
+      dev:
+        # Configurações para o ano 2024
+        2024:
+          templates:
+            .clasp-template.json:
+              destination-file: .clasp.json
+              scriptId: 1ni6ZUXl1lqfBRik93jEyMI_K7-nWJBGwHPIVAb5Fw-IHZTF1UPfEiBIL
+            .claspignore-template.json:
+              destination-file: .claspignore
+          linkedFileId: 1n1ypLBl5fPO4eClA9uIWUvlwwYTuu2lHAwQBmaFdSkI
+      prod:
+        # Configurações para o ano 2024
+        2024:
+          templates:
+            .clasp-template.json:
+              destination-file: .clasp.json
+              scriptId: 1piXZFH-QithkQm-Q5_S2HVsAZAlURV9iPKvgA_h4icEnNL9cJ0WgtMMJ
+            .claspignore-template.json:
+              destination-file: .claspignore
+          linkedFileId: 1xE0OSx7V6fc5SoDM6L6kJTuj-F3705tkc6XQe-lJUns
+  
+  # Configuração para planilhas de consumo
+  consumo:
+    src: planilha-consumo
+    output: consumo
+    # Template para diretório de saída: ano-pdv-consumo
+    outputTemplate: '{{year}}-{{pdv}}-{{output}}'
+    # Estrutura aninhada do projeto
+    nested:
+      - key: year
+      - key: pdv
+    # Template para nome do projeto
+    nameTemplate: 'Macros {{output}} {{pdv}} {{year}} {{env}}'
+    mapping:
+      keys-template:
+        - key: output
+          nameTemplate:
+            substitutions:
+              - consumo: Consumo
+        - key: pdv
+          nameTemplate:
+            substitutions:
+              - 1-cafeteria: 1.Cafeteria
+              - 2-saara: 2.Saara
+              - 3-castelo: 3.Castelo
+              - 4-stones: 4.Stones
+    dependencies:
+      - userSymbol: Drive
+        version: v3
+        serviceId: drive
+    sheetsMacros:
+      - menuName: 1. VIRAR MÊS CONSUMO
+        functionName: virarMesConsumo
+      - menuName: 2. VIRAR ANO CONSUMO
+        functionName: virarAnoConsumo
+    docsMacros: []
+    formsMacros: []
+    slidesMacros: []
+    # Configurações específicas para o Rollup
+    rollup:
+      # Arquivo principal de entrada
+      main: main.ts
+      # Nome do pacote de saída
+      name: VilladasPedras.Consumo
+      # Bibliotecas comuns a serem incluidas
+      common-libs:
+        - name: utils
+          path: ./src/commons/utils.ts
+      # Bibliotecas específicas deste projeto
+      project-libs: []
+      # Bibliotecas externas (não empacotadas)
+      externals: []
+    # Ambientes dentro do projeto (nova estrutura recomendada)
+    environments:
+      dev:
+        # Configurações para o ano 2024
+        2024:
+          # Configurações para cada PDV
+          1-cafeteria:
+            templates:
+              .clasp-template.json:
+                destination-file: .clasp.json
+                scriptId: 1950SgMmrmWZw6clxlsFZlU6TmBnwRdahBh7entPoVAteqFta_iNNZMy-
+              .claspignore-template.json:
+                destination-file: .claspignore
+            linkedFileId: 15mSmurGhqrG6o1t4vr2aLPOHN2HJ_Y6SK3od-2v0CbI
+          2-saara:
+            templates:
+              .clasp-template.json:
+                destination-file: .clasp.json
+                scriptId: 1j2qOwS6Iehduk1IqwckujJmX-nV9AIiOU0yik-f4ja5oIcXHQNnsZMSJ
+              .claspignore-template.json:
+                destination-file: .claspignore
+            linkedFileId: 1o0SdfBj15wgp4VB3ajwrrChwiU6cq2NEgkBsTjFZAmk
+          3-castelo:
+            templates:
+              .clasp-template.json:
+                destination-file: .clasp.json
+                scriptId: 1weezYUwBRbpriYYtaAetmkUdPQcNJUz_Q8G1e3qoZmH5UdRMK5m0c4Yh
+              .claspignore-template.json:
+                destination-file: .claspignore
+            linkedFileId: 1tCBoBkFnbjwHKiCN6TiLpwO_X9Z0Z7WKd9y7cz_2yIM
+          4-stones:
+            templates:
+              .clasp-template.json:
+                destination-file: .clasp.json
+                scriptId: 1x-UClZ5PEuUYbwrcM2c7GQxT3atTXZRz3hbTT-nyCo62JnUBeKlFZJUF
+              .claspignore-template.json:
+                destination-file: .claspignore
+            linkedFileId: 1hUKBaJBS5CuCi3AKnyCuLrk_RSzEKWHC3AST4FVJCdk
+      prod:
+        # Configurações para o ano 2024
+        2024:
+          # Configurações para cada PDV
+          1-cafeteria:
+            templates:
+              .clasp-template.json:
+                destination-file: .clasp.json
+                scriptId: 11vi0dyEeT43B9Gzprc_FoyqZfKAt_SpmPERsF0MpMG-9tOMWT_YkDa1p
+              .claspignore-template.json:
+                destination-file: .claspignore
+            linkedFileId: 1DVwbcihxArqQC1xXcZN4RVkdzlco270ikI5tdRY55UI
+          2-saara:
+            templates:
+              .clasp-template.json:
+                destination-file: .clasp.json
+                scriptId: 1hXR1oaQdUJTNgYHS6cWrd1_F5Z-cV7U1I1tz4CHrfatkIFVmzW9N145W
+              .claspignore-template.json:
+                destination-file: .claspignore
+            linkedFileId: 1FRgOyMG4LmyNcDydBOsd_fpolPHV9VXOkBSHrSx6j4k
+          3-castelo:
+            templates:
+              .clasp-template.json:
+                destination-file: .clasp.json
+                scriptId: 1JmMj09mr2XZCoL04I5w9Bqkwd9-Vy3YtwRALiy-w7ItHQeC2lxg7PyGP
+              .claspignore-template.json:
+                destination-file: .claspignore
+            linkedFileId: 1PrfuhwbCdhKN68p-HyYh5anyBWLY3e9FAojzlsRff9U
+          4-stones:
+            templates:
+              .clasp-template.json:
+                destination-file: .clasp.json
+                scriptId: 1nioOhx_pLkusxhjPrchT4S0ToBW93YygTppDWfSZkpbKuZDr22AjRcv9
+              .claspignore-template.json:
+                destination-file: .claspignore
+            linkedFileId: 1G5_yrB3yKdOak0Ia0jsSVoADi1YDGBkeseIEGvu252Y

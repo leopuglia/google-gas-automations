@@ -1,0 +1,46 @@
+{
+  "name": "gas-automations",
+  "version": "0.1.0",
+  "description": "Sistema flexível de build e deploy para projetos Google Apps Script",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest",
+    "watch": "rollup -c -w",
+    "clean": "rimraf dist/* build/*",
+    "deploy": "node scripts/build/deploy.js",
+    "deploy:dev": "node scripts/build/deploy.js --env=dev",
+    "deploy:prod": "node scripts/build/deploy.js --env=prod",
+    "deploy:push": "node scripts/build/deploy.js --push",
+    "deploy:dev:push": "node scripts/build/deploy.js --env=dev --push",
+    "deploy:prod:push": "node scripts/build/deploy.js --env=prod --push",
+    "deploy:clean": "node scripts/build/deploy.js --clean",
+    "deploy:clean:push": "node scripts/build/deploy.js --clean --push"
+  },
+  "devDependencies": {
+    "@google/clasp": "3.0.3-alpha",
+    "@jest/globals": "^29.7.0",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/google-apps-script": "^1.0.97",
+    "@types/jest": "^29.5.14",
+    "@types/luxon": "^3.6.2",
+    "chalk": "^5.4.1",
+    "fs-extra": "^11.3.0",
+    "handlebars": "^4.7.8",
+    "jest": "^29.7.0",
+    "js-yaml": "^4.1.0",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.40.1",
+    "ts-jest": "^29.3.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "luxon": "^3.6.1",
+    "yargs": "^17.7.2"
+  },
+  "packageManager": "pnpm@10.10.0"
+}
