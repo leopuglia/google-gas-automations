@@ -1,8 +1,7 @@
 {
-  "scriptId": "{{SCRIPT_ID}}",
-  "rootDir": "build",
+  "scriptId": "1txMGRTvK71GgQ1Viz-Yzz_2rYHbaDUj2wGw5pZ7GySlWDYnFgYlBxdXE",
+  "rootDir": ".",
   "scriptExtensions": [
-    ".js",
     ".gs"
   ],
   "htmlExtensions": [

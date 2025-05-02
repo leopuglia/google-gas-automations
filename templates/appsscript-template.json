@@ -1,0 +1,50 @@
+{
+  "timeZone": "{{timeZone}}",
+  "runtimeVersion": "{{runtimeVersion}}",
+  "exceptionLogging": "STACKDRIVER",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {{#each dependencies}}
+      {
+        "userSymbol": "{{userSymbol}}",
+        "serviceId": "{{serviceId}}",
+        "version": "{{version}}"
+      }
+      {{/each}}
+    ]
+  },
+  "sheets": {
+    "macros": [
+      {{#each sheetsMacros}}
+      {
+        "menuName": "{{menuName}}",
+        "functionName": "{{functionName}}"
+      }{{#unless @last}},{{/unless}}
+      {{/each}}
+    ],
+    "docs": [
+      {{#each docsMacros}}
+      {
+        "menuName": "{{menuName}}",
+        "functionName": "{{functionName}}"
+      }{{#unless @last}},{{/unless}}
+      {{/each}}
+    ],
+    "forms": [
+      {{#each formsMacros}}
+      {
+        "menuName": "{{menuName}}",
+        "functionName": "{{functionName}}"
+      }{{#unless @last}},{{/unless}}
+      {{/each}}
+    ],
+    "slides": [
+      {{#each slidesMacros}}
+      {
+        "menuName": "{{menuName}}",
+        "functionName": "{{functionName}}"
+      }{{#unless @last}},{{/unless}}
+      {{/each}}
+    ]
+  }
+}
