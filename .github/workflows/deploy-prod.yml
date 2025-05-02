@@ -1,0 +1,48 @@
+name: Deploy para Produção
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+      
+      - name: Install dependencies
+        run: pnpm install
+      
+      - name: Validate
+        run: pnpm run validate
+      
+      - name: Setup Clasp
+        run: |
+          echo "${{ secrets.CLASP_RC }}" > ~/.clasprc.json
+          npm install -g @google/clasp@3.0.3-alpha
+      
+      - name: Build e Deploy
+        run: pnpm run deploy:prod
+        env:
+          CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true

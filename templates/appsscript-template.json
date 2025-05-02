@@ -2,6 +2,16 @@
   "timeZone": "{{timeZone}}",
   "runtimeVersion": "{{runtimeVersion}}",
   "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+  ],
+  "buildInfo": {
+    "version": "{{version}}",
+    "buildDate": "{{buildDate}}",
+    "buildTimestamp": "{{buildTimestamp}}",
+    "environment": "{{ENVIRONMENT}}"
+  },
   "dependencies": {
     "enabledAdvancedServices": [
       {{#each dependencies}}

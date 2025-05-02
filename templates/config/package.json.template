@@ -1,9 +1,15 @@
 {
   "name": "{{PROJECT_NAME}}",
-  "version": "0.1.0",
+  "version": "{{version}}",
   "description": "{{PROJECT_DESCRIPTION}}",
   "author": "Leonardo Puglia",
   "license": "UNLICENSED",
+  "buildInfo": {
+    "version": "{{version}}",
+    "buildDate": "{{buildDate}}",
+    "buildTimestamp": "{{buildTimestamp}}",
+    "environment": "{{ENVIRONMENT}}"
+  },
   "scripts": {
     "build": "rimraf build && tsc && prettier --write 'build/**/*.js'",
     "push": "pnpm build && clasp push",

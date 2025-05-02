@@ -1,11 +1,12 @@
 # Regras do Workspace para Google Apps Scripts Automações
 
 ## Estrutura do Projeto
+
 - Estrutura monorepo com módulos independentes
 - Código fonte em TypeScript na pasta `src/` de cada módulo
 - Código compilado na pasta `build/` de cada módulo
-- Repositório Git inicializado na pasta raiz (/home/leopuglia/linux-projects/google-apps-scripts-automacoes)
-- Primeiro módulo: villadaspedras-lib (biblioteca com funções auxiliares para planilhas)
+- Repositório Git inicializado na pasta raiz (/mnt/wsl/linux-dev/linux-projects/google-gas-automations)
+- Sistema de build baseado em Rollup para projetos Google Apps Script na raiz
 - Arquivos ignorados pelo Git:
   - Pastas de dependências (node_modules/)
   - Arquivos de build compilados (build/)
@@ -15,18 +16,19 @@
   - Arquivos específicos de IDEs (mantendo configurações úteis do VS Code)
   - Arquivos temporários e do sistema operacional
   - Arquivos específicos do Google Apps Script (.clasp.json.bak)
-  - Arquivos compactados (*.tgz, *.zip, etc.)
+  - Arquivos compactados (*.tgz,*.zip, etc.)
 
 ## Configurações Técnicas
-- TypeScript como linguagem principal de desenvolvimento
-- Compilação para JavaScript antes do envio para o Google Apps Script
-- Uso do clasp para sincronização com o Google Apps Script
+
+- TypeScript como linguagem principal de desenvolvimento (versão 5.8+)
+- Compilação para JavaScript usando Rollup antes do envio para o Google Apps Script
+- Uso do clasp (versão 3.0.3-alpha) para sincronização com o Google Apps Script
 - Timezone padrão: America/Sao_Paulo
 - ESLint configurado com:
-  - Plugin para TypeScript
-  - Plugin para Google Apps Script
+  - Plugin para TypeScript (@typescript-eslint/eslint-plugin)
+  - Plugin para Google Apps Script (eslint-plugin-googleappsscript)
   - Regras de formatação consistentes
-  - Integração com Prettier
+  - Integração com Prettier (eslint-config-prettier)
 - Prettier configurado com:
   - Aspas simples
   - Ponto e vírgula obrigatório
@@ -37,6 +39,7 @@
   - Strict mode habilitado
   - Decoradores experimentais habilitados
   - Verificação de casing consistente em nomes de arquivos
+  - Suporte para ESM (ECMAScript Modules)
 - Configuração do clasp:
   - rootDir: build (para enviar apenas código compilado)
   - scriptExtensions: .js, .gs
@@ -44,22 +47,46 @@
   - jsonExtensions: .json
 
 ## Fluxo de Trabalho
+
 - Desenvolvimento em TypeScript na pasta `src/`
 - Compilação automática com `pnpm watch` durante o desenvolvimento
-- Envio para o Google Apps Script com `pnpm push`
-- Testes no ambiente do Google Apps Script
+- Envio para o Google Apps Script com scripts de deploy
+- Testes unitários com Jest
 - Commits seguindo o formato de conventional commits
 - Scripts disponíveis:
-  - build: Compila o código TypeScript e formata o JavaScript resultante
-  - push: Compila e envia para o Google Apps Script
-  - pull: Baixa o código do Google Apps Script
-  - deploy: Compila e faz deploy de uma nova versão
+  - build: Compila o código TypeScript usando Rollup
+  - test: Executa testes com Jest
   - watch: Compila automaticamente quando houver alterações
+  - clean: Remove arquivos de build
+  - deploy: Executa o script de deploy
+  - deploy:dev: Deploy em ambiente de desenvolvimento
+  - deploy:prod: Deploy em ambiente de produção
+  - deploy:push: Deploy e push para o Google Apps Script
+  - deploy:clean: Limpa e faz deploy
   - lint: Verifica erros de linting
   - lint:fix: Corrige erros de linting automaticamente
+  - lint:scripts: Verifica erros de linting nos scripts de build
   - format: Formata o código com Prettier
+  - format:check: Verifica formatação sem alterar arquivos
+  - format:build: Formata os arquivos JavaScript compilados
+  - validate: Executa lint, format:check e test
+  - prepare-build: Prepara o código para build (lint:fix, format, build, format:build)
+
+## Configuração de Testes
+
+- Framework de testes: Jest com ts-jest
+- Estrutura de arquivos de teste na pasta `tests/`
+- Configuração do Jest para suporte a TypeScript e ESM
+- Mocks para APIs do Google Apps Script
+- Cobertura de código automatizada
+- Integração com VS Code Test Explorer
+- Scripts de execução de testes:
+  - Execução de todos os testes: pnpm test
+  - Execução de arquivo específico: pnpm test -- <arquivo>
+- Configurações do VS Code para depuração de testes
 
 ## Convenções de Código
+
 - Indentação: 2 espaços
 - Aspas simples para strings
 - Ponto e vírgula ao final das instruções
@@ -74,7 +101,9 @@
 - Comentários em português do Brasil
 
 ## Módulos
+
 ### villadaspedras-lib
+
 - Biblioteca com funções auxiliares para planilhas
 - Funções para virada de mês e ano das planilhas de consumo e salário
 - ScriptID: 1txMGRTvK71GgQ1Viz-Yzz_2rYHbaDUj2wGw5pZ7GySlWDYnFgYlBxdXE
@@ -86,5 +115,21 @@
   - Funções de formatação e limpeza de dados
   - Reordenação de nomes em planilhas de salário
   - Virada de mês e ano para planilhas de consumo e salário
+
+## Dependências Principais
+
+- Dependências de produção:
+  - luxon: Biblioteca para manipulação de datas e horas
+  - yargs: Parser de argumentos de linha de comando
+
 - Dependências de desenvolvimento:
-  - Analisar arquivo package.json
+  - google/clasp: CLI para Google Apps Script
+  - rollup/plugin-*: Plugins para Rollup (commonjs, node-resolve, terser, typescript)
+  - types/google-apps-script: Tipos para Google Apps Script
+  - types/jest e jest: Framework de testes
+  - typescript-eslint/*: Plugins ESLint para TypeScript
+  - eslint e plugins relacionados: Linting de código
+  - prettier: Formatação de código
+  - rollup: Bundler para JavaScript
+  - typescript: Linguagem de programação
+  - ts-jest: Integração Jest com TypeScript

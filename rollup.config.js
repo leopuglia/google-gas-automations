@@ -5,8 +5,8 @@ import terser from '@rollup/plugin-terser';
 // import path from 'path';
 
 // Importar o módulo de carregamento de configuração
-import * as configHelper from './scripts/build/config-helper.js';
-import logger from './scripts/build/logger.js';
+import * as configHelper from './scripts/build-system/config-helper.js';
+import logger from './scripts/build-system/logger.js';
 
 /** Plugin para remover todas as linhas de import estático */
 function removeImports() {
