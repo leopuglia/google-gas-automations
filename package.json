@@ -6,6 +6,8 @@
   "scripts": {
     "build": "rollup -c",
     "test": "jest",
+    "test:safe": "node scripts/run-tests.js",
+    "test:parallel": "node scripts/run-tests-parallel.js",
     "watch": "rollup -c -w",
     "clean": "rimraf dist/* build/*",
     "deploy": "node scripts/build-system/deploy.js",

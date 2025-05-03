@@ -10,17 +10,9 @@ jest.mock('path');
 jest.mock('fs-extra');
 jest.mock('handlebars');
 
-// Mock do logger
-jest.mock('../../scripts/logger.js', () => {
-  return {
-    default: {
-      error: jest.fn(),
-      warn: jest.fn(),
-      info: jest.fn(),
-      debug: jest.fn(),
-      verbose: jest.fn(),
-    },
-  };
+// Mock do logger - usando o mock centralizado
+jest.mock('../../scripts/build-system/logger.js', () => {
+  return jest.requireActual('../mocks/logger.mock.js');
 });
 
 // Importar módulos mockados
@@ -39,10 +31,10 @@ describe('Template Helper', () => {
   beforeEach(() => {
     // Limpar todos os mocks
     jest.clearAllMocks();
-    
+
     // Mock para fs.existsSync
     (fs.existsSync as any).mockReturnValue(true);
-    
+
     // Mock para fs.readFileSync
     (fs.readFileSync as any).mockImplementation((path: string) => {
       if (path.includes('version.json')) {
@@ -53,16 +45,16 @@ describe('Template Helper', () => {
       }
       return '';
     });
-    
+
     // Mock para path.resolve
     (path.resolve as any).mockImplementation((...args: string[]) => args.join('/'));
-    
+
     // Mock para fs-extra.ensureDirSync
     (fsExtra.ensureDirSync as any).mockImplementation(() => {});
-    
+
     // Mock para fs.writeFileSync
     (fs.writeFileSync as any).mockImplementation(() => {});
-    
+
     // Mock para Handlebars
     (Handlebars.compile as any).mockImplementation((template: string) => {
       return (context: any) => {
@@ -73,7 +65,7 @@ describe('Template Helper', () => {
         return result;
       };
     });
-    
+
     // Mock para registerHelper
     (Handlebars.registerHelper as any).mockImplementation(() => {});
   });
@@ -83,54 +75,54 @@ describe('Template Helper', () => {
     // Configurar o mock para retornar os dados de versão
     const versionData = { version: '1.0.0', date: '2025-05-01' };
     (fs.readFileSync as any).mockReturnValueOnce(JSON.stringify(versionData));
-    
+
     // Chamar a função
     const result = templateHelper.loadVersionInfo();
-    
+
     // Verificar se fs.existsSync foi chamado
     expect(fs.existsSync).toHaveBeenCalled();
-    
+
     // Verificar se fs.readFileSync foi chamado
     expect(fs.readFileSync).toHaveBeenCalled();
-    
+
     // Verificar se o resultado é o esperado
     expect(result).toEqual(versionData);
   });
-  
+
   it('deve retornar informações padrão quando o arquivo não existe', () => {
     // Configurar o mock para retornar false
     (fs.existsSync as any).mockReturnValueOnce(false);
-    
+
     // Chamar a função
     const result = templateHelper.loadVersionInfo();
-    
+
     // Verificar se o resultado é o esperado
     expect(result).toHaveProperty('version');
     expect(result).toHaveProperty('date');
   });
-  
+
   // Testes para processTemplate
   it('deve processar um template com informações de versão', () => {
     // Chamar a função
     templateHelper.processTemplate('template.hbs', 'output.js', {});
-    
+
     // Verificar se as funções esperadas foram chamadas
     expect(fs.readFileSync).toHaveBeenCalled();
     expect(Handlebars.compile).toHaveBeenCalled();
     expect(fsExtra.ensureDirSync).toHaveBeenCalled();
     expect(fs.writeFileSync).toHaveBeenCalled();
   });
-  
+
   it('deve lidar com template não encontrado', () => {
     // Limpar todas as chamadas anteriores
     jest.clearAllMocks();
-    
+
     // Configurar o mock para retornar false para o template
     (fs.existsSync as any).mockReturnValue(false);
-    
+
     // Chamar a função
     templateHelper.processTemplate('template.hbs', 'output.js', {});
-    
+
     // Verificar que o arquivo de saída não foi escrito
     expect(fs.writeFileSync).not.toHaveBeenCalled();
   });

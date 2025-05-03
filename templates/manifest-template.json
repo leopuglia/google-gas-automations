@@ -1,0 +1,13 @@
+{
+  "name": "{{PROJECT_NAME}}",
+  "version": "{{version}}",
+  "description": "{{PROJECT_DESCRIPTION}}",
+  "buildInfo": {
+    "version": "{{version}}",
+    "buildDate": "{{buildDate}}",
+    "buildTimestamp": "{{buildTimestamp}}",
+    "environment": "{{ENVIRONMENT}}",
+    "author": "{{versionInfo.author}}",
+    "description": "{{versionInfo.description}}"
+  }
+}
