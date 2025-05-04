@@ -1,7 +1,0 @@
-{
-  "scriptId": "{{scriptId}}",
-  "filePushOrder": [
-{{#each file_push_order}}    "{{this}}"{{#unless @last}},
-{{/unless}}{{/each}}
-  ]
-}

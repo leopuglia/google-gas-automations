@@ -1,1 +1,0 @@
-// Arquivo gerado automaticamente
