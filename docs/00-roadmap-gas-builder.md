@@ -71,6 +71,29 @@ Esta abordagem gradual permite:
 - [ ] Ajustar configurações específicas do projeto
 - [ ] Validar funcionalidades de virada de mês/ano
 
+#### Fase 1.7: Documentação Avançada
+
+- [ ] Implementar JSDoc/TSDoc consistente em todos os módulos
+  - [ ] Documentar funções, parâmetros, retornos e exemplos
+  - [ ] Padronizar formato de comentários
+  - [ ] Adicionar descrições para interfaces e tipos
+- [ ] Criar documentação de arquitetura
+  - [ ] Desenvolver diagramas de fluxo do processo de build/deploy
+  - [ ] Criar diagramas de componentes mostrando relações entre módulos
+  - [ ] Documentar processo de extensão e personalização
+- [ ] Desenvolver guias práticos
+  - [ ] Guia de início rápido detalhado
+  - [ ] Tutorial de criação de projeto do zero
+  - [ ] Guia de troubleshooting para problemas comuns
+- [ ] Melhorar documentação de API
+  - [ ] Documentar todos os módulos exportados
+  - [ ] Listar funções públicas com parâmetros e retornos
+  - [ ] Incluir exemplos de uso para cada função principal
+- [ ] Reestruturar documentação existente
+  - [ ] Organizar em categorias lógicas (guias, referência, API, etc.)
+  - [ ] Atualizar README com informações mais concisas
+  - [ ] Adicionar índice e navegação entre documentos
+
 ### Cronograma Estimado
 
 - **Fase 1.1**: Concluída
@@ -79,6 +102,7 @@ Esta abordagem gradual permite:
 - **Fase 1.4**: Concluída
 - **Fase 1.5**: 2-3 semanas (Prioridade Atual)
 - **Fase 1.6**: 3-4 semanas (Após estabilização)
+- **Fase 1.7**: 4-6 semanas (Paralelo com Fase 1.6)
 
 ## Etapa 2: Migração para Repositório Separado (Template/Starter)
 
@@ -105,12 +129,21 @@ Esta abordagem gradual permite:
 - [ ] Remover dependências específicas do projeto original
 - [ ] Adicionar configurações padrão genéricas
 
-#### Fase 2.3: Documentação
+#### Fase 2.3: Documentação e Internacionalização
 
 - [ ] Criar README detalhado
 - [ ] Desenvolver guias de uso
 - [ ] Criar exemplos de projetos
 - [ ] Documentar processo de personalização
+- [ ] Traduzir toda a documentação para inglês
+  - [ ] README e documentação principal
+  - [ ] Guias e tutoriais
+  - [ ] Comentários no código
+  - [ ] Mensagens de erro e logs
+- [ ] Implementar estrutura para suporte a múltiplos idiomas
+  - [ ] Separar conteúdo em arquivos por idioma
+  - [ ] Criar sistema de navegação entre versões de idiomas
+  - [ ] Garantir consistência entre versões
 
 #### Fase 2.4: Exemplos e Testes
 
@@ -130,11 +163,13 @@ Esta abordagem gradual permite:
   - Mais exemplos e casos de uso
   - Suporte a configurações avançadas
   - Melhorias de performance
+  - Documentação em inglês (primeira versão)
 
 - **Versão 0.3.0 - Template Completo**
-  - Documentação abrangente
+  - Documentação abrangente em português e inglês
   - Suporte a múltiplos tipos de projetos
   - Integração com CI/CD
+  - Site de documentação com TypeDoc
 
 ### Cronograma Estimado
 

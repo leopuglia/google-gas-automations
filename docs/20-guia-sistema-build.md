@@ -7,19 +7,23 @@ Este documento contém instruções para utilizar o sistema de build que foi mig
 ```bash
 /mnt/wsl/linux-dev/linux-projects/google-gas-automations/
 ├── scripts/
-│   ├── build/               # Scripts do sistema de build
+│   ├── build/                    # Scripts do sistema de build
 │       ├── clasp-helper.js
 │       ├── config-helper.js
-│       ├── deploy.js        # Script principal
+│       ├── deploy.js             # Script principal
 │       ├── filesystem-helper.js
 │       ├── logger.js
 │       ├── template-helper.js
-│       └── tests/           # Testes para os scripts
-├── templates/               # Templates para arquivos de configuração
-├── config.yml               # Arquivo de configuração principal
-├── package.json             # Scripts npm para build e deploy
-├── rollup.config.js         # Configuração do Rollup
-└── tsconfig.json            # Configuração do TypeScript
+│       └── tests/                # Testes para os scripts
+├── templates/                    # Templates para arquivos de configuração
+│   ├── .clasp-template.json      # Template para o arquivo .clasp.json
+│   ├── .claspignore-template     # Template para o arquivo .claspignore
+│   ├── appsscript-template.json  # Template para o arquivo appsscript.json
+│   └── manifest-template.json    # Template para o arquivo manifest.json
+├── config.yml                    # Arquivo de configuração principal
+├── package.json                  # Scripts npm para build e deploy
+├── rollup.config.js              # Configuração do Rollup
+└── tsconfig.json                 # Configuração do TypeScript
 ```
 
 ## Comandos Disponíveis
@@ -67,6 +71,10 @@ O script de deploy aceita as seguintes opções:
 --project=nome
 
 # Filtrar projetos com chave/valor específicos
+--<key-1>=<value-1>
+--<key-2>=<value-2>
+
+Exemplo:
 --year=2025
 --pdv=1-cafeteria
 
@@ -142,4 +150,4 @@ Este é apenas o primeiro passo na migração para um sistema de build mais gen�
 4. Melhorar a documentação e adicionar exemplos
 5. Preparar para publicação como uma biblioteca pública
 
-Para mais detalhes sobre o plano completo de migração, consulte o documento [plano-migracao-gas-builder.md](./plano-migracao-gas-builder.md).
+Para mais detalhes sobre o plano completo de migração, consulte o documento [10-plano-migracao-gas-builder.md](./10-plano-migracao-gas-builder.md).

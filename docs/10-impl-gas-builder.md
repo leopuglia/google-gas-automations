@@ -6,10 +6,14 @@ Este documento detalha a implementação técnica do sistema GAS Builder, inclui
 
 ### package.json
 
+#### Inspirações para package.json
+
+[package.json](/mnt/wsl/linux-dev/linux-projects/google-gas-automations/package.json)
+
 ```json
 {
   "name": "gas-builder",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Sistema flexível de build e deploy para projetos Google Apps Script",
   "type": "module",
   "main": "dist/index.js",
@@ -73,6 +77,10 @@ Este documento detalha a implementação técnica do sistema GAS Builder, inclui
 
 ### tsconfig.json
 
+#### Inspirações para tsconfig.json
+
+[tsconfig.json](/mnt/wsl/linux-dev/linux-projects/google-gas-automations/tsconfig.json)
+
 ```json
 {
   "compilerOptions": {
@@ -94,6 +102,10 @@ Este documento detalha a implementação técnica do sistema GAS Builder, inclui
 ```
 
 ### .eslintrc.js
+
+#### Inspirações para .eslintrc.js
+
+[.eslintrc.js](/mnt/wsl/linux-dev/linux-projects/google-gas-automations/.eslintrc.js)
 
 ```javascript
 module.exports = {
@@ -117,6 +129,10 @@ module.exports = {
 
 ### .prettierrc
 
+#### Inspirações para .prettierrc
+
+[.prettierrc](/mnt/wsl/linux-dev/linux-projects/google-gas-automations/.prettierrc)
+
 ```json
 {
   "singleQuote": true,
@@ -130,6 +146,8 @@ module.exports = {
 ## 2. Implementação do CLI
 
 ### src/cli/index.ts
+
+#### Inspirações para src/cli/index.ts
 
 ```typescript
 #!/usr/bin/env node
@@ -229,6 +247,10 @@ yargs(hideBin(process.argv))
 ## 3. Sistema de Logging
 
 ### src/logger/logger.ts
+
+#### Inspirações para src/logger/logger.ts
+
+[src/logger/logger.ts](/mnt/wsl/linux-dev/linux-projects/google-gas-automations/scripts/build-system/logger.js)
 
 ```typescript
 import chalk from 'chalk';
@@ -401,6 +423,10 @@ export const logger = new Logger();
 
 ### src/config/config-loader.ts
 
+#### Inspirações para src/config/config-loader.ts
+
+[src/config/config-loader.ts](/mnt/wsl/linux-dev/linux-projects/google-gas-automations/scripts/build-system/config-loader.js)
+
 ```typescript
 import fs from 'fs-extra';
 import path from 'path';
@@ -523,6 +549,10 @@ export function validateConfig(config: Config, schemaPath: string = 'config.sche
 ## 5. Sistema de Templates
 
 ### src/templates/template-processor.ts
+
+#### Inspirações para src/templates/template-processor.ts
+
+[src/templates/template-processor.ts](/mnt/wsl/linux-dev/linux-projects/google-gas-automations/scripts/build-system/template-helper.js)
 
 ```typescript
 import fs from 'fs-extra';
@@ -673,6 +703,10 @@ export function processProjectTemplates(
 ## 6. Integração com Rollup
 
 ### src/rollup/build.ts
+
+#### Inspirações para src/rollup/build.ts
+
+[src/rollup/build.ts](/mnt/wsl/linux-dev/linux-projects/google-gas-automations/rollup.config.js)
 
 ```typescript
 import { rollup, RollupOptions } from 'rollup';
@@ -840,6 +874,12 @@ export async function build(configFile: string, projectKey?: string, clean: bool
 ### Exemplo Básico
 
 ```bash
+# Criar um novo projeto
+pnpm add -g @gas-builder/cli
+pnpm create gas-builder@latest
+ou
+gas-builder create example [folder]
+
 # Build de todos os projetos
 gas-builder build
 
@@ -860,6 +900,7 @@ gas-builder deploy --project=advanced --year=2024 --category=reports --env=prod 
 
 ```json
 "scripts": {
+  "create": "gas-builder create",
   "build": "gas-builder build",
   "build:clean": "gas-builder build --clean",
   "deploy:dev": "gas-builder deploy --env=dev",
