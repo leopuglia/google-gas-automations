@@ -26,7 +26,14 @@ export default {
   verbose: true,
   testPathIgnorePatterns: ['/node_modules/'],
   collectCoverage: true,
-  collectCoverageFrom: ['<rootDir>/src/**/*.ts'],
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.{js,ts}',
+    '<rootDir>/scripts/build-system/**/*.{js,ts}',
+    '!**/node_modules/**',
+    '!**/dist/**',
+    '!**/build/**',
+    '!**/coverage/**'
+  ],
   // Configurações para lidar com processos assíncronos e timers
   testTimeout: 10000, // Aumentar o timeout para 10 segundos
   forceExit: true, // Forçar a saída após os testes

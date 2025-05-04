@@ -94,8 +94,15 @@ describe('Funções Utilitárias', () => {
       ['usuario@dominio', false],
       ['usuario@.com', false],
       ['usuario@dominio..com', false],
-      ['usuario@dominio.', false],
-      ['usuario@dominio.c', false], // TLDs geralmente têm pelo menos 2 caracteres
+      ['usuario@dominio.', false],  // TLD ausente (termina com ponto)
+      ['usuario@dominio.c', false], // TLD com apenas 1 caractere
+      ['usuario@teste.', false],    // Outro caso de TLD ausente
+      ['usuario@a.b', false],       // Domínio com TLD muito curto
+      ['usuario@a.', false],        // Domínio terminando com ponto
+      ['usuario@.a', false],        // Domínio começando com ponto
+      ['usuario@a..b', false],      // Domínio com pontos consecutivos
+      ['usuario@a.b.', false],      // Domínio terminando com ponto após TLD
+      ['   ', false],               // Email contendo apenas espaços em branco
     ])('email invalido %s => como %s', (email, esperado) => {
       expect(validarEmail(email)).toBe(esperado);
     });

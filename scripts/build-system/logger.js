@@ -13,11 +13,11 @@ import chalk from 'chalk';
 // Níveis de log disponíveis
 export const LOG_LEVELS = {
   VERBOSE: 0, // Logs detalhados para depuração profunda
-  DEBUG: 1,   // Informações úteis para depuração
-  INFO: 2,    // Informações gerais sobre o processo
-  WARN: 3,    // Avisos que não interrompem o processo
-  ERROR: 4,   // Erros que podem interromper o processo
-  NONE: 5,     // Nenhum log (silencioso)
+  DEBUG: 1, // Informações úteis para depuração
+  INFO: 2, // Informações gerais sobre o processo
+  WARN: 3, // Avisos que não interrompem o processo
+  ERROR: 4, // Erros que podem interromper o processo
+  NONE: 5, // Nenhum log (silencioso)
 };
 
 // Cores padrão para cada nível
@@ -40,9 +40,9 @@ const DEFAULT_COLORS = {
 // Configuração padrão
 const DEFAULT_CONFIG = {
   level: LOG_LEVELS.INFO, // Nível padrão: INFO
-  useColors: true,        // Usar cores nos logs
-  showTimestamp: true,    // Mostrar timestamp nos logs
-  showLevel: true,        // Mostrar nível nos logs
+  useColors: true, // Usar cores nos logs
+  showTimestamp: true, // Mostrar timestamp nos logs
+  showLevel: true, // Mostrar nível nos logs
   colors: { ...DEFAULT_COLORS }, // Cores personalizadas
 };
 
@@ -252,7 +252,11 @@ export function highlight(message, options = {}) {
  * @param {Object} options Opções adicionais
  */
 export function important(message, options = {}) {
-  log(LOG_LEVELS.INFO, 'IMPORTANT', message, { ...options, color: DEFAULT_COLORS.IMPORTANT, bold: true });
+  log(LOG_LEVELS.INFO, 'IMPORTANT', message, {
+    ...options,
+    color: DEFAULT_COLORS.IMPORTANT,
+    bold: true,
+  });
 }
 
 // Exportar um objeto logger para uso simplificado

@@ -36,12 +36,16 @@ const colors = {
 function loadVersionFile() {
   try {
     if (!fs.existsSync(versionFilePath)) {
-      console.error(`${colors.red}Arquivo de versão não encontrado: ${versionFilePath}${colors.reset}`);
+      console.error(
+        `${colors.red}Arquivo de versão não encontrado: ${versionFilePath}${colors.reset}`,
+      );
       process.exit(1);
     }
     return JSON.parse(fs.readFileSync(versionFilePath, 'utf8'));
   } catch (error) {
-    console.error(`${colors.red}Erro ao carregar arquivo de versão: ${error.message}${colors.reset}`);
+    console.error(
+      `${colors.red}Erro ao carregar arquivo de versão: ${error.message}${colors.reset}`,
+    );
     process.exit(1);
   }
 }
@@ -67,10 +71,12 @@ function saveVersionFile(versionData) {
 function updatePackageJson(version) {
   try {
     if (!fs.existsSync(packageJsonPath)) {
-      console.warn(`${colors.yellow}Arquivo package.json não encontrado: ${packageJsonPath}${colors.reset}`);
+      console.warn(
+        `${colors.yellow}Arquivo package.json não encontrado: ${packageJsonPath}${colors.reset}`,
+      );
       return;
     }
-    
+
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
     packageJson.version = version;
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf8');
@@ -88,7 +94,7 @@ function updatePackageJson(version) {
  */
 function incrementVersion(currentVersion, type) {
   const [major, minor, patch] = currentVersion.split('.').map(Number);
-  
+
   switch (type) {
     case 'major':
       return `${major + 1}.0.0`;
@@ -108,16 +114,16 @@ function incrementVersion(currentVersion, type) {
 function getCommitsSinceLastTag() {
   try {
     // Obtém a última tag
-    const lastTag = execSync('git describe --tags --abbrev=0 2>/dev/null || echo ""', { encoding: 'utf8' }).trim();
-    
+    const lastTag = execSync('git describe --tags --abbrev=0 2>/dev/null || echo ""', {
+      encoding: 'utf8',
+    }).trim();
+
     // Se não houver tag, obtém todos os commits
-    const gitLogCommand = lastTag 
+    const gitLogCommand = lastTag
       ? `git log ${lastTag}..HEAD --pretty=format:"%s" --no-merges`
       : 'git log --pretty=format:"%s" --no-merges';
-    
-    return execSync(gitLogCommand, { encoding: 'utf8' })
-      .split('\n')
-      .filter(Boolean);
+
+    return execSync(gitLogCommand, { encoding: 'utf8' }).split('\n').filter(Boolean);
   } catch (error) {
     console.warn(`${colors.yellow}Não foi possível obter commits: ${error.message}${colors.reset}`);
     return [];
@@ -144,14 +150,14 @@ function categorizeCommits(commits) {
     revert: { title: 'Reversões', items: [] },
     other: { title: 'Outros', items: [] },
   };
-  
-  commits.forEach(commit => {
+
+  commits.forEach((commit) => {
     const match = commit.match(/^(\w+)(?:\(([^)]+)\))?:\s*(.+)$/);
-    
+
     if (match) {
       const [, type, scope, message] = match;
       const formattedMessage = scope ? `**${scope}**: ${message}` : message;
-      
+
       if (categories[type]) {
         categories[type].items.push(formattedMessage);
       } else {
@@ -161,7 +167,7 @@ function categorizeCommits(commits) {
       categories.other.items.push(commit);
     }
   });
-  
+
   return categories;
 }
 
@@ -174,19 +180,19 @@ function categorizeCommits(commits) {
 function generateReleaseNotes(version, date) {
   const commits = getCommitsSinceLastTag();
   const categories = categorizeCommits(commits);
-  
+
   let notes = `## [${version}] - ${date}\n\n`;
-  
-  Object.values(categories).forEach(category => {
+
+  Object.values(categories).forEach((category) => {
     if (category.items.length > 0) {
       notes += `### ${category.title}\n\n`;
-      category.items.forEach(item => {
+      category.items.forEach((item) => {
         notes += `- ${item}\n`;
       });
       notes += '\n';
     }
   });
-  
+
   return notes;
 }
 
@@ -197,21 +203,22 @@ function generateReleaseNotes(version, date) {
 function updateChangelog(releaseNotes) {
   try {
     let changelog = '';
-    
+
     if (fs.existsSync(changelogPath)) {
       changelog = fs.readFileSync(changelogPath, 'utf8');
     } else {
-      changelog = '# Changelog\n\nTodas as mudanças notáveis neste projeto serão documentadas neste arquivo.\n\n';
+      changelog =
+        '# Changelog\n\nTodas as mudanças notáveis neste projeto serão documentadas neste arquivo.\n\n';
     }
-    
+
     // Insere as novas notas após o cabeçalho
     const parts = changelog.split('\n\n');
     const header = parts[0] + '\n\n' + (parts.length > 1 ? parts[1] + '\n\n' : '');
     const rest = parts.slice(2).join('\n\n');
-    
+
     const newChangelog = `${header}${releaseNotes}${rest}`;
     fs.writeFileSync(changelogPath, newChangelog, 'utf8');
-    
+
     console.log(`${colors.green}CHANGELOG.md atualizado${colors.reset}`);
   } catch (error) {
     console.error(`${colors.red}Erro ao atualizar CHANGELOG.md: ${error.message}${colors.reset}`);
@@ -239,31 +246,33 @@ function commandBump(argv) {
   const versionData = loadVersionFile();
   const currentVersion = versionData.version;
   const newVersion = incrementVersion(currentVersion, argv.type);
-  
+
   if (currentVersion === newVersion) {
     console.log(`${colors.yellow}A versão não foi alterada: ${currentVersion}${colors.reset}`);
     return;
   }
-  
+
   // Atualiza a data
   const today = new Date().toISOString().split('T')[0];
   versionData.version = newVersion;
   versionData.date = today;
-  
+
   if (argv.description) {
     versionData.description = argv.description;
   }
-  
+
   // Gera notas de release
   const releaseNotes = generateReleaseNotes(newVersion, today);
-  
+
   // Atualiza os arquivos
   saveVersionFile(versionData);
   updatePackageJson(newVersion);
   updateChangelog(releaseNotes);
-  
-  console.log(`${colors.green}Versão incrementada: ${currentVersion} -> ${newVersion}${colors.reset}`);
-  
+
+  console.log(
+    `${colors.green}Versão incrementada: ${currentVersion} -> ${newVersion}${colors.reset}`,
+  );
+
   // Cria tag Git se solicitado
   if (argv.tag) {
     const tagMessage = argv.description || `Release v${newVersion}`;
@@ -291,9 +300,9 @@ function commandShow() {
 function commandNotes(argv) {
   const versionData = loadVersionFile();
   const today = new Date().toISOString().split('T')[0];
-  
+
   const releaseNotes = generateReleaseNotes(versionData.version, today);
-  
+
   if (argv.save) {
     updateChangelog(releaseNotes);
   } else {
@@ -304,35 +313,43 @@ function commandNotes(argv) {
 
 // Configuração do CLI
 yargs(hideBin(process.argv))
-  .command('bump [type]', 'Incrementa a versão (major, minor, patch)', (yargs) => {
-    return yargs
-      .positional('type', {
-        describe: 'Tipo de incremento',
-        choices: ['major', 'minor', 'patch'],
-        default: 'patch'
-      })
-      .option('description', {
-        alias: 'd',
-        describe: 'Descrição da versão',
-        type: 'string'
-      })
-      .option('tag', {
-        alias: 't',
-        describe: 'Cria uma tag Git para a versão',
-        type: 'boolean',
-        default: false
-      });
-  }, commandBump)
+  .command(
+    'bump [type]',
+    'Incrementa a versão (major, minor, patch)',
+    (yargs) => {
+      return yargs
+        .positional('type', {
+          describe: 'Tipo de incremento',
+          choices: ['major', 'minor', 'patch'],
+          default: 'patch',
+        })
+        .option('description', {
+          alias: 'd',
+          describe: 'Descrição da versão',
+          type: 'string',
+        })
+        .option('tag', {
+          alias: 't',
+          describe: 'Cria uma tag Git para a versão',
+          type: 'boolean',
+          default: false,
+        });
+    },
+    commandBump,
+  )
   .command('show', 'Mostra a versão atual', {}, commandShow)
-  .command('notes', 'Gera notas de release', (yargs) => {
-    return yargs
-      .option('save', {
+  .command(
+    'notes',
+    'Gera notas de release',
+    (yargs) => {
+      return yargs.option('save', {
         alias: 's',
         describe: 'Salva as notas no CHANGELOG.md',
         type: 'boolean',
-        default: false
+        default: false,
       });
-  }, commandNotes)
+    },
+    commandNotes,
+  )
   .demandCommand(1, 'Você precisa especificar um comando')
-  .help()
-  .argv;
+  .help().argv;

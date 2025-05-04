@@ -44,7 +44,7 @@ export function processTemplate(templatePath, outputPath, context) {
       versionDate: versionInfo.date,
       versionInfo: versionInfo,
       buildDate: new Date().toISOString().split('T')[0],
-      buildTimestamp: new Date().toISOString()
+      buildTimestamp: new Date().toISOString(),
     };
 
     const templateContent = fs.readFileSync(templatePath, 'utf8');
@@ -104,7 +104,11 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
     }
 
     // Segundo, verificar na estrutura environments.{env}.{project}
-    else if (config.environments && config.environments[environment] && config.environments[environment][projectKey]) {
+    else if (
+      config.environments &&
+      config.environments[environment] &&
+      config.environments[environment][projectKey]
+    ) {
       envConfig = config.environments[environment][projectKey];
     }
 
@@ -117,18 +121,24 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
     else {
       // Se não é o ambiente padrão (dev), retornar null
       if (environment !== 'dev') {
-        logger.warn(`Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Pulando.`);
+        logger.warn(
+          `Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Pulando.`,
+        );
         return null;
       }
       // Para o ambiente padrão, usar um objeto vazio
-      logger.warn(`Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Usando configurações padrão.`);
+      logger.warn(
+        `Ambiente "${environment}" não encontrado para o projeto "${projectKey}". Usando configurações padrão.`,
+      );
       envConfig = {};
     }
 
     // Verificar a estrutura do projeto
     const projectStructure = config.defaults['projects-structure']?.[projectKey];
     if (!projectStructure) {
-      logger.warn(`Estrutura do projeto "${projectKey}" não encontrada na configuração. Usando estrutura padrão.`);
+      logger.warn(
+        `Estrutura do projeto "${projectKey}" não encontrada na configuração. Usando estrutura padrão.`,
+      );
     }
 
     // Processar estrutura aninhada se existir
@@ -168,7 +178,7 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
 
     // Processar bibliotecas externas
     if (rollupConfig.externals && Array.isArray(rollupConfig.externals)) {
-      rollupConfig.externals.forEach(external => {
+      rollupConfig.externals.forEach((external) => {
         if (typeof external === 'string') {
           externalLibs.push(`${external}.js`);
         } else if (external.name) {
@@ -179,7 +189,7 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
 
     // Processar bibliotecas comuns
     if (rollupConfig['common-libs'] && Array.isArray(rollupConfig['common-libs'])) {
-      rollupConfig['common-libs'].forEach(lib => {
+      rollupConfig['common-libs'].forEach((lib) => {
         if (typeof lib === 'string') {
           commonLibs.push(`${lib}.js`);
         } else if (lib.name) {
@@ -190,7 +200,7 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
 
     // Processar bibliotecas específicas do projeto
     if (rollupConfig['project-libs'] && Array.isArray(rollupConfig['project-libs'])) {
-      rollupConfig['project-libs'].forEach(lib => {
+      rollupConfig['project-libs'].forEach((lib) => {
         if (typeof lib === 'string') {
           projectLibs.push(`${lib}.js`);
         } else if (lib.name) {
@@ -215,9 +225,10 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
       ...nestedConfig,
       ...keys,
       env: environment,
-      timeZone: config.defaults.keys?.find(k => k.timeZone)?.timeZone || 'America/Sao_Paulo',
-      runtimeVersion: config.defaults.keys?.find(k => k.runtimeVersion)?.runtimeVersion || 'V8',
-      scriptId: nestedConfig.templates && nestedConfig.templates['.clasp-template.json']?.scriptId || '',
+      timeZone: config.defaults.keys?.find((k) => k.timeZone)?.timeZone || 'America/Sao_Paulo',
+      runtimeVersion: config.defaults.keys?.find((k) => k.runtimeVersion)?.runtimeVersion || 'V8',
+      scriptId:
+        (nestedConfig.templates && nestedConfig.templates['.clasp-template.json']?.scriptId) || '',
       dependencies: projectConfig.dependencies || [],
       sheetsMacros: projectConfig.sheetsMacros || [],
       docsMacros: projectConfig.docsMacros || [],
@@ -317,11 +328,7 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
       logger.debug(`Processando template ${templatePath} -> ${destinationFileName}`);
 
       // Criar caminho de saída com pasta separada para o ambiente
-      const outputDir = path.join(
-        config.defaults.paths.dist,
-        environment,
-        resolvedOutput,
-      );
+      const outputDir = path.join(config.defaults.paths.dist, environment, resolvedOutput);
 
       const outputPath = path.join(outputDir, destinationFileName);
 
@@ -356,7 +363,9 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
           srcDir = srcAltDir;
           logger.info(`Usando diretório alternativo: ${srcDir}`);
         } else {
-          logger.error(`Não foi possível encontrar um diretório de origem válido para o projeto ${projectKey}`);
+          logger.error(
+            `Não foi possível encontrar um diretório de origem válido para o projeto ${projectKey}`,
+          );
           logger.error(`Diretórios verificados: ${srcDir}, ${srcAltDir}`);
           logger.error('Execute o comando "pnpm run build" antes de fazer o deploy');
         }
@@ -368,14 +377,13 @@ export function processProjectTemplates(config, projectKey, environment, keys = 
     }
 
     return {
-      outputDir: path.join(
-        config.defaults.paths.dist,
-        environment,
-        resolvedOutput,
-      ),
+      outputDir: path.join(config.defaults.paths.dist, environment, resolvedOutput),
     };
   } catch (error) {
-    logger.error(`Erro ao processar templates para o projeto ${projectKey}: ${error.message}`, error);
+    logger.error(
+      `Erro ao processar templates para o projeto ${projectKey}: ${error.message}`,
+      error,
+    );
     return null;
   }
 }

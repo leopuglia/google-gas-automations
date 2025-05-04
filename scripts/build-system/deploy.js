@@ -19,7 +19,6 @@
  * - --log-level=<level>: define o nível de log (verbose, debug, info, warn, error, none)
  */
 
-
 // Importar o módulo de carregamento de configuração
 import * as configHelper from './config-helper.js';
 import * as filesystemHelper from './filesystem-helper.js';
@@ -62,12 +61,27 @@ export function processAllProjects(config, environment, filters = {}, doPush = f
       logger.debug(`Estrutura aninhada: ${JSON.stringify(nestedStructure)}`);
 
       // Processar projeto com estrutura aninhada
-      processNestedProject(config, projectKey, environment, nestedStructure, filters, doPush, outputDirs, paths);
+      processNestedProject(
+        config,
+        projectKey,
+        environment,
+        nestedStructure,
+        filters,
+        doPush,
+        outputDirs,
+        paths,
+      );
     } else {
       logger.debug(`Processando projeto ${projectKey} sem estrutura aninhada`);
 
       // Processar projeto sem estrutura aninhada
-      const result = templateHelper.processProjectTemplates(config, projectKey, environment, filters, paths);
+      const result = templateHelper.processProjectTemplates(
+        config,
+        projectKey,
+        environment,
+        filters,
+        paths,
+      );
 
       logger.verbose(`Resultados do processamento: ${JSON.stringify(result)}`);
 
@@ -84,14 +98,15 @@ export function processAllProjects(config, environment, filters = {}, doPush = f
 
           claspHelper.pushProject(result.outputDir);
         }
-      }
-      else {
+      } else {
         logger.warn(`Projeto ${projectKey} não processado`);
       }
     }
   }
 
-  logger.success(`Processados ${outputDirs.length} projetos para ambiente de ${environment === 'dev' ? 'desenvolvimento' : 'produção'}`);
+  logger.success(
+    `Processados ${outputDirs.length} projetos para ambiente de ${environment === 'dev' ? 'desenvolvimento' : 'produção'}`,
+  );
   return outputDirs;
 }
 
@@ -106,7 +121,16 @@ export function processAllProjects(config, environment, filters = {}, doPush = f
  * @param {Array} outputDirs Lista de diretórios de saída
  * @param {Object} paths Caminhos dos diretórios
  */
-export function processNestedProject(config, projectKey, environment, nestedStructure, filters, doPush, outputDirs, paths) {
+export function processNestedProject(
+  config,
+  projectKey,
+  environment,
+  nestedStructure,
+  filters,
+  doPush,
+  outputDirs,
+  paths,
+) {
   // Obter as configurações específicas do ambiente
   // const envConfig = config.environments && config.environments[environment] || {};
 
@@ -116,7 +140,16 @@ export function processNestedProject(config, projectKey, environment, nestedStru
 
   // Se um filtro para este nível foi especificado, usar apenas esse valor
   if (filters[firstLevelKey]) {
-    processNestedLevel(config, projectKey, environment, nestedStructure, 0, { ...filters }, doPush, outputDirs);
+    processNestedLevel(
+      config,
+      projectKey,
+      environment,
+      nestedStructure,
+      0,
+      { ...filters },
+      doPush,
+      outputDirs,
+    );
     return;
   }
 
@@ -139,7 +172,17 @@ export function processNestedProject(config, projectKey, environment, nestedStru
 
   for (const value of availableValues) {
     const levelFilters = { ...filters, [firstLevelKey]: value };
-    processNestedLevel(config, projectKey, environment, nestedStructure, 0, levelFilters, doPush, outputDirs, paths);
+    processNestedLevel(
+      config,
+      projectKey,
+      environment,
+      nestedStructure,
+      0,
+      levelFilters,
+      doPush,
+      outputDirs,
+      paths,
+    );
   }
 }
 
@@ -155,8 +198,20 @@ export function processNestedProject(config, projectKey, environment, nestedStru
  * @param {Array} outputDirs Lista de diretórios de saída
  * @param {Object} paths Caminhos dos diretórios
  */
-export function processNestedLevel(config, projectKey, environment, nestedStructure, level, filters, doPush, outputDirs, paths) {
-  logger.debug(`Processando nível ${level} do projeto ${projectKey} com filtros: ${JSON.stringify(filters)}`);
+export function processNestedLevel(
+  config,
+  projectKey,
+  environment,
+  nestedStructure,
+  level,
+  filters,
+  doPush,
+  outputDirs,
+  paths,
+) {
+  logger.debug(
+    `Processando nível ${level} do projeto ${projectKey} com filtros: ${JSON.stringify(filters)}`,
+  );
   logger.verbose(`Estrutura aninhada: ${JSON.stringify(nestedStructure)}`);
   logger.verbose(`Filtros acumulados: ${JSON.stringify(filters)}`);
   logger.verbose(`Nível atual: ${level}`);
@@ -167,7 +222,13 @@ export function processNestedLevel(config, projectKey, environment, nestedStruct
   if (level >= nestedStructure.length) {
     logger.debug(`Processando projeto ${projectKey} com filtros: ${JSON.stringify(filters)}`);
 
-    const result = templateHelper.processProjectTemplates(config, projectKey, environment, filters, paths);
+    const result = templateHelper.processProjectTemplates(
+      config,
+      projectKey,
+      environment,
+      filters,
+      paths,
+    );
 
     logger.verbose(`Resultados do processamento: ${JSON.stringify(result)}`);
 
@@ -188,8 +249,7 @@ export function processNestedLevel(config, projectKey, environment, nestedStruct
 
         claspHelper.pushProject(result.outputDir);
       }
-    }
-    else {
+    } else {
       logger.warn(`Projeto ${projectKey} não processado`);
     }
 
@@ -203,23 +263,49 @@ export function processNestedLevel(config, projectKey, environment, nestedStruct
 
   // Se já temos um filtro para este nível, processar o próximo nível
   if (filters[currentKey]) {
-    processNestedLevel(config, projectKey, environment, nestedStructure, level + 1, filters, doPush, outputDirs);
+    processNestedLevel(
+      config,
+      projectKey,
+      environment,
+      nestedStructure,
+      level + 1,
+      filters,
+      doPush,
+      outputDirs,
+    );
     return;
   }
 
   // Caso contrário, procurar todos os valores disponíveis para este nível
-  const availableValues = getAvailableValuesForKey(config, environment, projectKey, currentKey, filters);
+  const availableValues = getAvailableValuesForKey(
+    config,
+    environment,
+    projectKey,
+    currentKey,
+    filters,
+  );
 
   if (availableValues.length === 0) {
     logger.warn(`Nenhum valor encontrado para a chave ${currentKey} no projeto ${projectKey}`);
     return;
   }
 
-  logger.debug(`Processando nível ${level} (${currentKey}) com ${availableValues.length} valores...`);
+  logger.debug(
+    `Processando nível ${level} (${currentKey}) com ${availableValues.length} valores...`,
+  );
 
   for (const value of availableValues) {
     const levelFilters = { ...filters, [currentKey]: value };
-    processNestedLevel(config, projectKey, environment, nestedStructure, level + 1, levelFilters, doPush, outputDirs);
+    processNestedLevel(
+      config,
+      projectKey,
+      environment,
+      nestedStructure,
+      level + 1,
+      levelFilters,
+      doPush,
+      outputDirs,
+    );
   }
 }
 
@@ -234,13 +320,16 @@ export function processNestedLevel(config, projectKey, environment, nestedStruct
  */
 export function getAvailableValuesForKey(config, environment, projectKey, key, filters = {}) {
   // Obter a configuração do projeto
-  const projectConfig = config.projects && config.projects[projectKey] || {};
+  const projectConfig = (config.projects && config.projects[projectKey]) || {};
 
   // Obter a estrutura aninhada do projeto usando projects-structure
-  const projectStructure = config.defaults && config.defaults['projects-structure'] &&
-                          config.defaults['projects-structure'][projectKey] || {};
+  const projectStructure =
+    (config.defaults &&
+      config.defaults['projects-structure'] &&
+      config.defaults['projects-structure'][projectKey]) ||
+    {};
   const nestedStructure = projectStructure.nested || projectConfig.nested || [];
-  const nestedKeys = nestedStructure.map(item => item.key);
+  const nestedKeys = nestedStructure.map((item) => item.key);
 
   // Verificar se a chave solicitada está na estrutura aninhada
   if (!nestedKeys.includes(key)) {
@@ -248,8 +337,10 @@ export function getAvailableValuesForKey(config, environment, projectKey, key, f
   }
 
   // Obter a configuração de ambientes
-  const envConfig = config.projects[projectKey].environments &&
-                   config.projects[projectKey].environments[environment] || {};
+  const envConfig =
+    (config.projects[projectKey].environments &&
+      config.projects[projectKey].environments[environment]) ||
+    {};
 
   // Determinar o nível da chave na estrutura aninhada
   const keyLevel = nestedKeys.indexOf(key);
@@ -275,7 +366,7 @@ export function getAvailableValuesForKey(config, environment, projectKey, key, f
   for (const template of keysTemplate) {
     if (template.key === key && template.nameTemplate && template.nameTemplate.substitutions) {
       const substitutions = template.nameTemplate.substitutions || [];
-      return substitutions.map(sub => Object.keys(sub)[0]);
+      return substitutions.map((sub) => Object.keys(sub)[0]);
     }
   }
 
@@ -383,7 +474,12 @@ function main() {
     const selectedProject = filters.project || null;
     let buildSuccess;
     try {
-      buildSuccess = filesystemHelper.ensureBuildBeforeDeploy(config, paths, selectedProject, false);
+      buildSuccess = filesystemHelper.ensureBuildBeforeDeploy(
+        config,
+        paths,
+        selectedProject,
+        false,
+      );
     } catch (buildError) {
       logger.error(`Erro ao verificar diretórios de build: ${buildError.message}`);
       process.exit(1);
@@ -399,14 +495,19 @@ function main() {
     if (!environment) {
       logger.important('Nenhum ambiente especificado, processando ambos (dev e prod)');
 
-      let devOutputDirs = [], prodOutputDirs = [];
+      let devOutputDirs = [],
+        prodOutputDirs = [];
 
       // Processar ambiente de desenvolvimento
       try {
         devOutputDirs = processAllProjects(config, 'dev', filters, doPush, paths);
-        logger.debug(`Processados ${devOutputDirs.length} projetos para ambiente de desenvolvimento`);
+        logger.debug(
+          `Processados ${devOutputDirs.length} projetos para ambiente de desenvolvimento`,
+        );
       } catch (devError) {
-        logger.error(`Erro ao processar projetos para ambiente de desenvolvimento: ${devError.message}`);
+        logger.error(
+          `Erro ao processar projetos para ambiente de desenvolvimento: ${devError.message}`,
+        );
       }
 
       // Processar ambiente de produção
@@ -430,7 +531,9 @@ function main() {
 
       // Se um projeto específico foi solicitado
       if (projectKey) {
-        logger.highlight(`Processando projeto específico: ${projectKey} (${environment})`, { bold: true });
+        logger.highlight(`Processando projeto específico: ${projectKey} (${environment})`, {
+          bold: true,
+        });
         logger.debug(`Filtros adicionais: ${JSON.stringify(filters)}`);
 
         // Verificar se o projeto existe na configuração
@@ -445,7 +548,9 @@ function main() {
           result = templateHelper.processProjectTemplates(config, projectKey, environment, filters);
           logger.verbose(`Resultados do processamento: ${JSON.stringify(result)}`);
         } catch (templateError) {
-          logger.error(`Erro ao processar templates para o projeto '${projectKey}': ${templateError.message}`);
+          logger.error(
+            `Erro ao processar templates para o projeto '${projectKey}': ${templateError.message}`,
+          );
           process.exit(1);
         }
 
@@ -469,7 +574,9 @@ function main() {
             logger.warn('Nenhum projeto foi processado. Verifique os filtros aplicados.');
           }
         } catch (processError) {
-          logger.error(`Erro ao processar projetos para ambiente ${environment}: ${processError.message}`);
+          logger.error(
+            `Erro ao processar projetos para ambiente ${environment}: ${processError.message}`,
+          );
           process.exit(1);
         }
       }

@@ -1,6 +1,6 @@
 /**
  * Script de demonstração para o sistema de logs
- * 
+ *
  * Este script demonstra as diferentes opções de cores e formatação
  * disponíveis no sistema de logs.
  */
@@ -53,8 +53,8 @@ console.log('\n--- Configuração personalizada de cores ---');
 logger.configure({
   colors: {
     INFO: 'blueBright',
-    DEBUG: 'magentaBright'
-  }
+    DEBUG: 'magentaBright',
+  },
 });
 logger.info('Mensagem INFO com cor configurada para azul brilhante');
 logger.debug('Mensagem DEBUG com cor configurada para magenta brilhante');

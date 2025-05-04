@@ -124,14 +124,16 @@ export function loadConfig(configFile = DEFAULT_CONFIG_FILE, verbose = true, val
  */
 export function initializePaths(config, verbose = true) {
   // Obter os caminhos da configuração ou usar os valores padrão
-  const configPaths = config.defaults && config.defaults.paths || {};
+  const configPaths = (config.defaults && config.defaults.paths) || {};
 
   // Inicializar cada caminho, usando o valor da configuração ou o valor padrão
   const paths = {
     src: configPaths.src ? path.resolve(configPaths.src) : DEFAULT_PATHS.src,
     build: configPaths.build ? path.resolve(configPaths.build) : DEFAULT_PATHS.build,
     dist: configPaths.dist ? path.resolve(configPaths.dist) : DEFAULT_PATHS.dist,
-    templates: configPaths.templates ? path.resolve(configPaths.templates) : DEFAULT_PATHS.templates,
+    templates: configPaths.templates
+      ? path.resolve(configPaths.templates)
+      : DEFAULT_PATHS.templates,
     scripts: configPaths.scripts ? path.resolve(configPaths.scripts) : DEFAULT_PATHS.scripts,
   };
 
