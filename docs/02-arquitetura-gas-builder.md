@@ -1,14 +1,14 @@
 # Arquitetura do GAS Builder
 
-> Última atualização: 06/05/2025
+> Última atualização: 08/05/2025
 
 ## Resumo
 
-Este documento descreve a arquitetura técnica do sistema GAS Builder, detalhando seus componentes principais, fluxo de dados e interações entre módulos. É destinado a desenvolvedores que precisam compreender a estrutura interna do sistema para manutenção, extensão ou integração.
+Este documento descreve a arquitetura técnica do sistema GAS Builder, detalhado como um sistema JavaScript que suporta projetos em JavaScript ou TypeScript. São apresentados seus componentes principais, fluxo de dados e interações entre módulos. É destinado a desenvolvedores que precisam compreender a estrutura interna do sistema para manutenção, extensão ou integração.
 
 ## Visão Geral da Arquitetura
 
-O GAS Builder é um sistema modular que transforma código TypeScript em Google Apps Script através de um pipeline de processamento bem definido. A arquitetura foi projetada com os seguintes princípios:
+O GAS Builder é um sistema modular implementado em JavaScript que transforma código (JavaScript ou TypeScript) em Google Apps Script através de um pipeline de processamento bem definido. A arquitetura foi projetada com os seguintes princípios:
 
 - **Modularidade**: Componentes com responsabilidades únicas e bem definidas
 - **Extensibilidade**: Sistema de plugins para adicionar funcionalidades

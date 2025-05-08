@@ -136,6 +136,11 @@
             "type": "string",
             "description": "Diretório de código-fonte do projeto"
           },
+          "language": {
+            "type": "string",
+            "description": "Linguagem de programação do projeto (javascript ou typescript)",
+            "enum": ["javascript", "typescript"]
+          },
           "output": {
             "type": "string",
             "description": "Nome do diretório de saída"

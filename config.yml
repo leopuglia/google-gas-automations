@@ -32,11 +32,22 @@ defaults:
     plugins:
       - name: nodeResolve
         config: {}
+      - name: commonjs
+        config: {}
       - name: typescript
         config:
           tsconfig: './tsconfig.json'
+      - name: babel
+        config:
+          babelHelpers: 'bundled'
+          presets:
+            - ['@babel/preset-env', { targets: { node: '12' } }]
       - name: removeImports
         config: {}
+      - name: terser
+        config:
+          format:
+            comments: false
   
   # Estrutura de projetos
   projects-structure:

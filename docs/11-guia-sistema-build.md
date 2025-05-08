@@ -4,20 +4,20 @@
 
 ## Resumo
 
-Este guia explica como usar o sistema de build do GAS Builder para compilar, otimizar e preparar seus projetos Google Apps Script para deploy. O sistema de build é baseado em Rollup e oferece várias opções de configuração para atender diferentes necessidades de projeto.
+Este guia explica como usar o sistema de build do GAS Builder, implementado em JavaScript, para compilar, otimizar e preparar seus projetos Google Apps Script para deploy. O sistema de build é baseado em Rollup e oferece várias opções de configuração para atender diferentes necessidades de projeto, suportando o desenvolvimento tanto em JavaScript quanto em TypeScript.
 
 ## Pré-requisitos
 
 - [Node.js](https://nodejs.org/) 18.x ou superior
 - [pnpm](https://pnpm.io/) (gerenciador de pacotes preferido)
-- Conhecimento básico de [TypeScript](https://www.typescriptlang.org/)
+- Conhecimento básico de JavaScript e/ou [TypeScript](https://www.typescriptlang.org/)
 - [Clasp](https://github.com/google/clasp) configurado
 
 ## 1. Visão Geral do Sistema de Build
 
-O sistema de build do GAS Builder transforma seu código TypeScript modular em JavaScript compatível com Google Apps Script. Ele realiza as seguintes operações:
+O sistema de build do GAS Builder, implementado em JavaScript, transforma seu código fonte (JavaScript ou TypeScript) em JavaScript compatível com Google Apps Script. Ele realiza as seguintes operações:
 
-1. Compila o código TypeScript para JavaScript
+1. Processa o código fonte (compila TypeScript para JavaScript ou transforma JavaScript)
 2. Resolve dependências e módulos
 3. Concatena os arquivos conforme necessário
 4. Aplica otimizações (minificação, tree-shaking)

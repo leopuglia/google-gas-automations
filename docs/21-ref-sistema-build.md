@@ -1,23 +1,23 @@
 # Referência do Sistema de Build
 
-> Última atualização: 06/05/2025
+> Última atualização: 08/05/2025
 
 ## Resumo
 
-Este documento fornece uma referência detalhada do sistema de build do GAS Builder, baseado em Rollup. O sistema compila o código TypeScript para JavaScript compatível com Google Apps Script, gerando arquivos otimizados prontos para deploy, incluindo suporte a módulos e dependências.
+Este documento fornece uma referência detalhada do sistema de build do GAS Builder, implementado em JavaScript e baseado em Rollup. O sistema processa código JavaScript ou TypeScript para gerar código JavaScript compatível com Google Apps Script, produzindo arquivos otimizados prontos para deploy, incluindo suporte a módulos e dependências.
 
 ## Pré-requisitos
 
-- Conhecimento básico de [TypeScript](https://www.typescriptlang.org/docs/)
+- Conhecimento básico de JavaScript e/ou [TypeScript](https://www.typescriptlang.org/docs/)
 - Familiaridade com [Rollup](https://rollupjs.org/)
 - Node.js 18+ e pnpm instalados
 - [Clasp](https://github.com/google/clasp) configurado para o projeto
 
 ## 1. Visão Geral do Sistema de Build
 
-O sistema de build do GAS Builder é projetado para:
+O sistema de build do GAS Builder, implementado em JavaScript, é projetado para:
 
-1. Compilar código TypeScript para JavaScript compatível com Google Apps Script
+1. Processar código JavaScript ou compilar código TypeScript para JavaScript compatível com Google Apps Script
 2. Processar e resolver dependências, incluindo módulos externos
 3. Otimizar o código final para melhor performance
 4. Facilitar a modularização do código

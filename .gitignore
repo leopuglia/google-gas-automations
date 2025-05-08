@@ -56,9 +56,9 @@ temp/
 tmp/
 
 # Arquivos e pastas de backup
-.bak
-.bkp
-.backup
+*.bak
+*.bkp
+*.backup
 backup/
 
 # Outros

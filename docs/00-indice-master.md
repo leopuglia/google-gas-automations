@@ -22,6 +22,7 @@ Documentos focados em instruções práticas para usuários:
 
 - [10-guia-inicio-rapido.md](./10-guia-inicio-rapido.md): Guia passo a passo para começar
 - [11-guia-sistema-build.md](./11-guia-sistema-build.md): Como usar o sistema de build
+- [11-guia-suporte-dual-js-ts.md](./11-guia-suporte-dual-js-ts.md): Suporte para JavaScript e TypeScript
 - [12-guia-documentacao-codigo.md](./12-guia-documentacao-codigo.md): Práticas para documentação de código
 - [19-guia-troubleshooting.md](./19-guia-troubleshooting.md): Solução de problemas comuns
 
