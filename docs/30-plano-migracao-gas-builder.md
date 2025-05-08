@@ -1,6 +1,10 @@
 # Plano de Migração: Sistema de Build GAS Flexível
 
-Plano detalhado para migrar o sistema de build para a raiz do projeto, incorporando melhorias sugeridas e tornando a solução mais genérica para uso público.
+> Última atualização: 06/05/2025
+
+## Resumo
+
+Este documento apresenta um plano detalhado para migrar o sistema de build para a raiz do projeto, incorporando melhorias e tornando a solução mais genérica para uso público. O objetivo é criar uma base sólida para a evolução do sistema conforme definido no [roadmap](./01-roadmap-gas-builder.md).
 
 ## 1. Visão Geral do Projeto
 
@@ -8,7 +12,7 @@ Plano detalhado para migrar o sistema de build para a raiz do projeto, incorpora
 
 Criar um sistema de build flexível e genérico para projetos Google Apps Script, que possa ser usado como ponto de partida para qualquer desenvolvedor, com configuração baseada em YAML e suporte a múltiplos ambientes e estruturas de projeto.
 
-### Nome Sugerido
+### Nome do Projeto
 
 **GAS Builder** (Google Apps Script Builder)
 
@@ -73,7 +77,7 @@ gas-builder/
 ### 3.2. Migração do Código Base
 
 1. **Migrar scripts de build e deploy**
-   - Mover e refatorar scripts do `villadaspedras_new` para a nova estrutura
+   - Mover e refatorar scripts existentes para a nova estrutura
    - Organizar em módulos separados (config, deploy, templates, etc.)
    - Converter para ES Modules (se ainda não estiver)
 
@@ -95,7 +99,7 @@ gas-builder/
 ### 3.3. Implementação de Melhorias
 
 1. **Sistema de logging avançado**
-   - Migrar sistema de logging do `villadaspedras_new`
+   - Migrar sistema de logging existente
    - Adicionar suporte para níveis de log configuráveis
    - Implementar formatação colorida para console
 
@@ -148,37 +152,90 @@ gas-builder/
    - Definir processo de pull request
    - Documentar convenções de código
 
+## 4. Marcos de Implementação
+
+### 4.1. Marco 1: Estrutura Base (1-2 semanas)
+
+**Objetivos:**
+
+- Criar repositório e estrutura de diretórios
+- Configurar ferramentas de desenvolvimento (ESLint, Prettier, etc.)
+- Migrar código base essencial
+
+**Entregáveis:**
+
+- Repositório Git inicializado
+- Estrutura de diretórios completa
+- Configurações de desenvolvimento (tsconfig.json, eslintrc, etc.)
+- Documentação inicial (README.md)
+
+### 4.2. Marco 2: Core do Sistema (2-3 semanas)
+
+**Objetivos:**
+
+- Implementar sistema de configuração
+- Desenvolver CLI básica
+- Migrar sistema de templates
+- Implementar integração com Rollup
+
+**Entregáveis:**
+
+- Sistema de configuração YAML funcional
+- CLI com comandos básicos (build, deploy)
+- Sistema de templates funcionando
+- Build com Rollup configurado
+
+### 4.3. Marco 3: Testes e Refinamentos (1-2 semanas)
+
+**Objetivos:**
+
+- Implementar testes automatizados
+- Refinar sistema de logging
+- Otimizar performance
+- Adicionar validação de configuração
+
+**Entregáveis:**
+
+- Suite de testes com Jest
+- Sistema de logging avançado
+- Validação de configuração via schema JSON
+- Documentação de desenvolvimento atualizada
+
+### 4.4. Marco 4: Documentação e Exemplos (1-2 semanas)
+
+**Objetivos:**
+
+- Criar documentação detalhada
+- Desenvolver exemplos práticos
+- Preparar guia de contribuição
+- Finalizar README principal
+
+**Entregáveis:**
+
+- Documentação completa na pasta `docs/`
+- Exemplos funcionais na pasta `examples/`
+- Guia de contribuição (CONTRIBUTING.md)
+- README.md detalhado e abrangente
+
+### 4.5. Marco 5: Publicação e Divulgação (1 semana)
+
+**Objetivos:**
+
+- Configurar CI/CD
+- Preparar para publicação no npm
+- Planejar divulgação
+- Coletar feedback inicial
+
+**Entregáveis:**
+
+- Configuração do GitHub Actions
+- Package.json preparado para publicação
+- Plano de divulgação
+- Sistema de coleta de feedback
+
 ## 5. Plano de Execução
 
-### 5.1. Cronograma Sugerido
-
-1. **Fase 1: Preparação e Estrutura Básica (1-2 semanas)**
-   - Criar repositório e estrutura de diretórios
-   - Configurar ferramentas de desenvolvimento
-   - Migrar código base essencial
-
-2. **Fase 2: Implementação Core (2-3 semanas)**
-   - Implementar sistema de configuração
-   - Desenvolver CLI
-   - Migrar sistema de templates
-   - Implementar integração com Rollup
-
-3. **Fase 3: Testes e Melhorias (1-2 semanas)**
-   - Implementar testes automatizados
-   - Corrigir bugs e otimizar performance
-   - Adicionar validação de configuração
-
-4. **Fase 4: Documentação e Exemplos (1-2 semanas)**
-   - Criar documentação detalhada
-   - Desenvolver exemplos práticos
-   - Preparar guia de contribuição
-
-5. **Fase 5: Publicação e Divulgação (1 semana)**
-   - Configurar CI/CD
-   - Publicar no npm
-   - Divulgar nas comunidades relevantes
-
-### 5.2. Priorização de Tarefas
+### 5.1. Priorização de Tarefas
 
 1. **Alta Prioridade**
    - Migração do sistema de configuração
@@ -198,47 +255,54 @@ gas-builder/
    - Integração com CI/CD
    - Otimizações de performance
 
-### 5.3. Estratégia de Migração
+### 5.2. Estratégia de Migração
 
-1. **Abordagem Incremental**
-   - Começar com um MVP funcional
-   - Adicionar recursos gradualmente
-   - Testar cada componente individualmente
+1. **Fase Inicial: Analítica**
+   - Analisar código existente
+   - Identificar componentes reutilizáveis
+   - Mapear dependências
+   - Planejar arquitetura
 
-2. **Compatibilidade**
-   - Manter compatibilidade com projetos existentes
-   - Implementar sistema de fallback para configurações antigas
-   - Documentar mudanças e migrações necessárias
+2. **Fase Intermediária: Migração Gradual**
+   - Migrar componentes um por um
+   - Implementar testes para cada componente
+   - Validar funcionalidade após cada migração
+   - Documentar durante o processo
 
-3. **Feedback Contínuo**
-   - Solicitar feedback da comunidade durante o desenvolvimento
-   - Ajustar prioridades com base no feedback
-   - Iterar rapidamente para resolver problemas
+3. **Fase Final: Integração e Validação**
+   - Integrar todos os componentes
+   - Testar sistema completo
+   - Validar com casos de uso reais
+   - Finalizar documentação
 
-## 6. Considerações Finais
+### 5.3. Mitigação de Riscos
 
-### 6.1. Diferenciais do Projeto
+1. **Risco: Compatibilidade com Clasp**
+   - **Mitigação**: Testar exaustivamente a integração com diferentes versões do Clasp
+   - **Plano B**: Implementar camada de compatibilidade para diferentes versões
 
-O GAS Builder se diferenciará de outras soluções por:
+2. **Risco: Complexidade da Configuração**
+   - **Mitigação**: Criar validação robusta e mensagens de erro detalhadas
+   - **Plano B**: Simplificar esquema de configuração, priorizando usabilidade
 
-1. **Flexibilidade**: Configuração totalmente baseada em YAML, sem necessidade de editar código JavaScript
-2. **Estrutura Aninhada**: Suporte nativo para projetos com múltiplos níveis (ano, categoria, etc.)
-3. **Ambientes**: Gerenciamento integrado de ambientes de desenvolvimento e produção
-4. **Empacotamento Moderno**: Integração com Rollup para bundle otimizado
-5. **TypeScript First**: Suporte completo para TypeScript desde o início
-6. **Documentação Abrangente**: Exemplos práticos e documentação detalhada
+3. **Risco: Curva de Aprendizado**
+   - **Mitigação**: Criar documentação detalhada e exemplos práticos
+   - **Plano B**: Implementar assistentes de linha de comando para tarefas comuns
 
-### 6.2. Desafios Potenciais
+## 6. Conclusão e Próximos Passos
 
-1. **Complexidade**: Equilibrar flexibilidade e simplicidade
-2. **Compatibilidade**: Garantir compatibilidade com diferentes versões do Google Apps Script
-3. **Manutenção**: Estabelecer processo para manutenção contínua
-4. **Adoção**: Promover o projeto na comunidade
+A migração do sistema de build para um formato mais genérico e flexível é um passo importante para a evolução do projeto. Seguindo este plano, será possível criar uma base sólida para futuros desenvolvimentos, conforme detalhado no [roadmap](./01-roadmap-gas-builder.md).
 
-### 6.3. Próximos Passos
+Após a conclusão da migração, os próximos passos incluem:
 
-1. Iniciar o repositório e configurar a estrutura básica
-2. Migrar os componentes essenciais do sistema de build
-3. Implementar o CLI e sistema de configuração
-4. Desenvolver documentação inicial e exemplos básicos
-5. Solicitar feedback da comunidade
+1. Coletar feedback de usuários iniciais
+2. Implementar melhorias baseadas no feedback
+3. Expandir documentação e exemplos
+4. Planejar a evolução para uma CLI independente
+
+## Referências
+
+- [00-introducao-gas-builder.md](./00-introducao-gas-builder.md): Visão geral do projeto
+- [01-roadmap-gas-builder.md](./01-roadmap-gas-builder.md): Plano de evolução do projeto
+- [02-arquitetura-gas-builder.md](./02-arquitetura-gas-builder.md): Arquitetura do sistema
+- [10-guia-inicio-rapido.md](./10-guia-inicio-rapido.md): Guia para começar a usar o sistema

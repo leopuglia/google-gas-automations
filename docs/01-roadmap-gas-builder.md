@@ -1,5 +1,9 @@
 # Roadmap: GAS Builder
 
+> Última atualização: 06/05/2025
+
+## Resumo
+
 Este documento descreve o plano de evolução do sistema de build para projetos Google Apps Script, dividido em etapas graduais que vão desde um sistema interno até uma biblioteca completa com CLI.
 
 ## Visão Geral da Abordagem
@@ -106,30 +110,30 @@ Esta abordagem gradual permite:
 
 ## Etapa 2: Migração para Repositório Separado (Template/Starter)
 
-### Objetivos
+### 2.1 Objetivos
 
 - Criar um template/starter que outros desenvolvedores possam usar
 - Fornecer documentação abrangente
 - Facilitar adaptação e personalização
 - Estabelecer base para comunidade
 
-### Tarefas
+### 2.2 Tarefas
 
-#### Fase 2.1: Criação de Repositório
+#### Fase 2.2.1: Criação de Repositório
 
 - [ ] Criar repositório GitHub separado
 - [ ] Estruturar como template/starter
 - [ ] Configurar licença apropriada (MIT)
 - [ ] Configurar GitHub Actions básicas
 
-#### Fase 2.2: Migração do Código
+#### Fase 2.2.2: Migração do Código
 
 - [ ] Migrar código refinado da Etapa 1
 - [ ] Organizar em estrutura modular
 - [ ] Remover dependências específicas do projeto original
 - [ ] Adicionar configurações padrão genéricas
 
-#### Fase 2.3: Documentação e Internacionalização
+#### Fase 2.2.3: Documentação e Internacionalização
 
 - [ ] Criar README detalhado
 - [ ] Desenvolver guias de uso
@@ -145,14 +149,14 @@ Esta abordagem gradual permite:
   - [ ] Criar sistema de navegação entre versões de idiomas
   - [ ] Garantir consistência entre versões
 
-#### Fase 2.4: Exemplos e Testes
+#### Fase 2.2.4: Exemplos e Testes
 
 - [ ] Criar projetos de exemplo
 - [ ] Implementar testes automatizados
 - [ ] Validar em diferentes ambientes
 - [ ] Coletar feedback inicial
 
-### Versões Planejadas
+### 2.3 Versões Planejadas
 
 - **Versão 0.1.0 - Template Básico**
   - Migração do código refinado
@@ -171,7 +175,7 @@ Esta abordagem gradual permite:
   - Integração com CI/CD
   - Site de documentação com TypeDoc
 
-### Cronograma Estimado
+### 2.4 Cronograma Estimado
 
 - **Versão 0.1.0**: 1-2 meses após conclusão da Etapa 1
 - **Versão 0.2.0**: 2-3 meses após lançamento da 0.1.0
@@ -179,91 +183,74 @@ Esta abordagem gradual permite:
 
 ## Etapa 3: Evolução para Biblioteca/CLI (Futuro)
 
-### Objetivos
+### 3.1 Objetivos
 
 - Desenvolver uma biblioteca completa com CLI
 - Publicar no npm para instalação global
 - Criar API estável para uso programático
 - Estabelecer ecossistema de plugins
 
-### Tarefas
+### 3.2 Tarefas
 
-#### Fase 3.1: Desenvolvimento da CLI
+#### Fase 3.2.1: Desenvolvimento da CLI
 
 - [ ] Implementar interface de linha de comando
 - [ ] Desenvolver comandos essenciais
 - [ ] Criar sistema de ajuda e documentação
 - [ ] Implementar tratamento de erros robusto
 
-#### Fase 3.2: Publicação no npm
+#### Fase 3.2.2: Publicação no npm
 
 - [ ] Configurar package.json para publicação
 - [ ] Implementar testes automatizados
-- [ ] Criar pipeline de CI/CD
-- [ ] Publicar versão inicial
+- [ ] Criar pipeline de publicação
+- [ ] Publicar versão inicial no npm
 
-#### Fase 3.3: Expansão de Funcionalidades
+#### Fase 3.2.3: API Estável
 
-- [ ] Adicionar mais comandos e opções
-- [ ] Implementar sistema de plugins
-- [ ] Melhorar integração com ferramentas existentes
-- [ ] Otimizar performance
+- [ ] Definir API pública
+- [ ] Implementar versionamento semântico
+- [ ] Documentar API completa
+- [ ] Desenvolver exemplos de uso programático
 
-#### Fase 3.4: Ecossistema
+#### Fase 3.2.4: Ecossistema de Plugins
 
-- [ ] Desenvolver plugins oficiais
-- [ ] Criar documentação para desenvolvimento de plugins
-- [ ] Implementar sistema de templates personalizáveis
-- [ ] Estabelecer comunidade de contribuidores
+- [ ] Projetar sistema de plugins
+- [ ] Implementar carregamento dinâmico de plugins
+- [ ] Criar plugins essenciais
+- [ ] Documentar criação de plugins
 
-### Versões Planejadas
+### 3.3 Versões Planejadas
 
 - **Versão 1.0.0 - CLI Básica**
-  - Implementação da interface de linha de comando
-  - Comandos essenciais (init, build, deploy)
-  - Publicação inicial no npm
+  - Comandos essenciais
+  - Documentação de uso
+  - Suporte básico a plugins
 
-- **Versão 1.5.0 - CLI Aprimorada**
-  - Mais comandos e opções
-  - Melhor integração com ferramentas existentes
-  - Suporte a plugins
+- **Versão 1.1.0 - API Estável**
+  - API pública documentada
+  - Suporte a uso programático
+  - Melhorias de performance
 
-- **Versão 2.0.0 - Sistema Completo**
-  - API estável para uso programático
-  - Ecossistema de plugins
-  - Integração com ferramentas populares de CI/CD
+- **Versão 1.2.0 - Ecossistema**
+  - Sistema de plugins avançado
+  - Marketplace de plugins
+  - Integração com ferramentas populares
 
-### Cronograma Estimado
+### 3.4 Cronograma Estimado
 
-- **Versão 1.0.0**: 6-8 meses após conclusão da Etapa 2
-- **Versão 1.5.0**: 8-12 meses após lançamento da 1.0.0
-- **Versão 2.0.0**: 12+ meses após lançamento da 1.5.0
+- **Versão 1.0.0**: 3-4 meses após conclusão da Etapa 2
+- **Versão 1.1.0**: 2-3 meses após lançamento da 1.0.0
+- **Versão 1.2.0**: 3-4 meses após lançamento da 1.1.0
 
-## Benefícios da Abordagem Gradual
+## Próximos Passos
 
-1. **Feedback Contínuo**
-   - Cada etapa permite coletar feedback e ajustar o rumo
-   - Problemas são identificados e corrigidos mais cedo
+- Avançar com a Fase 1.5 (Testes e Estabilização)
+- Preparar o terreno para a Fase 1.6 (Migração do Projeto VilladasPedras)
+- Começar a trabalhar na Fase 1.7 (Documentação Avançada)
 
-2. **Valor Incremental**
-   - Desenvolvedores podem começar a usar o sistema desde a Etapa 2
-   - Não é necessário esperar pela versão final
+## Referências
 
-3. **Flexibilidade**
-   - O template/starter permite personalização imediata
-   - Desenvolvedores podem adaptar às suas necessidades específicas
-
-4. **Comunidade**
-   - Construção gradual de comunidade
-   - Oportunidades para contribuições em diferentes níveis
-
-5. **Menor Risco**
-   - Investimento gradual de tempo e recursos
-   - Validação do conceito antes de compromissos maiores
-
-## Próximos Passos Imediatos
-
-1. Concluir as tarefas da Fase 1.2 (Refinamentos)
-2. Iniciar trabalho na Fase 1.3 (Aprimoramentos)
-3. Planejar em detalhes a estrutura do repositório template
-4. Desenvolver exemplos iniciais para validação do conceito
+- [00-introducao-gas-builder.md](./00-introducao-gas-builder.md): Visão geral do projeto
+- [02-arquitetura-gas-builder.md](./02-arquitetura-gas-builder.md): Arquitetura do sistema
+- [30-plano-migracao-gas-builder.md](./30-plano-migracao-gas-builder.md): Plano detalhado de migração

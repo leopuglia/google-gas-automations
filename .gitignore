@@ -5,11 +5,9 @@ node_modules/
 
 # Arquivos de build
 build/
-**/build
 
 # Arquivos de dist
 dist/
-**/dist
 
 # Logs
 logs
@@ -54,25 +52,14 @@ desktop.ini
 *.temp
 .tmp/
 .temp/
-**/*.tmp
-**/*.temp
-**/*.tmp/
-**/*.temp/
 temp/
 tmp/
-**/temp
-**/tmp
 
 # Arquivos e pastas de backup
 .bak
-**/*.bak
 .bkp
-**/*.bkp
 .backup
-**/*.backup
-
-# Arquivos específicos do Google Apps Script
-**/.clasp.json.bak
+backup/
 
 # Outros
 *.tgz

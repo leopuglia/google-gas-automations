@@ -1,6 +1,16 @@
 # Configuração YAML: GAS Builder
 
-Este documento detalha a estrutura e as opções de configuração do arquivo YAML utilizado pelo GAS Builder para gerenciar projetos Google Apps Script.
+> Última atualização: 06/05/2025
+
+## Resumo
+
+Este documento detalha a estrutura e as opções de configuração do arquivo YAML utilizado pelo GAS Builder para gerenciar projetos Google Apps Script. A configuração YAML é o coração do sistema, permitindo personalizar todos os aspectos do processo de build e deploy.
+
+## Pré-requisitos
+
+- Conhecimento básico de YAML
+- Familiaridade com a [estrutura do projeto](./32-impl-core-sistema.md)
+- Entendimento dos [conceitos básicos](./00-introducao-gas-builder.md) do GAS Builder
 
 ## 1. Estrutura Geral
 
@@ -52,158 +62,171 @@ defaults:
 ```yaml
 defaults:
   rollup:
-    output:
-      format: esm
-      inlineDynamicImports: false
     plugins:
-      - name: nodeResolve
-        config: {}
-      - name: typescript
-        config:
-          tsconfig: './tsconfig.json'
-      - name: terser
-        config:
-          compress: true
+      - typescript
+      - commonjs
+      - resolve
+    minify: false
+    sourcemap: false
 ```
 
-### 2.4. Estrutura de Projetos
+### 2.4. Configurações de Logging
 
 ```yaml
 defaults:
-  projects-structure:
-    example:
-      keys: []
-    advanced:
-      nested:
-        - key: year
-        - key: category
+  logging:
+    level: INFO  # NONE, ERROR, WARN, INFO, DEBUG
+    colorize: true
 ```
 
-## 3. Definição de Projetos
+### 2.5. Configurações de Deploy
 
-Cada projeto é definido com suas próprias configurações:
+```yaml
+defaults:
+  deploy:
+    default-environment: dev
+    push:
+      force: false
+      watch: false
+```
+
+## 3. Configurações de Projetos
+
+### 3.1. Estrutura Básica de Projeto
 
 ```yaml
 projects:
-  example:
-    src: example
-    output: example
-    outputTemplate: example
-    nameTemplate: 'Example {{env}}'
-    # Outras configurações...
-```
-
-### 3.1. Configurações Básicas
-
-| Propriedade | Descrição | Exemplo |
-|-------------|-----------|---------|
-| `src` | Diretório fonte do projeto | `example` |
-| `output` | Nome base de saída | `example` |
-| `outputTemplate` | Template para o diretório de saída | `{{year}}-{{output}}` |
-| `nameTemplate` | Template para o nome do projeto | `{{output}} {{env}}` |
-
-### 3.2. Estrutura Aninhada
-
-Para projetos com estrutura aninhada (como ano/categoria):
-
-```yaml
-projects:
-  advanced:
-    nested:
-      - key: year
-      - key: category
-```
-
-### 3.3. Mapeamento de Chaves
-
-Para substituir valores de chaves por nomes amigáveis:
-
-```yaml
-projects:
-  advanced:
-    mapping:
-      keys-template:
-        - key: category
-          nameTemplate:
-            substitutions:
-              - reports: Reports
-              - analytics: Analytics
-```
-
-### 3.4. Dependências
-
-```yaml
-projects:
-  advanced:
-    dependencies:
-      - userSymbol: Drive
-        version: v3
-        serviceId: drive
-```
-
-### 3.5. Macros
-
-```yaml
-projects:
-  advanced:
-    sheetsMacros:
-      - menuName: Update Reports
-        functionName: updateReports
-```
-
-### 3.6. Configurações do Rollup
-
-```yaml
-projects:
-  advanced:
-    rollup:
-      main: main.ts
-      name: Advanced
-      common-libs:
-        - name: utils
-          path: ./src/commons/utils.ts
-      project-libs:
-        - name: reports
-          path: ./src/advanced/libs/reports.ts
-      externals:
-        - luxon
-```
-
-### 3.7. Ambientes
-
-```yaml
-projects:
-  advanced:
+  nome-do-projeto:
+    src: src/nome-do-projeto
+    output: build/nome-do-projeto
+    entryFiles:
+      - index.ts
     environments:
       dev:
-        2024:
-          reports:
-            templates:
-              .clasp-template.json:
-                destination-file: .clasp.json
-                scriptId: YOUR_DEV_REPORTS_SCRIPT_ID
-          analytics:
-            templates:
-              .clasp-template.json:
-                destination-file: .clasp.json
-                scriptId: YOUR_DEV_ANALYTICS_SCRIPT_ID
+        scriptId: SCRIPT_ID_DEV
       prod:
-        2024:
-          reports:
-            templates:
-              .clasp-template.json:
-                destination-file: .clasp.json
-                scriptId: YOUR_PROD_REPORTS_SCRIPT_ID
+        scriptId: SCRIPT_ID_PROD
 ```
 
-## 4. Exemplo Completo
+### 3.2. Opções Avançadas de Projeto
 
 ```yaml
-# Configuração de exemplo para o GAS Builder
-# Schema: ./config.schema.json
+projects:
+  nome-do-projeto:
+    src: src/nome-do-projeto
+    output: build/nome-do-projeto
+    entryFiles:
+      - index.ts
+      - functions.ts
+    externals:
+      - lodash
+      - dayjs
+    rollup:
+      minify: true
+      sourcemap: true
+      plugins:
+        - typescript
+        - commonjs
+        - resolve
+        - terser
+    templates:
+      custom-template.json:
+        destination-file: custom.json
+        keys:
+          - customKey: customValue
+    environments:
+      dev:
+        scriptId: SCRIPT_ID_DEV
+        variables:
+          API_URL: https://api-dev.example.com
+      stage:
+        scriptId: SCRIPT_ID_STAGE
+        variables:
+          API_URL: https://api-stage.example.com
+      prod:
+        scriptId: SCRIPT_ID_PROD
+        variables:
+          API_URL: https://api.example.com
+```
 
+## 4. Referência Completa de Opções
+
+### 4.1. Seção defaults
+
+| Opção | Descrição | Tipo | Valor Padrão |
+|-------|-----------|------|--------------|
+| `defaults.templates` | Definições de templates | Objeto | `{}` |
+| `defaults.paths` | Caminhos de diretórios | Objeto | Ver 2.2 |
+| `defaults.rollup` | Configurações do Rollup | Objeto | Ver 2.3 |
+| `defaults.logging` | Configurações de logging | Objeto | Ver 2.4 |
+| `defaults.deploy` | Configurações de deploy | Objeto | Ver 2.5 |
+
+### 4.2. Seção projects
+
+| Opção | Descrição | Tipo | Obrigatório | Valor Padrão |
+|-------|-----------|------|-------------|--------------|
+| `projects.<name>.src` | Diretório de código-fonte | String | Sim | - |
+| `projects.<name>.output` | Diretório de saída | String | Não | Valor de `src` |
+| `projects.<name>.entryFiles` | Arquivos de entrada | Array | Não | `["index.ts"]` |
+| `projects.<name>.externals` | Dependências externas | Array | Não | `[]` |
+| `projects.<name>.rollup` | Configurações do Rollup | Objeto | Não | Herda de `defaults.rollup` |
+| `projects.<name>.templates` | Templates específicos | Objeto | Não | Herda de `defaults.templates` |
+| `projects.<name>.environments` | Ambientes de deploy | Objeto | Sim | - |
+
+### 4.3. Configurações de Ambiente
+
+| Opção | Descrição | Tipo | Obrigatório | Valor Padrão |
+|-------|-----------|------|-------------|--------------|
+| `projects.<name>.environments.<env>.scriptId` | ID do script no Google | String | Sim | - |
+| `projects.<name>.environments.<env>.variables` | Variáveis de ambiente | Objeto | Não | `{}` |
+| `projects.<name>.environments.<env>.deploy` | Configurações de deploy | Objeto | Não | Herda de `defaults.deploy` |
+
+## 5. Exemplos Práticos
+
+### 5.1. Configuração Mínima
+
+```yaml
+projects:
+  meu-projeto:
+    src: src/meu-projeto
+    environments:
+      dev:
+        scriptId: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ
+```
+
+### 5.2. Projeto com Múltiplos Ambientes
+
+```yaml
 defaults:
-  # Templates padrão para todos os projetos
+  paths:
+    src: ./src
+    build: ./build
+  logging:
+    level: INFO
+
+projects:
+  meu-projeto:
+    src: src/meu-projeto
+    output: build/meu-projeto
+    entryFiles:
+      - index.ts
+    environments:
+      dev:
+        scriptId: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ_DEV
+        variables:
+          IS_DEVELOPMENT: true
+          API_KEY: dev_key_123
+      prod:
+        scriptId: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ_PROD
+        variables:
+          IS_DEVELOPMENT: false
+          API_KEY: prod_key_456
+```
+
+### 5.3. Configuração Avançada com Múltiplos Projetos
+
+```yaml
+defaults:
   templates:
     .clasp-template.json:
       destination-file: .clasp.json
@@ -214,161 +237,65 @@ defaults:
       keys:
         - timeZone: America/Sao_Paulo
         - runtimeVersion: V8
-  
-  # Configurações de caminhos
   paths:
     src: ./src
     build: ./build
-    dist: ./dist
     templates: ./templates
-    scripts: ./scripts
-  
-  # Configurações para o Rollup
   rollup:
-    # Configurações de saída padrão
-    output:
-      format: esm
-      inlineDynamicImports: false
-    # Plugins padrão
     plugins:
-      - name: nodeResolve
-        config: {}
-      - name: typescript
-        config:
-          tsconfig: './tsconfig.json'
-      - name: terser
-        config:
-          compress: true
-  
-  # Estrutura de projetos
-  projects-structure:
-    example:
-      keys: []
-    advanced:
-      nested:
-        - key: year
-        - key: category
+      - typescript
+      - commonjs
+      - resolve
+    minify: false
+  logging:
+    level: INFO
+    colorize: true
 
-# Configurações dos projetos
 projects:
-  # Projeto de exemplo simples
-  example:
-    src: example
-    output: example
-    outputTemplate: example
-    nameTemplate: 'Example {{env}}'
-    dependencies: []
-    sheetsMacros: []
-    # Configurações específicas para o Rollup
+  projeto-planilhas:
+    src: src/projeto-planilhas
+    output: build/projeto-planilhas
+    entryFiles:
+      - index.ts
+      - funcoes-planilha.ts
     rollup:
-      main: main.ts
-      name: Example
-    # Ambientes dentro do projeto
+      minify: true
     environments:
       dev:
-        templates:
-          .clasp-template.json:
-            destination-file: .clasp.json
-            scriptId: YOUR_DEV_SCRIPT_ID
+        scriptId: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ_PLANILHAS_DEV
       prod:
-        templates:
-          .clasp-template.json:
-            destination-file: .clasp.json
-            scriptId: YOUR_PROD_SCRIPT_ID
+        scriptId: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ_PLANILHAS_PROD
   
-  # Projeto avançado com estrutura aninhada
-  advanced:
-    src: advanced
-    output: advanced
-    outputTemplate: '{{year}}-{{category}}-{{output}}'
-    nameTemplate: '{{output}} {{year}} {{category}} {{env}}'
-    nested:
-      - key: year
-      - key: category
-    mapping:
-      keys-template:
-        - key: category
-          nameTemplate:
-            substitutions:
-              - reports: Reports
-              - analytics: Analytics
-    dependencies:
-      - userSymbol: Drive
-        version: v3
-        serviceId: drive
-    sheetsMacros:
-      - menuName: Update Reports
-        functionName: updateReports
-    rollup:
-      main: main.ts
-      name: Advanced
-      common-libs:
-        - name: utils
-          path: ./src/commons/utils.ts
+  projeto-docs:
+    src: src/projeto-docs
+    output: build/projeto-docs
+    entryFiles:
+      - index.ts
     environments:
       dev:
-        2024:
-          reports:
-            templates:
-              .clasp-template.json:
-                destination-file: .clasp.json
-                scriptId: YOUR_DEV_REPORTS_SCRIPT_ID
-          analytics:
-            templates:
-              .clasp-template.json:
-                destination-file: .clasp.json
-                scriptId: YOUR_DEV_ANALYTICS_SCRIPT_ID
+        scriptId: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ_DOCS_DEV
       prod:
-        2024:
-          reports:
-            templates:
-              .clasp-template.json:
-                destination-file: .clasp.json
-                scriptId: YOUR_PROD_REPORTS_SCRIPT_ID
-          analytics:
-            templates:
-              .clasp-template.json:
-                destination-file: .clasp.json
-                scriptId: YOUR_PROD_ANALYTICS_SCRIPT_ID
+        scriptId: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ_DOCS_PROD
 ```
 
-## 5. Variáveis de Template
+## 6. Validação de Configuração
 
-O sistema de templates suporta as seguintes variáveis:
+O GAS Builder valida automaticamente o arquivo de configuração YAML contra um schema JSON. Em caso de erros, mensagens detalhadas são exibidas para ajudar na correção:
 
-| Variável | Descrição | Exemplo |
-|----------|-----------|---------|
-| `{{env}}` | Ambiente atual | `dev`, `prod` |
-| `{{output}}` | Nome base de saída | `example` |
-| `{{project}}` | Nome do projeto | `advanced` |
-| `{{year}}` | Valor da chave `year` | `2024` |
-| `{{category}}` | Valor da chave `category` | `reports` |
-
-Você pode usar essas variáveis nos templates de saída e nome:
-
-```yaml
-outputTemplate: '{{year}}-{{category}}-{{output}}'
-nameTemplate: '{{output}} {{year}} {{category}} {{env}}'
+```bash
+[ERROR] Erros de validação na configuração:
+- /projects/meu-projeto: não possui a propriedade obrigatória 'environments'
+- /projects/meu-projeto/src: não é uma string
 ```
 
-## 6. Boas Práticas
+## Próximos Passos
 
-1. **Organize projetos por funcionalidade**
-   - Agrupe projetos relacionados com estrutura aninhada
-   - Use nomes descritivos para projetos e chaves
+- Consulte [11-guia-sistema-build.md](./11-guia-sistema-build.md) para instruções de uso prático
+- Explore [32-impl-core-sistema.md](./32-impl-core-sistema.md) para entender a implementação
+- Veja [34-impl-plugins-templates.md](./34-impl-plugins-templates.md) para detalhes sobre templates
 
-2. **Defina valores padrão em `defaults`**
-   - Evite repetição de configurações comuns
-   - Sobrescreva apenas o necessário em cada projeto
+## Referências
 
-3. **Use templates para nomes consistentes**
-   - Crie templates descritivos para diretórios e nomes
-   - Aproveite o sistema de substituição para nomes amigáveis
-
-4. **Separe ambientes claramente**
-   - Mantenha configurações de desenvolvimento e produção separadas
-   - Use IDs de script diferentes para cada ambiente
-
-5. **Documente sua configuração**
-   - Adicione comentários explicativos no YAML
-   - Documente a estrutura de projetos complexos
+- [YAML Specification](https://yaml.org/spec/1.2.2/)
+- [JSON Schema](https://json-schema.org/)
+- [10-guia-inicio-rapido.md](./10-guia-inicio-rapido.md): Primeiros passos com o GAS Builder
